@@ -1,0 +1,9 @@
+.header{
+    display: flex;
+    padding : var(--sds-size-space-800);
+    align-items: center;
+    align-content: center;
+    gap: 0 var(--sds-size-space-600);
+    align-self: stretch;
+    flex-wrap: wrap;
+}
