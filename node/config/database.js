@@ -1,7 +1,5 @@
-const db = require('mysql2')
+const mysql = require('mysql2/promise');
 
-db.createConnection(
-    
-)
 
-module.exports = db;
+
+module.exports = pool;
