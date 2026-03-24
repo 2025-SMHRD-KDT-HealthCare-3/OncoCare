@@ -7,6 +7,7 @@ const userRouter = require('./routes/user');
 const recipeRouter = require('./routes/recipeRouter'); // 추가
 const registerRouter = require('./routes/registerRouter'); // 추가
 const userDailyRouter = require('./routes/userDailyRouter'); // 추가
+const reportRouter = require('./routes/ReportRouter');
 
 const app = express();
 
@@ -23,5 +24,6 @@ app.use('/user', userRouter);
 app.use('/recipe', recipeRouter);
 app.use('/register', registerRouter);
 app.use('/daily', userDailyRouter);
+app.use('/report', reportRouter);
 
 app.listen(3000);
