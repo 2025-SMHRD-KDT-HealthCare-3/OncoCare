@@ -1,27 +1,30 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../css/Header.css'
+import icon from '../assets/oncocare_icon.png'
+import { Link } from 'react-router-dom'
 
 const LoginHeader = () => {
   return (
 <nav className="navbar navbar-expand-sm custom-navbar">
     <div className="container-fluid">
-        <a className="navbar-brand" href="/Main">Logo</a>
+        <Link to='/'>
+            <img src={icon} className="navbar-brand"></img>
+        </Link>
         <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-                <a className="nav-link" href="/Recipe">Recipe</a>
+                <Link to='/Fridge' className="nav-link">My Fridge</Link>
             </li>
             <li className="nav-item">
-                <a className="nav-link" href="/Ingredient">Ingredient</a>
+                <Link to='/Report' className="nav-link">Report</Link>
             </li>
             <li className="nav-item">
-                <a className="nav-link" href="/Report">Report</a>
-            </li>
-            <li className="nav-item">
-                <a className="nav-link" href="/MyPage">My page</a>
+                <Link to='/MyPage' className="nav-link">My page</Link>
             </li>
             <li className="nav-item-btn">
-                <button className="btn custom-btn" type="button">Register</button>
+                <Link to="/Register" className="btn custom-btn">
+                    Register
+                </Link>
             </li>
         </ul>
     </div>
