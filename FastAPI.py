@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 import json
 import asyncio
 import httpx
@@ -10,15 +11,19 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_community.callbacks.manager import get_openai_callback
 
+load_dotenv()
 app = FastAPI()
 scheduler = BackgroundScheduler()
 
 # 환경 변수 및 설정
-os.environ["OPENAI_API_KEY"] = "your_openai_api_key_here"
-NODE_SERVER_URL = "http://localhost:3000/api/reports" # Node.js 서버 주소
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+NODE_SERVER_URL = "http://localhost:3000/api/reports"
 
 # 모델 초기화
-llm = ChatOpenAI(model="gpt-4o", temperature=0.7)
+llm = ChatOpenAI(
+    model="gpt-4omini", 
+    openai_api_key=OPENAI_API_KEY
+)
 parser = JsonOutputParser()
 
 # --- [비동기 분석 로직] ---
