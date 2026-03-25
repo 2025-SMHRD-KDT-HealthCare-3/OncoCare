@@ -8,6 +8,7 @@ const recipeRouter = require('./routes/recipeRouter'); // 추가
 const registerRouter = require('./routes/registerRouter'); // 추가
 const userDailyRouter = require('./routes/userDailyRouter'); // 추가
 const reportRouter = require('./routes/ReportRouter');
+const mainRouter = require('./routes/mainRouter');
 
 const app = express();
 
@@ -20,6 +21,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // 라우터 경로 설정
+
+app.use('/', mainRouter);
 app.use('/user', userRouter);
 app.use('/recipe', recipeRouter);
 app.use('/register', registerRouter);
