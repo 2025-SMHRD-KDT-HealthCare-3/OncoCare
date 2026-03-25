@@ -8,6 +8,9 @@ import Fridge from './pages/Fridge.jsx'
 import Report from './pages/Report.jsx'
 import DailyReport from './pages/DailyReport.jsx'
 import DetailRecipe from './pages/DetailRecipe.jsx'
+import axios from 'axios'
+axios.defaults.withCredentials = true;
+
 
 
 function App() {
