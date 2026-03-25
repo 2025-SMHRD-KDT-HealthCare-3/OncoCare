@@ -4,7 +4,7 @@ const db = require('../config/database');
 
 
 /**
- * 5. 사용자 맞춤 추천 식단 리스트 출력 (7개)
+ * 5. 사용자 맞춤 추천 식단 리스트 출력 (중복 제거, 최신순 7개)
  * GET /recipe/dietList/:user_idx
  */
 router.get('/dietList/:user_idx', async (req, res) => {
@@ -22,18 +22,21 @@ router.get('/dietList/:user_idx', async (req, res) => {
             return res.send('0');
         }
 
-        // [STEP 2] 프로필이 있다면 즉시 랜덤하게 레시피 7개 추출
+        // [STEP 2] 프로필이 있다면, '해당 유저'의 레시피 중 중복 없는 최신 7개 추출
         const recipeSql = `
             SELECT 
-                recipe_idx, 
+                MAX(recipe_idx) as recipe_idx, 
                 recipe_name, 
-                recipe_category
+                MAX(recipe_category) as recipe_category
             FROM t_recipe
-            ORDER BY RAND() 
+            WHERE user_idx = ?
+            GROUP BY recipe_name
+            ORDER BY MAX(created_at) DESC
             LIMIT 7
         `;
 
-        const [recipes] = await db.query(recipeSql);
+        // 주의: user_idx 파라미터를 반드시 배열에 담아 전달해야 합니다.
+        const [recipes] = await db.query(recipeSql, [user_idx]);
 
         // 결과가 1개라도 있으면 데이터를 보내고, 아예 없으면 '0'을 보냅니다.
         if (recipes.length > 0) {
