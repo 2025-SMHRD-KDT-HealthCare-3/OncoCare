@@ -54,6 +54,11 @@ const RegisterBody = () => {
             return
         }
 
+        if (!sex) { 
+        alert('성별을 선택해주세요.');
+        return;  // 여기서 함수를 종료시켜서 서버로 post 요청이 안 가게 막음
+        }
+
         if (password !== confirmPassword) {
             setError('비밀번호가 일치하지 않습니다.')
             return
@@ -66,8 +71,7 @@ const RegisterBody = () => {
                 name: name,
                 gender: sex,        
                 birthdate: birth,   
-                phone: phone,
-                allergy: '0' 
+                phone: phone
       })
       if (response.data == '1') {
                 alert('회원가입 성공!');
@@ -111,7 +115,7 @@ const RegisterBody = () => {
                 <div className="form-floating mb-3 mt-3">
                     <input type="date" className="form-control" id="birth"
                         placeholder="Enter birth"
-                        onChange={(e) => setBirth(e.target.value)} />  {/* ← onChange 추가 */}
+                        onChange={(es) => setBirth(e.target.value)} />  {/* ← onChange 추가 */}
                     <label htmlFor="birth">Birth</label>
                 </div>
 

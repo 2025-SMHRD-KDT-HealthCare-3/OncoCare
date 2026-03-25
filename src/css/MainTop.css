@@ -14,15 +14,15 @@
   flex: 2;
   background-color: white;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 2rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   min-height: 400px;
 }
 
 .panel-date {
-  font-size: 1.3rem;
+  font-size: 1.8rem;
   font-weight: 600;
-  color: #5a9e7e;
+  color: #3C8C03;
   border-bottom: 2px solid #8EBFA3;
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
@@ -58,7 +58,7 @@
 
 /* 헤더 배경색 */
 .react-calendar__navigation {
-  background-color: #8EBFA3 !important;
+  background-color: #3C8C03 !important;
   margin-bottom: 0 !important;
   height: 60px !important;
 }
@@ -91,7 +91,7 @@
 }
 
 .react-calendar__month-view__weekdays__weekday {
-  color: #5a9e7e !important;
+  color: #8BA663 !important;
   font-weight: 600 !important;
   text-align: center !important;
 }

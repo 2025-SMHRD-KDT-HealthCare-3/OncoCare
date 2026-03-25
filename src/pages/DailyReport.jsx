@@ -2,6 +2,7 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import '../css/root.css'
 import MainHeader from '../components/MainHeader'
+import DailyReportBody from '../components/DailyReportBody'
 
 const DailyReport = () => {
 
@@ -10,7 +11,8 @@ const DailyReport = () => {
   return (
     <div className="main-content">
       <MainHeader></MainHeader>
-      <h2>{date} 리포트</h2>
+      <h1>{date} 리포트</h1>
+      <DailyReportBody></DailyReportBody>
     </div>
   )
 }
