@@ -66,16 +66,36 @@ router.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(pw, user.pw);
 
         if (isMatch) {
+            // 기존 세션ID 파기 후 새 세션ID 발급
+            req.session.regenerate((err) => {
+                if (err) throw err;
+
+                // 세션에 유저 정보 기록
+                req.session.user = {
+                    id: user.id,
+                    name: user.name
+                };
+
                 res.json({ 
-                result: '1', 
-                user_idx: user.user_idx,
-                user_name: user.name
+                    result: '1', 
+                    user_name: user.name
+                });
             });
         } else {
             res.send('0'); 
         }
     } catch (err) {
+        console.error(err);
         res.status(500).send('0');
+    }
+});
+
+// 4. 세션 로그인 유지 확인 API (리액트 새로고침 대비)
+router.get('/check', (req, res) => {
+    if (req.session.user) {
+        res.json({ loggedIn: true, name: req.session.user.name });
+    } else {
+        res.json({ loggedIn: false });
     }
 });
 
