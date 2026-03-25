@@ -9,7 +9,7 @@ import { useState } from 'react'
 
 const LoginBody = () => {
   const [id, setId] = useState('')
-  const [password, setPassword] = useState('')
+  const [pw, setPw] = useState('')
   const [error, setError] = useState('')
 
   const nav = useNavigate();
@@ -20,7 +20,7 @@ const LoginBody = () => {
     try{
       const response = await axios.post('http://localhost:3000/user/login', {
         id,
-        password
+        pw
       })
 
       console.log(response.data)
@@ -48,7 +48,7 @@ const LoginBody = () => {
           </div>
 
           <div className="form-floating mt-3 mb-3">
-            <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} id="pwd" placeholder="Enter password" name="pswd"/>
+            <input type="password" className="form-control" value={pw} onChange={(e) => setPw(e.target.value)} id="pwd" placeholder="Enter password" name="pswd"/>
             <label htmlFor="pwd" >Password</label>
           </div>
 

@@ -2,19 +2,24 @@ import React from 'react'
 import { useState } from 'react'
 import '../css/MainBody.css'
 import '../css/root.css'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-import { ko } from 'date-fns/locale'
+import Calendar from 'react-calendar'
+import 'react-calendar/dist/Calendar.css'
+import { useNavigate } from 'react-router-dom'
 
 const MainBody = () => {
 
-    const [selectedDate, setSelectedDate] = useState(new Date())
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const nav = useNavigate();
+
+  // 더블클릭시 리포트 이동
+  const dateDoubleClick = (date) => {
+    const dateform = date.toISOString().split('T')[0]  // 2024-03-25 형식
+    nav(`/DailyReport/${dateform}`);
+  }
 
 
   return (
     <div className="main-content two-column-wrapper">
-
-
             {/* 왼쪽 - 패널 */}
       <div className="panel-box">
         {selectedDate ? (
@@ -26,7 +31,7 @@ const MainBody = () => {
                 day: 'numeric'
               })}
             </h5>
-            <p className="panel-content">날짜를 선택했어요!</p>
+            <p>날짜를 더블클릭하면 리포트로 이동해요!</p>
             {/* 나중에 리포트 내용 여기에 */}
           </>
         ) : (
@@ -39,12 +44,12 @@ const MainBody = () => {
 
       {/* 오른쪽 - 미니 캘린더 */}
       <div className="calendar-box">
-        <DatePicker
-          selected={selectedDate}
-          onChange={(date) => setSelectedDate(date)}
-          locale={ko}
-          inline  // ← 항상 열려있게
-          calendarClassName="custom-calendar"
+        <Calendar
+          onChange={setSelectedDate}       // 싱글클릭 → 날짜 선택
+          onClickDay={dateDoubleClick}      // 더블클릭 대신 싱글클릭으로 이동
+          value={selectedDate}
+          locale="ko-KR"
+          formatDay={(locale, date) => date.getDate()}
         />
       </div>
 
