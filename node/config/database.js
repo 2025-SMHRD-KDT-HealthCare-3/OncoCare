@@ -1,7 +1,9 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path : path.join(__dirname, '../../.env') });
+console.log("체크 - DB_USER:", process.env.DB_USER);
 
-const pool = mysql.createPool({
+const conn = mysql.createPool({
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
     user: process.env.DB_USER,

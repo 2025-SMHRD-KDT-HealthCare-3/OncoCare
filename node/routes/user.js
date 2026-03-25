@@ -34,10 +34,10 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         // 1. 성별 처리: 'Male' -> 'M', 'Female' -> 'F' (첫 글자만 자르기)
-        const mappedGender = gender ? gender.charAt(0).toUpperCase() : 'M'; 
+        const mappedGender = gender ? gender.charAt(0).toUpperCase() : null;
 
-        const sql = `INSERT INTO t_user (id, pw, name, gender, birthdate, phone, alergy) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const sql = `INSERT INTO t_user (id, pw, name, gender, birthdate, phone) 
+                     VALUES (?, ?, ?, ?, ?, ?)`;
 
         await db.query(sql, [
             email, 
@@ -45,8 +45,7 @@ router.post('/register', async (req, res) => {
             name, 
             mappedGender, // 'M' 또는 'F'
             birthdate, 
-            phone, 
-            allergy || '0'
+            phone
         ]);
 
         res.send('1');
