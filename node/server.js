@@ -9,11 +9,12 @@ const registerRouter = require('./routes/registerRouter'); // 추가
 const userDailyRouter = require('./routes/userDailyRouter'); // 추가
 const reportRouter = require('./routes/ReportRouter');
 const mainRouter = require('./routes/mainRouter');
+const llmRouter = require('./routes/llmRouter');
 
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST']
 }));
 
@@ -28,5 +29,6 @@ app.use('/recipe', recipeRouter);
 app.use('/register', registerRouter);
 app.use('/daily', userDailyRouter);
 app.use('/report', reportRouter);
+app.use('/api', llmRouter);
 
 app.listen(3000);

@@ -8,12 +8,11 @@ const conn = require('../config/database');
  */
 router.get('/detail', async (req, res) => {
     try {
-        // req.params 대신 req.query를 사용합니다.
         const recipe_idx = req.query.recipe_idx;
         
         const sql = `
             SELECT recipe_name, recipe_category, cooking_method, nutrition_info 
-            FROM t_recipe 
+            FROM t_recipe
             WHERE recipe_idx = ?
         `;
 
@@ -70,7 +69,6 @@ router.get('/ingredient/detail', async (req, res) => {
 /**
  * 17. 식재료 직접 등록 (registerIngredient)
  * POST /recipe/ingredient/register
- * (등록은 보안과 데이터 양 때문에 POST 방식을 유지하는 것이 정석입니다.)
  */
 router.post('/ingredient/register', async (req, res) => {
     try {
