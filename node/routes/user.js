@@ -28,12 +28,15 @@ router.post('/emailCheck', async (req, res) => {
 
 // 2. 회원가입 (비밀번호 암호화)
 router.post('/register', async (req, res) => {
-    const { email, password, name, sex, birth, phone } = req.body;
-    
+    console.log("회원가입 요청 데이터:", req.body); 
+    const { email, password, name, gender, birthdate, phone } = req.body;
+
     try {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const mappedGender = sex ? sex.charAt(0).toUpperCase() : 'M';
-        const formattedBirthdate = (birth && birth !== "") ? birth : '1900-01-01';
+        const mappedGender = gender ? gender.charAt(0).toUpperCase() : 'M';
+        
+
+        const formattedBirthdate = (birthdate && birthdate !== "") ? birthdate : "1900-01-01";
 
         const sql = `INSERT INTO t_user (id, pw, name, gender, birthdate, phone) 
                      VALUES (?, ?, ?, ?, ?, ?)`;
@@ -49,7 +52,7 @@ router.post('/register', async (req, res) => {
 
         res.send('1');
     } catch (error) {
-        console.error(error);
+        console.error("회원가입 서버 에러:", error);
         res.status(500).send('0');
     }
 });
