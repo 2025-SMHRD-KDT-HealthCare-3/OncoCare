@@ -90,4 +90,14 @@ router.post('/unClickRecipe', (req, res) => {
     });
 });
 
+router.get('/test-fastapi', async (req, res) => {
+    try {
+        const response = await fetch('http://localhost:8000/api/test');
+        const data = await response.json();
+        res.json({ data_from_python: data });
+    } catch (error) {
+        res.status(500).json({ error: "연결 실패" });
+    }
+});
+
 module.exports = router;

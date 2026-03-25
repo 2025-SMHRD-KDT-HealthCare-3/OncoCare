@@ -6,6 +6,7 @@ app = FastAPI()
 # Node.js 서버(localhost:3000)에서 오는 요청을 허용하기 위한 CORS 설정
 origins = [
     "http://localhost:3000",
+    "http://localhost:5173"
 ]
 
 app.add_middleware(
