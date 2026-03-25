@@ -2,101 +2,90 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 
+
 /**
  * 5. 사용자 맞춤 추천 식단 리스트 출력 (7개)
- * GET /main/dietList/:user_idx
+ * GET /recipe/dietList/:user_idx
  */
-router.get('/dietList/:user_idx', (req, res) => {
-    const user_idx = req.params.user_idx;
+router.get('/dietList/:user_idx', async (req, res) => {
+    // URL 파라미터에서 user_idx 추출
+    const { user_idx } = req.params;
 
-    // [STEP 1] 우선 건강 프로필(T_HEALTH_PROFILE)이 있는지 확인
-    const profileSql = 'SELECT * FROM t_health_profile WHERE user_idx = ?';
+    try {
+        // [STEP 1] 우선 건강 프로필(t_health_profile)이 있는지 확인
+        const profileSql = 'SELECT user_idx FROM t_health_profile WHERE user_idx = ?';
+        const [profile] = await db.query(profileSql, [user_idx]);
 
-    db.query(profileSql, [user_idx], (err, profile) => {
-        if (err) return res.status(500).send('0');
-
-        // 정보가 없는 초기 상황이면 리액트에서 "정보 입력" UI를 띄우도록 신호 보냄
+        // 프로필 정보가 없는 초기 상황이면 '0' 반환 (리액트에서 정보 입력창 띄우기용)
         if (profile.length === 0) {
-            return res.json({ status: 'no_profile', message: '사용자 정보가 없습니다.' });
+            console.log(`사용자(${user_idx})의 건강 프로필이 없습니다.`);
+            return res.send('0');
         }
 
-        // [STEP 2] 정보가 있다면 추천 식단 7개 가져오기
-        // (is_selected: 오늘 이미 선택한 레시피인지 확인하는 서브쿼리 포함)
+        // [STEP 2] 프로필이 있다면 즉시 랜덤하게 레시피 7개 추출
         const recipeSql = `
             SELECT 
-                r.recipe_idx, 
-                r.recipe_name, 
-                r.recipe_category,
-                (SELECT COUNT(*) FROM t_diet d 
-                 WHERE d.recipe_idx = r.recipe_idx 
-                 AND d.user_idx = ? 
-                 AND DATE(d.created_at) = CURDATE()) as is_selected
-            FROM t_recipe r
+                recipe_idx, 
+                recipe_name, 
+                recipe_category
+            FROM t_recipe
             ORDER BY RAND() 
             LIMIT 7
         `;
 
-        db.query(recipeSql, [user_idx], (err, recipes) => {
-            if (err) return res.status(500).send('0');
-            res.json({ status: 'success', data: recipes });
-        });
-    });
+        const [recipes] = await db.query(recipeSql);
+
+        // 결과가 1개라도 있으면 데이터를 보내고, 아예 없으면 '0'을 보냅니다.
+        if (recipes.length > 0) {
+            res.json(recipes);
+        } else {
+            res.send('0');
+        }
+
+    } catch (err) {
+        console.error("추천 식단 조회 중 서버 에러:", err);
+        // 서버 에러 시에도 리액트가 멈추지 않도록 '0'을 보냅니다.
+        res.status(500).send('0');
+    }
 });
 
 /**
  * 6. 레시피 식단 선택 (저장)
  * POST /main/clickRecipe
  */
-router.post('/clickRecipe', (req, res) => {
-    const { user_idx, recipe_idx } = req.body;
-
-    // T_DIET 테이블에 오늘 날짜로 기록 추가
-    // start_date, end_date는 일단 오늘 날짜로 저장
-    const sql = `
-        INSERT INTO t_diet (user_idx, recipe_idx, start_date, end_date, created_at)
-        VALUES (?, ?, CURDATE(), CURDATE(), NOW())
-    `;
-
-    db.query(sql, [user_idx, recipe_idx], (err, result) => {
-        if (err) {
-            console.error('식단 선택 에러:', err);
-            return res.send('0');
-        }
+router.post('/clickRecipe', async (req, res) => {
+    try {
+        const { user_idx, recipe_idx } = req.body;
+        const sql = `
+            INSERT INTO t_diet (user_idx, recipe_idx, start_date, end_date, created_at)
+            VALUES (?, ?, CURDATE(), CURDATE(), NOW())
+        `;
+        await db.query(sql, [user_idx, recipe_idx]);
         res.send('1'); // 성공
-    });
+    } catch (err) {
+        console.error('식단 선택 에러:', err);
+        res.send('0'); // 실패
+    }
 });
 
 /**
  * 7. 레시피 식단 선택 취소 (삭제)
  * POST /main/unClickRecipe
  */
-router.post('/unClickRecipe', (req, res) => {
-    const { user_idx, recipe_idx } = req.body;
-
-    // 오늘 날짜(CURDATE)에 선택했던 해당 레시피 기록만 삭제
-    const sql = `
-        DELETE FROM t_diet 
-        WHERE user_idx = ? 
-        AND recipe_idx = ? 
-        AND DATE(created_at) = CURDATE()
-    `;
-
-    db.query(sql, [user_idx, recipe_idx], (err, result) => {
-        if (err) {
-            console.error('식단 취소 에러:', err);
-            return res.send('0');
-        }
-        res.send('1'); // 성공
-    });
-});
-
-router.get('/test-fastapi', async (req, res) => {
+router.post('/unClickRecipe', async (req, res) => {
     try {
-        const response = await fetch('http://localhost:8000/api/test');
-        const data = await response.json();
-        res.json({ data_from_python: data });
-    } catch (error) {
-        res.status(500).json({ error: "연결 실패" });
+        const { user_idx, recipe_idx } = req.body;
+        const sql = `
+            DELETE FROM t_diet 
+            WHERE user_idx = ? 
+            AND recipe_idx = ? 
+            AND DATE(created_at) = CURDATE()
+        `;
+        await db.query(sql, [user_idx, recipe_idx]);
+        res.send('1'); // 성공
+    } catch (err) {
+        console.error('식단 취소 에러:', err);
+        res.send('0'); // 실패
     }
 });
 
