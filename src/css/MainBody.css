@@ -52,8 +52,8 @@
   border: none !important;
   border-radius: 12px !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
-  font-size: 1.2rem !important;
   overflow: hidden !important;
+  min-height: 800px !important;
 }
 
 /* 헤더 배경색 */
@@ -66,7 +66,7 @@
 /* 헤더 월 텍스트 */
 .react-calendar__navigation__label {
   color: white !important;
-  font-size: 1.3rem !important;
+  font-size: 2rem !important;
   font-weight: 600 !important;
 }
 
@@ -103,8 +103,8 @@
 
 /* 날짜 칸 */
 .react-calendar__tile {
-  padding: 1.2rem 0 !important;
-  font-size: 1.1rem !important;
+  padding: 3rem 0 !important;
+  font-size: 2rem !important;
 }
 
 .react-calendar__tile:hover {
@@ -141,12 +141,8 @@
   color: #ff6b6b !important;
 }
 
-/* 날짜 칸 높이 */
-.react-calendar__tile {
-  padding: 1.5rem 0 !important;  /* ← 숫자 키우면 높이 커짐 */
-}
 
 /* 전체 글자 크기 */
 .react-calendar {
-  font-size: 1.5rem !important;  /* ← 키우면 전체 텍스트 커짐 */
+  font-size: 2rem !important;  /* ← 키우면 전체 텍스트 커짐 */
 }

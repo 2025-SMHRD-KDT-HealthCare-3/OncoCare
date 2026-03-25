@@ -25,12 +25,24 @@ const RegisterBody = () => {
             return
         }
         try {
-            const responser = await axios.post('http://localhost:3000/user/emailCheck', {email})
-            setEmailCheck(true)
-            setEmailMessage('사용 가능한 이메일입니다.')
+             // 서버의 { email } = req.body에 맞게 전달
+            const response = await axios.post('http://localhost:3000/user/emailCheck', { email: id });
+            
+            // 서버 응답이 문자열 '1' 또는 숫자 1일 경우 처리
+            if (response.data == '1') {
+                setEmailCheck(true); // 중복 확인 통과!
+                setEmailMessage('사용 가능한 이메일입니다.');
+                alert('사용 가능한 이메일입니다.');
+           
+        }else {
+                setEmailCheck(false); // 중복임
+                setEmailMessage('이미 사용 중인 이메일입니다.');
+                alert('중복된 이메일입니다.');
+            }
         }catch (error){
-            setEmailCheck(false)
-            setEmailMessage('이미 사용중인 이메일입니다.')
+            console.error("중복 체크 에러:", error);
+            setEmailCheck(false);
+            alert('서버 통신 중 오류가 발생했습니다.')
         }
     }
 
@@ -49,16 +61,21 @@ const RegisterBody = () => {
 
         try {
             const response = await axios.post('http://localhost:3000/user/register', {
-                name,
-                sex,
-                id,
-                password,
-                phone,
-                birth
+                email: id,          
+                password: password,
+                name: name,
+                gender: sex,        
+                birthdate: birth,   
+                phone: phone,
+                allergy: '0' 
       })
-      console.log(response.data)
-      nav('/')  // 회원가입 성공시 로그인 페이지로 이동
-    } catch (error) {
+      if (response.data == '1') {
+                alert('회원가입 성공!');
+                nav('/'); // 로그인 페이지로 이동
+    } else {
+                alert('회원가입 실패');
+            }
+        }catch (error) {
       setError('회원가입에 실패했습니다.')
       console.error(error)
     }
@@ -72,7 +89,7 @@ const RegisterBody = () => {
         <div className="register-box">
             <h1 className="register-title">Register</h1>
             <br />
-            <form>
+            <form onSubmit={register}>
                 {/* 이름 성별 */}
                 <div className="form-floating name-gender-wrapper d-flex mb-3 mt-3">
                     <div className='form-floating name-box'>

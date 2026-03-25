@@ -48,8 +48,9 @@ const MainBody = () => {
           onChange={setSelectedDate}       // 싱글클릭 → 날짜 선택
           onClickDay={dateDoubleClick}      // 더블클릭 대신 싱글클릭으로 이동
           value={selectedDate}
-          locale="ko-KR"
+          locale="en-US"
           formatDay={(locale, date) => date.getDate()}
+          calendarType="gregory"
         />
       </div>
 

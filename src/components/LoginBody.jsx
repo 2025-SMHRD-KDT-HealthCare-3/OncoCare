@@ -23,11 +23,19 @@ const LoginBody = () => {
         pw
       })
 
-      console.log(response.data)
-      nav('/Main')
+      if (response.data.result === '1') {
+      alert(`${response.data.user_name}님 환영합니다!`);
+      
+      // (선택 사항) 로그인 정보를 유지하고 싶다면 로컬 스토리지 등에 저장
+      // localStorage.setItem('user', JSON.stringify(response.data));
+
+      // 로그인 성공 시 로그인 페이지로 이동
+      nav('/Main');
+    }
     } catch (error) {
-      setError('이메일 또는 비밀번호가 틀렸습니다.')  // 실패시 에러 표시
-      console.error(error)
+      // 서버에서 '0'을 보냈을 때 (아이디/비번 불일치)
+      alert('이메일 또는 비밀번호가 틀렸습니다.');
+      setError('이메일 또는 비밀번호가 틀렸습니다.');
     }
     }
   
