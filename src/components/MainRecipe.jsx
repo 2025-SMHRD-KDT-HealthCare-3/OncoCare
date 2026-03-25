@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import RecipeCard from './RecipeCard'
 
-const MainRecipe = ({ mealCount }) => {
+const MainRecipe = ({ mealsPerDay }) => {
   const [recipes, setRecipes] = useState([])
 
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/recipe/recommend?count=${meals_per_day}`
+          `http://localhost:3000/recipe/recommend?count=${mealsPerDay}`
         )
         setRecipes(response.data)
       } catch (error) {
@@ -17,7 +17,7 @@ const MainRecipe = ({ mealCount }) => {
       }
     }
     fetchRecipes()
-  }, [mealCount])
+  }, [mealsPerDay])
 
   return (
     <div className="recipe-section">

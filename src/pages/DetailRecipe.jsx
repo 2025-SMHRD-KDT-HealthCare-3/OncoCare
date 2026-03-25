@@ -1,8 +1,9 @@
 import React from 'react'
+import MainHeader from '../components/MainHeader'
 
 const DetailRecipe = () => {
   return (
-    <div>DetailRecipe</div>
+    <MainHeader></MainHeader>
   )
 }
 
