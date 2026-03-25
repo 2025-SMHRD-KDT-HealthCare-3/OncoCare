@@ -57,6 +57,8 @@
 .react-datepicker {
     font-size: 2.67rem !important;
     width: 800px !important;
+    overflow: hidden !important;  /* ← 삐져나온 헤더 정리 */
+    border-radius: 12px !important;  /* ← 추가 */
 }
 
 /* 선택된 날짜 색상 */
@@ -82,25 +84,53 @@
   background-color: #8EBFA3 !important;
   border: none !important;
   border-radius: 12px 12px 0 0 !important;
-  padding-bottom: 0 !important;  /* ← 추가 */
-  padding-top: 0.5rem !important;  /* ← 추가 */
+  padding-bottom: 1rem !important;  /* ← 추가 */
+  padding-top: 1rem !important;  /* ← 추가 */
   
 }
 
 .react-datepicker__current-month,
 .react-datepicker__day-name {
   color: white !important;
-  font-size: 3rem !important;
+  font-size: 2.5rem !important;
   padding: 0.3rem 0 !important;  /* ← 추가 */
 
 }
 
 .react-datepicker__day-names {
-  margin-bottom: 0 !important;  /* ← 추가 */
-  padding-bottom: 0 !important;  /* ← 추가 */
+  margin: 0 !important;  /* ← 추가 */
+  padding: 0 !important;  /* ← 추가 */
 }
 
 .react-datepicker__month {
   margin-top: 0 !important;  /* ← 추가 */
-  padding-top: 0.3rem !important;  /* ← 추가 */
+  padding-top: 0 !important;  /* ← 추가 */
+}
+
+/* 화살표 + 월 제목 가로 정렬 */
+.react-datepicker__navigation {
+  top: 1.5rem !important;  /* ← 세로 위치 조절 */
+}
+
+/* 화살표 크기 키우기 */
+.react-datepicker__navigation-icon::before {
+  border-width: 5px 5px 0 0 !important;  /* ← 화살표 굵기 */
+  width: 20px !important;  /* ← 화살표 크기 */
+  height: 20px !important;
+  border-color: white !important;  /* ← 화살표 색상 */
+}
+
+/* 왼쪽 화살표 위치 */
+.react-datepicker__navigation--previous {
+  left: 20px !important;
+}
+
+/* 오른쪽 화살표 위치 */
+.react-datepicker__navigation--next {
+  right: 20px !important;
+}
+
+.react-datepicker__week {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }
