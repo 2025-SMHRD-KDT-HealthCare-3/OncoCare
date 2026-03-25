@@ -115,7 +115,7 @@ const RegisterBody = () => {
                 <div className="form-floating mb-3 mt-3">
                     <input type="date" className="form-control" id="birth"
                         placeholder="Enter birth"
-                        onChange={(es) => setBirth(e.target.value)} />  {/* ← onChange 추가 */}
+                        onChange={(e) => setBirth(e.target.value)} />  {/* ← onChange 추가 */}
                     <label htmlFor="birth">Birth</label>
                 </div>
 
