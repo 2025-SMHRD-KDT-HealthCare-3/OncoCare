@@ -1,0 +1,106 @@
+.two-column-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  padding: 2rem;
+  padding-top: 120px;
+  box-sizing: border-box;
+  width: 100%;
+  align-items: flex-start;
+}
+
+/* 왼쪽 패널 */
+.panel-box {
+  flex: 2;
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  min-height: 400px;
+}
+
+.panel-date {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #5a9e7e;
+  border-bottom: 2px solid #8EBFA3;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.panel-placeholder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  color: #aaa;
+  font-size: 1rem;
+}
+
+/* 오른쪽 캘린더 */
+.calendar-box {
+  flex: 2;
+
+  display: flex;
+  justify-content: center;
+}
+
+/* 캘린더 커스텀 스타일 */
+.custom-calendar {
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+  border-radius: 12px !important;
+  font-size: 0.9rem !important;
+}
+
+.react-datepicker {
+    font-size: 2.67rem !important;
+    width: 800px !important;
+}
+
+/* 선택된 날짜 색상 */
+.react-datepicker__day--selected {
+  background-color: #8EBFA3 !important;
+  border-radius: 50% !important;
+}
+
+/* 오늘 날짜 색상 */
+.react-datepicker__day--today {
+  color: #5a9e7e !important;
+  font-weight: bold !important;
+}
+
+/* hover 색상 */
+.react-datepicker__day:hover {
+  background-color: #e8f5ee !important;
+  border-radius: 50% !important;
+}
+
+/* 헤더 색상 */
+.react-datepicker__header {
+  background-color: #8EBFA3 !important;
+  border: none !important;
+  border-radius: 12px 12px 0 0 !important;
+  padding-bottom: 0 !important;  /* ← 추가 */
+  padding-top: 0.5rem !important;  /* ← 추가 */
+  
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  color: white !important;
+  font-size: 3rem !important;
+  padding: 0.3rem 0 !important;  /* ← 추가 */
+
+}
+
+.react-datepicker__day-names {
+  margin-bottom: 0 !important;  /* ← 추가 */
+  padding-bottom: 0 !important;  /* ← 추가 */
+}
+
+.react-datepicker__month {
+  margin-top: 0 !important;  /* ← 추가 */
+  padding-top: 0.3rem !important;  /* ← 추가 */
+}

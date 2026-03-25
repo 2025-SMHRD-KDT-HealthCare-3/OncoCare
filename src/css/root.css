@@ -7,3 +7,7 @@
     align-self: stretch;
     flex-wrap: wrap;
 }
+
+.main-content{
+    padding-top : 120px;
+}

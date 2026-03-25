@@ -1,3 +1,25 @@
+@font-face {
+  font-family: 'KGPartofMe';
+  src: url('../assets/fonts/KGPartofMe.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Arenq';
+  src: url('../assets/fonts/Arenq.otf') format('opentype');  /* otf → opentype */
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MERKIN__';
+  src: url('../assets/fonts/MERKIN__.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 .custom-navbar{
   background-color: white;
   position: fixed;
@@ -5,24 +27,36 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 1rem 0;
+  padding: 0.5rem 0;
   font-size: 14px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  background: linear-gradient(to right, #ffffff, #8EBFA3);
 }   
 
 .navbar-brand{
-    font-size: 2rem;
+    font-size: 1.5rem;
     padding-left: 10px;
 }
 
 .navbar-text{
     font-size: 2.5rem;
     padding-right: 10px;
+    font-family: 'Arenq', sans-serif;
+    font-weight: bold;
+    font-size: 4rem;
 }
 
 .nav-item{
     padding-right: 10px;
+    font-family: 'MERKIN__', sans-serif;
+    font-weight: 100 !important;
 }
+
+.nav-item-btn{
+    padding-right: 10px;
+    font-size : 1.5rem !important;
+}
+
 
 .nav-link{
     font-size: 1.5rem;
@@ -31,9 +65,8 @@
 }
 
 .custom-btn{
-    padding: 12px 50px;
-    font-size: 25px;
-    background-color: azure;
+    font-size: 30px;
+    background-color: #A0D9B4;
 
 }
 
