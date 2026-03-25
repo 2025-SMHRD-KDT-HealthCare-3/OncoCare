@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import MyPage from './pages/MyPage.jsx'
 import Fridge from './pages/Fridge.jsx'
 import Report from './pages/Report.jsx'
+import DailyReport from './pages/DailyReport.jsx'
+
 
 function App() {
 
@@ -18,6 +20,7 @@ function App() {
         <Route path='/MyPage' element={<MyPage />}/>
         <Route path='/Fridge' element={<Fridge />}/>
         <Route path='/Report' element={<Report />}/>
+        <Route path='/DailyReport/:date' element={<DailyReport />}/>
       </Routes>
     </BrowserRouter>
   )

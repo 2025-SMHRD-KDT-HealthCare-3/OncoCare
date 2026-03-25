@@ -46,91 +46,107 @@
   justify-content: center;
 }
 
-/* 캘린더 커스텀 스타일 */
-.custom-calendar {
+/* 캘린더 전체 */
+.react-calendar {
+  width: 100% !important;
   border: none !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
   border-radius: 12px !important;
-  font-size: 0.9rem !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+  font-size: 1.2rem !important;
+  overflow: hidden !important;
 }
 
-.react-datepicker {
-    font-size: 2.67rem !important;
-    width: 800px !important;
-    overflow: hidden !important;  /* ← 삐져나온 헤더 정리 */
-    border-radius: 12px !important;  /* ← 추가 */
-}
-
-/* 선택된 날짜 색상 */
-.react-datepicker__day--selected {
+/* 헤더 배경색 */
+.react-calendar__navigation {
   background-color: #8EBFA3 !important;
-  border-radius: 50% !important;
+  margin-bottom: 0 !important;
+  height: 60px !important;
 }
 
-/* 오늘 날짜 색상 */
-.react-datepicker__day--today {
+/* 헤더 월 텍스트 */
+.react-calendar__navigation__label {
+  color: white !important;
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+}
+
+/* 화살표 버튼 */
+.react-calendar__navigation__arrow {
+  color: white !important;
+  font-size: 1.5rem !important;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #5a9e7e !important;
+}
+
+.react-calendar__navigation button:disabled {
+  background-color: #8EBFA3 !important;
+}
+
+/* 요일 */
+.react-calendar__month-view__weekdays {
+  background-color: #e8f5ee !important;
+  padding: 0.5rem 0 !important;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  color: #5a9e7e !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+}
+
+/* 요일 밑줄 제거 */
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none !important;
+}
+
+/* 날짜 칸 */
+.react-calendar__tile {
+  padding: 1.2rem 0 !important;
+  font-size: 1.1rem !important;
+}
+
+.react-calendar__tile:hover {
+  background-color: #e8f5ee !important;
+  border-radius: 8px !important;
+}
+
+/* 선택된 날짜 */
+.react-calendar__tile--active {
+  background-color: #8EBFA3 !important;
+  border-radius: 8px !important;
+  color: white !important;
+}
+
+.react-calendar__tile--active:hover {
+  background-color: #5a9e7e !important;
+}
+
+/* 오늘 날짜 */
+.react-calendar__tile--now {
+  background-color: #e8f5ee !important;
+  border-radius: 8px !important;
   color: #5a9e7e !important;
   font-weight: bold !important;
 }
 
-/* hover 색상 */
-.react-datepicker__day:hover {
-  background-color: #e8f5ee !important;
-  border-radius: 50% !important;
+/* 이번 달 아닌 날짜 */
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #ccc !important;
 }
 
-/* 헤더 색상 */
-.react-datepicker__header {
-  background-color: #8EBFA3 !important;
-  border: none !important;
-  border-radius: 12px 12px 0 0 !important;
-  padding-bottom: 1rem !important;  /* ← 추가 */
-  padding-top: 1rem !important;  /* ← 추가 */
-  
+/* 일요일 빨간색 */
+.react-calendar__month-view__days__day--weekend:nth-child(7n+1) {
+  color: #ff6b6b !important;
 }
 
-.react-datepicker__current-month,
-.react-datepicker__day-name {
-  color: white !important;
-  font-size: 2.5rem !important;
-  padding: 0.3rem 0 !important;  /* ← 추가 */
-
+/* 날짜 칸 높이 */
+.react-calendar__tile {
+  padding: 1.5rem 0 !important;  /* ← 숫자 키우면 높이 커짐 */
 }
 
-.react-datepicker__day-names {
-  margin: 0 !important;  /* ← 추가 */
-  padding: 0 !important;  /* ← 추가 */
-}
-
-.react-datepicker__month {
-  margin-top: 0 !important;  /* ← 추가 */
-  padding-top: 0 !important;  /* ← 추가 */
-}
-
-/* 화살표 + 월 제목 가로 정렬 */
-.react-datepicker__navigation {
-  top: 1.5rem !important;  /* ← 세로 위치 조절 */
-}
-
-/* 화살표 크기 키우기 */
-.react-datepicker__navigation-icon::before {
-  border-width: 5px 5px 0 0 !important;  /* ← 화살표 굵기 */
-  width: 20px !important;  /* ← 화살표 크기 */
-  height: 20px !important;
-  border-color: white !important;  /* ← 화살표 색상 */
-}
-
-/* 왼쪽 화살표 위치 */
-.react-datepicker__navigation--previous {
-  left: 20px !important;
-}
-
-/* 오른쪽 화살표 위치 */
-.react-datepicker__navigation--next {
-  right: 20px !important;
-}
-
-.react-datepicker__week {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
+/* 전체 글자 크기 */
+.react-calendar {
+  font-size: 1.5rem !important;  /* ← 키우면 전체 텍스트 커짐 */
 }
