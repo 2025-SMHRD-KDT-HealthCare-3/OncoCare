@@ -1,0 +1,38 @@
+.ingredient-input-section {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 0;
+}
+
+
+.ingredient-btn-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.4rem;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.ingredient-btn-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.4rem;
+    width: 100%;
+}
+
+.ingredient-btn {
+    background-color: #8EBFA3;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 2rem;
+    padding: 1.2rem 4rem;
+    width: 640px;
+}
+
+.ingredient-btn:hover {
+    background-color: #74aa8d;
+    color: #fff;
+}

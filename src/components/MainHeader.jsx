@@ -3,9 +3,15 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import '../css/Header.css'
 import avater from '../assets/avater.jpg'
 import icon from '../assets/oncocare_icon.png'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const MainHeader = () => {
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    navigate('/')
+  }
+
   return (
 <nav className="navbar navbar-expand-sm custom-navbar">
     <div className="container-fluid">
@@ -28,10 +34,13 @@ const MainHeader = () => {
             {/* 회원 프로필, 회원명, 로그아웃 버튼 -> 로그인 화면으로 이동 / 아직 코딩 x 
                                 회원 프로필, 회원명 선택했을 때 회원정보 수정 페이지로 이동 */}
             <li className="nav-item-avater">
-                <Link className="navbar-brand" to='/MyPage'>
-                    <img src={avater} alt="Avatar Logo" style={{ width: '70px' }} className="rounded-pill"/> 
-                    <span className='nav-user'>User</span>
+                <Link to='/MyPage'>
+                    <img src={avater} alt="Avatar Logo" style={{ width: '70px' }} className="rounded-pill"/>
                 </Link>
+                <div className="nav-user-info">
+                    <Link to='/MyPage'><span className='nav-user'>User</span></Link>
+                    <span onClick={handleLogout} className='nav-logout'>logout</span>
+                </div>
             </li>
         </ul>
     </div>
