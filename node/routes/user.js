@@ -99,4 +99,16 @@ router.get('/check', (req, res) => {
     }
 });
 
+// 5. 로그아웃 (세션 파기)
+router.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("세션 삭제 에러:", err);
+            return res.status(500).send('0');
+        }
+        res.clearCookie('connect.sid'); // 세션 쿠키 강제 삭제
+        res.send('1');
+    });
+});
+
 module.exports = router;
