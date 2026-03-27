@@ -1,13 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../css/HealthInfo.css'
 
 const ALL_ALLERGENS = [
-  '우유', '달걀', '밀', '대두(콩)', '땅콩', '견과류',
-  '새우', '게', '오징어', '복숭아', '토마토', '닭고기',
-  '돼지고기', '소고기', '메밀', '아황산염', '잣', '고등어',
+  '우유', '달걀', '밀', '글루텐', '유당',
+  '대두(콩)', '땅콩', '견과류', '잣',
+  '새우', '게', '조개', '홍합', '전복', '굴',
+  '오징어', '고등어', '연어', '참치',
+  '닭고기', '돼지고기', '소고기',
+  '복숭아', '토마토', '키위', '바나나', '사과',
+  '메밀', '아황산염', '셀러리', '겨자', '참깨'
 ]
 
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * HealthInfoBody 컴포넌트는 기본 건강 정보와 식습관 정보를 입력하는 폼을 제공합니다.
+ * 기본 건강 정보에는 키, 체중, 장루 여부, 항암 여부, 대장암 진단 기수, 수술 날짜, 퇴원 날짜가 있습니다.
+ * 식습관 정보에는 하루 식사 횟수, 알레르기 검색이 있습니다.
+ */
+/*******  80367f79-adc9-4b67-9962-f2bf3f25f416  *******/
 const HealthInfoBody = () => {
   // 기본 건강 정보
   const [height, setHeight] = useState('')
@@ -35,14 +47,58 @@ const HealthInfoBody = () => {
     )
   }
 
-  const handleSubmit = () => {
-    // TODO: axios.post로 백엔드 저장 연결
-    console.log({
-      height, weight, hasOstomy, hasChemo,
-      diagnosisStage, surgeryDate, dischargeDate,
-      mealsPerDay, selectedAllergens,
-    })
-    alert('저장되었습니다.')
+  // 기존 건강정보 불러오기
+  useEffect(() => {
+    const user_idx = sessionStorage.getItem('user_idx')
+    if (!user_idx) return
+
+    axios.get(`http://localhost:3000/register/getHealth/${user_idx}`)
+      .then((res) => {
+        const d = res.data
+        if (!d) return
+        if (d.height)        setHeight(d.height)
+        if (d.weight)        setWeight(d.weight)
+        if (d.cancer_stage)  setDiagnosisStage(String(d.cancer_stage))
+        if (d.surgery_date)  setSurgeryDate(d.surgery_date)
+        if (d.discharge_date) setDischargeDate(d.discharge_date)
+        setHasOstomy(d.stoma_status === 'Y' || d.stoma_status === 1)
+        setHasChemo(d.chemo_status === 'Y' || d.chemo_status === 1)
+        if (d.meals_per_day) setMealsPerDay(String(d.meals_per_day))
+      })
+      .catch(() => {
+        // 데이터 없으면 빈 폼으로 진행
+      })
+  }, [])
+
+  const handleSubmit = async () => {
+    const user_idx = sessionStorage.getItem('user_idx')
+    if (!user_idx) {
+      alert('로그인이 필요합니다.')
+      return
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3000/register/registerHealth', {
+        user_idx,
+        height,
+        weight,
+        cancer_stage: diagnosisStage,
+        surgery_date: surgeryDate,
+        discharge_date: dischargeDate,
+        stoma_status: hasOstomy ? 'Y' : 'N',
+        chemo_status: hasChemo ? 'Y' : 'N',
+        meals_per_day: mealsPerDay,
+      })
+
+      if (response.data == '1') {
+        alert('저장되었습니다.')
+      } else {
+        alert('저장에 실패했습니다.')
+      }
+    } catch (error) {
+      console.error(error)
+      alert('서버 통신 중 오류가 발생했습니다.')
+    }
   }
 
   return (

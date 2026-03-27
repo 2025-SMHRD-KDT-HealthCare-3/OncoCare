@@ -30,6 +30,7 @@ const LoginBody = () => {
 
       if (response.data.result === '1') {
       alert(`${response.data.user_name}님 환영합니다!`);
+      sessionStorage.setItem('user_idx', response.data.user_idx);
 
       // 로그인 성공 시 로그인 페이지로 이동
       nav('/Main');
