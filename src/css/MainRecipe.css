@@ -1,0 +1,128 @@
+/* ── 섹션 전체 ── */
+.recipe-section {
+  padding: 32px 40px;
+  border-top: 1px solid var(--border);
+  max-width: 70%;
+  margin: 0 auto;
+}
+
+.recipe-section-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.recipe-section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 4px;
+}
+
+.recipe-section-sub {
+  font-size: 14px;
+  color: #aaa;
+  margin: 0;
+}
+
+/* ── 검색 + 버튼 툴바 ── */
+.recipe-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.recipe-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.recipe-search-input {
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 6px 36px 6px 16px;
+  font-size: 14px;
+  outline: none;
+  width: 180px;
+}
+
+.recipe-search-input:focus {
+  border-color: #8EBFA3;
+}
+
+.recipe-search-icon {
+  position: absolute;
+  right: 12px;
+  font-size: 13px;
+  color: #aaa;
+  pointer-events: none;
+}
+
+.recipe-new-btn {
+  background-color: #3d3d3d;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.recipe-new-btn:hover {
+  background-color: var(--text-main);
+}
+
+/* ── 카드 그리드 ── */
+.recipe-grid-top {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.recipe-grid-bottom {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* ── 카드 ── */
+.recipe-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+.recipe-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.recipe-card-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #e0e0e0;
+  overflow: hidden;
+}
+
+.recipe-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recipe-card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #e0e0e0;
+}
+
+.recipe-card-name {
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--text-main);
+  margin: 0;
+}

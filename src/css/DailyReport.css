@@ -1,0 +1,136 @@
+/* ── 히어로 ── */
+.daily-hero {
+  text-align: center;
+  padding: 50px 40px 24px;
+  background-color: #f5f5f5;
+}
+
+.daily-body {
+  max-width: 70%;
+  margin: 0 auto;
+}
+
+.daily-hero-title {
+  font-size: 48px;
+  font-weight: 800;
+  color: #111;
+}
+
+.daily-hero-sub {
+  font-size: 24px;
+  color: var(--text-sub);
+}
+
+/* ── 섹션 공통 ── */
+.daily-diet-card {
+  padding: 32px 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.daily-diet-card:last-child {
+  border-bottom: none;
+}
+
+/* 섹션 타이틀 (h5로 쓸 때) */
+.daily-section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.daily-section-sub {
+  font-size: 14px;
+  color: #aaa;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #e0e0e0;
+  display: inline-block;
+  margin-bottom: 24px;
+}
+
+/* ── DailyDiet: 2열 레이아웃 ── */
+.daily-diet-recipe-placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 0 0 320px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.daily-diet-img-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #e0e0e0;
+  border-radius: 6px;
+}
+
+.daily-diet-name {
+  font-size: 14px;
+  color: #444;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* 별점 */
+.daily-diet-rating {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.daily-diet-stars {
+  display: flex;
+  gap: 4px;
+}
+
+.daily-diet-star {
+  font-size: 22px;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.daily-diet-star.active {
+  color: #f5a623;
+}
+
+/* 코멘트(오른쪽) */
+.daily-diet-comment {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* DailyDiet 내부를 2열로 배치 */
+.daily-diet-inner {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+/* 라벨 공통 */
+.daily-diet-label {
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
+/* 저장 버튼 */
+.daily-diet-save-btn {
+  background-color: #3d3d3d;
+  color: #fff;
+  padding: 8px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  align-self: flex-end;
+  margin-top: 12px;
+}
+
+.daily-diet-save-btn:hover {
+  background-color: #222;
+  color: #fff;
+}

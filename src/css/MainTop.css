@@ -5,8 +5,9 @@
   padding: 2rem;
   padding-top: 120px;
   box-sizing: border-box;
-  width: 100%;
-  align-items: flex-start;
+  max-width: 70%;
+  margin: 0 auto;
+  align-items: stretch;
 }
 
 /* 왼쪽 패널 */
@@ -22,10 +23,108 @@
 .panel-date {
   font-size: 1.8rem;
   font-weight: 600;
-  color: #3C8C03;
+  color: var(--primary-dark);
   border-bottom: 2px solid #8EBFA3;
   padding-bottom: 0.5rem;
+  margin-bottom: 1.2rem;
+}
+
+/* 건강 점수 */
+.panel-score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.panel-score-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.panel-score-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.panel-score-max {
+  font-size: 0.9rem;
+  color: #aaa;
+  font-weight: 400;
+}
+
+.panel-score-bar-bg {
+  width: 100%;
+  height: 10px;
+  background: #e8e8e8;
+  border-radius: 10px;
+  margin-bottom: 1.4rem;
+}
+
+.panel-score-bar {
+  height: 100%;
+  background: linear-gradient(to right, #8EBFA3, var(--primary-dark));
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+/* 요약 항목 */
+.panel-summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 1.2rem;
+}
+
+.panel-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.panel-summary-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.panel-summary-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  margin: 0 0 2px;
+}
+
+.panel-summary-desc {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
+}
+
+/* 한줄 코멘트 */
+.panel-comment {
+  background: #f0f7f3;
+  border-left: 3px solid #8EBFA3;
+  border-radius: 6px;
+  padding: 10px 14px;
   margin-bottom: 1rem;
+}
+
+.panel-comment-text {
+  font-size: 0.9rem;
+  color: var(--primary-dark);
+  margin: 0;
+}
+
+.panel-hint {
+  font-size: 0.8rem;
+  color: #bbb;
+  text-align: right;
+  margin: 0;
 }
 
 .panel-placeholder {
@@ -53,27 +152,29 @@
   border-radius: 12px !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
   overflow: hidden !important;
-  min-height: 800px !important;
 }
 
 /* 헤더 배경색 */
 .react-calendar__navigation {
-  background-color: #3C8C03 !important;
+  background-color: var(--primary-dark) !important;
   margin-bottom: 0 !important;
-  height: 60px !important;
+  height: 80px !important;
 }
 
 /* 헤더 월 텍스트 */
 .react-calendar__navigation__label {
   color: white !important;
-  font-size: 2rem !important;
+  font-size: 2.4rem !important;
   font-weight: 600 !important;
 }
 
 /* 화살표 버튼 */
 .react-calendar__navigation__arrow {
   color: white !important;
-  font-size: 1.5rem !important;
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+  min-width: 44px !important;
 }
 
 .react-calendar__navigation button:hover {
@@ -87,13 +188,14 @@
 /* 요일 */
 .react-calendar__month-view__weekdays {
   background-color: #e8f5ee !important;
-  padding: 0.5rem 0 !important;
+  padding: 1rem 0 !important;
 }
 
 .react-calendar__month-view__weekdays__weekday {
   color: #8BA663 !important;
   font-weight: 600 !important;
   text-align: center !important;
+  font-size: 1.1rem !important;
 }
 
 /* 요일 밑줄 제거 */
@@ -103,30 +205,31 @@
 
 /* 날짜 칸 */
 .react-calendar__tile {
-  padding: 3rem 0 !important;
-  font-size: 2rem !important;
+  padding: 1.8rem 1rem !important;
+  font-size: 1.2rem !important;
 }
 
 .react-calendar__tile:hover {
   background-color: #e8f5ee !important;
-  border-radius: 8px !important;
+  border-radius: 50% !important;
 }
 
 /* 선택된 날짜 */
 .react-calendar__tile--active {
-  background-color: #8EBFA3 !important;
-  border-radius: 8px !important;
+  background-color: var(--primary-dark) !important;
+  border-radius: 50% !important;
   color: white !important;
 }
 
 .react-calendar__tile--active:hover {
-  background-color: #5a9e7e !important;
+  background-color: var(--primary-dark) !important;
+  border-radius: 50% !important;
 }
 
 /* 오늘 날짜 */
 .react-calendar__tile--now {
   background-color: #e8f5ee !important;
-  border-radius: 8px !important;
+  border-radius: 50% !important;
   color: #5a9e7e !important;
   font-weight: bold !important;
 }
@@ -144,5 +247,5 @@
 
 /* 전체 글자 크기 */
 .react-calendar {
-  font-size: 2rem !important;  /* ← 키우면 전체 텍스트 커짐 */
+  font-size: 1rem !important;
 }

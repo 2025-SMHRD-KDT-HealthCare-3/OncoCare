@@ -1,10 +1,12 @@
 import React from 'react'
 import MainHeader from '../components/MainHeader'
+import MypageBody from '../components/MypageBody'
 
 const MyPage = () => {
   return (
-    <div>
+    <div className="page-layout">
       <MainHeader></MainHeader>
+      <MypageBody></MypageBody>
     </div>
   )
 }
