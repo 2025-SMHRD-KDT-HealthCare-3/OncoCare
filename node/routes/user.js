@@ -28,7 +28,6 @@ router.post('/emailCheck', async (req, res) => {
 
 // 2. 회원가입 (비밀번호 암호화)
 router.post('/register', async (req, res) => {
-    console.log("회원가입 요청 데이터:", req.body); 
     const { email, password, name, gender, birthdate, phone } = req.body;
 
     try {

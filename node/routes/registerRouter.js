@@ -57,19 +57,43 @@ router.get('/healthSelect', async (req, res) => {
  */
 router.post('/registerHealth', async (req, res) => {
     try {
-        const { user_idx, height, weight, cancer_stage, surgery_date, discharge_date, stoma_status, chemo_status, meals_per_day } = req.body;
+        // 1. req.body에 alergy 추가
+        const { 
+            user_idx, height, weight, cancer_stage, surgery_date, 
+            discharge_date, stoma_status, chemo_status, alergy, meals_per_day 
+        } = req.body;
+        
         const checkSql = `SELECT user_idx FROM t_health_profile WHERE user_idx = ?`;
         const [existing] = await conn.query(checkSql, [user_idx]);
 
         if (existing.length > 0) {
-            const updateSql = `UPDATE t_health_profile SET height=?, weight=?, cancer_stage=?, surgery_date=?, discharge_date=?, stoma_status=?, chemo_status=?, meals_per_day=? WHERE user_idx=?`;
-            await conn.query(updateSql, [height, weight, cancer_stage, surgery_date, discharge_date, stoma_status, chemo_status, meals_per_day, user_idx]);
+            // 2. UPDATE 쿼리에 alergy 추가
+            const updateSql = `
+                UPDATE t_health_profile 
+                SET height=?, weight=?, cancer_stage=?, surgery_date=?, 
+                    discharge_date=?, stoma_status=?, chemo_status=?, alergy=?, meals_per_day=? 
+                WHERE user_idx=?
+            `;
+            await conn.query(updateSql, [
+                height, weight, cancer_stage, surgery_date, 
+                discharge_date, stoma_status, chemo_status, alergy, meals_per_day, user_idx
+            ]);
         } else {
-            const insertSql = `INSERT INTO t_health_profile (user_idx, height, weight, cancer_stage, surgery_date, discharge_date, stoma_status, chemo_status, meals_per_day) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-            await conn.query(insertSql, [user_idx, height, weight, cancer_stage, surgery_date, discharge_date, stoma_status, chemo_status, meals_per_day]);
+            // 3. INSERT 쿼리에 alergy 추가 (총 10개의 데이터)
+            const insertSql = `
+                INSERT INTO t_health_profile (
+                    user_idx, height, weight, cancer_stage, surgery_date, 
+                    discharge_date, stoma_status, chemo_status, alergy, meals_per_day
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `;
+            await conn.query(insertSql, [
+                user_idx, height, weight, cancer_stage, surgery_date, 
+                discharge_date, stoma_status, chemo_status, alergy, meals_per_day
+            ]);
         }
         res.send('1');
     } catch (err) {
+        console.error("건강정보 저장/수정 에러:", err); // 에러 확인을 위해 로그 추가
         res.send('0');
     }
 });
