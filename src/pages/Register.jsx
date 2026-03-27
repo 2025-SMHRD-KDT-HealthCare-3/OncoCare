@@ -9,7 +9,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const Register = () => {
   return (
-    <div>
+    <div className="page-layout">
         <nav className="navbar navbar-expand-sm custom-navbar">
           <div className="container-fluid">
             <Link to='/'>

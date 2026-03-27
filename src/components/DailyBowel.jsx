@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import '../css/DailyReport.css'
 
 const bristolLabels = {
   1: '1형 - 분리된 딱딱한 덩어리 (심한 변비)',
@@ -23,7 +24,8 @@ const DailyBowel = () => {
 
   return (
     <div className="daily-diet-card">
-      <h5 className="daily-diet-label" style={{ marginBottom: '16px' }}>배변 기록</h5>
+      <h2 className="daily-section-title">배변일지 등록</h2>
+      <span className="daily-section-sub">배변 시간과 형태를 기록해주세요.</span>
 
       {/* 배변 일시 */}
       <div className="daily-diet-comment">

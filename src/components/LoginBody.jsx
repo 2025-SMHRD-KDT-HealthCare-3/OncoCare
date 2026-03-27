@@ -5,12 +5,17 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import '../css/Header.css'
 import '../css/root.css'
 import '../css/LoginBody.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const LoginBody = () => {
   const [id, setId] = useState('')
   const [pw, setPw] = useState('')
   const [error, setError] = useState('')
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    axios.get
+  })
 
   const nav = useNavigate();
 
@@ -25,9 +30,6 @@ const LoginBody = () => {
 
       if (response.data.result === '1') {
       alert(`${response.data.user_name}님 환영합니다!`);
-      
-      // (선택 사항) 로그인 정보를 유지하고 싶다면 로컬 스토리지 등에 저장
-      // localStorage.setItem('user', JSON.stringify(response.data));
 
       // 로그인 성공 시 로그인 페이지로 이동
       nav('/Main');
@@ -62,7 +64,7 @@ const LoginBody = () => {
 
           <div className="d-flex justify-content-between gap-2">
             <Link to='/Register' className="btn btn-outline-secondary w-50">Register</Link>
-            <button onClick = {login} type="submit" className="btn w-50" style={{backgroundColor : '#8EBFA3' }}>Log in</button>
+            <button onClick = {login} type="submit" className="btn w-50" style={{backgroundColor : '#4CAF50' }}>Log in</button>
           </div>
 
           {/* 비밀번호 분실 -> 기능x */}

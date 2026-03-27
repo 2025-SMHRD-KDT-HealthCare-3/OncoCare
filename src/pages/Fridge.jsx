@@ -1,10 +1,14 @@
 import React from 'react'
 import MainHeader from '../components/MainHeader'
+import FridgeBody from '../components/FridgeBody'
+import RegisterIngredient from '../components/RegisterIngredient'
 
 const Fridge = () => {
   return (
-    <div>
-      <MainHeader></MainHeader>
+    <div className="page-layout">
+      <MainHeader />
+      <FridgeBody />
+      <RegisterIngredient></RegisterIngredient>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import '../css/DailyReport.css'
 
 const conditionLabels = {
   1: '매우 나쁨',
@@ -24,7 +25,8 @@ const DailyCondition = () => {
 
   return (
     <div className="daily-diet-card">
-      <h5 className="daily-diet-label" style={{ marginBottom: '16px' }}>컨디션 기록</h5>
+      <h2 className="daily-section-title">컨디션 기록</h2>
+      <span className="daily-section-sub">오늘의 컨디션을 기록해주세요.</span>
 
       {/* 기분/피로도 */}
       <div className="daily-diet-comment">

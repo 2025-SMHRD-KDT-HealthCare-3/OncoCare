@@ -62,7 +62,7 @@
 
 .custom-btn1{
     align-content: center;
-    background-color: #8EBFA3;
+    background-color: var(--primary);
     border-radius: 10px;
     border: none;
     color: white;
@@ -80,7 +80,7 @@
     display: block;
     justify-content: center;
     align-content: center;
-    background-color: #8EBFA3;
+    background-color: var(--primary);
     border-radius: 10px;
     border: none;
     color: white;

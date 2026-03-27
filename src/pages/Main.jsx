@@ -6,7 +6,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const Main = () => {
   return (
-    <div>
+    <div className="page-layout">
         <MainHeader></MainHeader>
         <MainBody></MainBody>
     </div>

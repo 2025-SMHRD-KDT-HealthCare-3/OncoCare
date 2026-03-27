@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../css/Header.css'
 import avater from '../assets/avater.jpg'
@@ -8,6 +8,17 @@ import axios from 'axios'
 
 const MainHeader = () => {
   const navigate = useNavigate()
+  const [userName, setUserName] = useState('')
+
+  useEffect(() => {
+    axios.get('http://localhost:3000/user/check')
+      .then((res) => {
+        if (res.data.loggedIn) {
+          setUserName(res.data.name)
+        }
+      })
+      .catch((err) => console.error('유저 정보 조회 실패:', err))
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -26,7 +37,7 @@ const MainHeader = () => {
 
   return (
 <nav className="navbar navbar-expand-sm custom-navbar">
-    <div className="container-fluid">
+    <div className="container-fluid px-0">
         {/* 이미지 로고 클릭하면 홈으로 이동 */}
         <Link to='/Main'>
             <img src={icon} className="navbar-brand"></img>
@@ -46,11 +57,11 @@ const MainHeader = () => {
             {/* 회원 프로필, 회원명, 로그아웃 버튼 -> 로그인 화면으로 이동 / 아직 코딩 x 
                                 회원 프로필, 회원명 선택했을 때 회원정보 수정 페이지로 이동 */}
             <li className="nav-item-avater">
-                <Link to='/MyPage'>
-                    <img src={avater} alt="Avatar Logo" style={{ width: '70px' }} className="rounded-pill"/>
+                <Link to='/PersonalInfo'>
+                    <img src={avater} alt="Avatar Logo" style={{ width: '54px' }} className="rounded-pill"/>
                 </Link>
                 <div className="nav-user-info">
-                    <Link to='/MyPage'><span className='nav-user'>User</span></Link>
+                    <Link to='/PersonalInfo'><span className='nav-user'>{userName} 님</span></Link>
                     <span onClick={handleLogout} className='nav-logout'>logout</span>
                 </div>
             </li>

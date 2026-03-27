@@ -1,0 +1,192 @@
+.recipe-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 40px 60px;
+}
+
+.recipe-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+/* ── Image Section ── */
+.recipe-detail-image-section {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #e8e8e8;
+  aspect-ratio: 3 / 4;
+}
+
+.recipe-detail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recipe-detail-img-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #e8e8e8;
+}
+
+.recipe-heart-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #3d3d3d;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.recipe-heart-btn.liked {
+  background: #e53e3e;
+}
+
+/* ── Info Section ── */
+.recipe-detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.recipe-detail-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+.recipe-detail-desc {
+  font-size: 15px;
+  color: #888;
+  margin: 0;
+}
+
+/* ── Accordion ── */
+.recipe-accordion {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.recipe-accordion-item {
+  border-bottom: 1px solid var(--border);
+}
+
+.recipe-accordion-item:last-child {
+  border-bottom: none;
+}
+
+.recipe-accordion-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: white;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.recipe-accordion-header:hover {
+  background: #f9f9f9;
+}
+
+.recipe-accordion-body {
+  padding: 12px 20px 20px;
+  font-size: 14px;
+  color: #444;
+  line-height: 1.7;
+  background: white;
+}
+
+.recipe-accordion-body ul,
+.recipe-accordion-body ol {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.recipe-accordion-body li {
+  margin-bottom: 6px;
+}
+
+/* ── 영양정보 그리드 ── */
+.nutrition-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.nutrition-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #f5f7f6;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.nutrition-item span:first-child {
+  color: #888;
+}
+
+.nutrition-item span:last-child {
+  font-weight: 600;
+  color: #222;
+}
+
+/* ── 식단선택 버튼 ── */
+.recipe-select-btn {
+  width: 100%;
+  padding: 16px;
+  background: #3d3d3d;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.recipe-select-btn:hover {
+  background: #222;
+}
+
+/* ── 뒤로가기 ── */
+.recipe-detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 28px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #888;
+  cursor: pointer;
+  padding: 0;
+}
+
+.recipe-detail-back:hover {
+  color: #333;
+}

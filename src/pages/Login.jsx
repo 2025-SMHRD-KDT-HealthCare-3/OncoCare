@@ -4,7 +4,7 @@ import LoginBody from '../components/LoginBody'
 
 const Login = () => {
   return (
-    <div>
+    <div className="page-layout">
         <LoginHeader></LoginHeader>
         <LoginBody></LoginBody>
     </div>

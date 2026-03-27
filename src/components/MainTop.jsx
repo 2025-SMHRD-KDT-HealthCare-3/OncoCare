@@ -29,8 +29,48 @@ const MainTop = () => {
                 day: 'numeric'
               })}
             </h5>
-            <p>날짜를 더블클릭하면 리포트로 이동해요!</p>
-            {/* 나중에 리포트 내용 여기에 */}
+
+            {/* TODO: 선택 날짜 기준으로 axios.get('/report/daily?date=...') 연결 */}
+            {/* 건강 점수 */}
+            <div className="panel-score-row">
+              <span className="panel-score-label">건강 점수</span>
+              <span className="panel-score-value">— 점 <span className="panel-score-max">/ 100</span></span>
+            </div>
+            <div className="panel-score-bar-bg">
+              <div className="panel-score-bar" style={{ width: '0%' }} />
+            </div>
+
+            {/* 요약 항목들 */}
+            <div className="panel-summary-list">
+              <div className="panel-summary-item">
+                <span className="panel-summary-icon">🍽️</span>
+                <div>
+                  <p className="panel-summary-title">식단</p>
+                  <p className="panel-summary-desc">기록 없음</p>
+                </div>
+              </div>
+              <div className="panel-summary-item">
+                <span className="panel-summary-icon">🚽</span>
+                <div>
+                  <p className="panel-summary-title">배변</p>
+                  <p className="panel-summary-desc">기록 없음</p>
+                </div>
+              </div>
+              <div className="panel-summary-item">
+                <span className="panel-summary-icon">💪</span>
+                <div>
+                  <p className="panel-summary-title">컨디션</p>
+                  <p className="panel-summary-desc">기록 없음</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 한줄 코멘트 */}
+            <div className="panel-comment">
+              <p className="panel-comment-text">💬 오늘의 기록을 입력해보세요.</p>
+            </div>
+
+            <p className="panel-hint">더블클릭하면 상세 리포트로 이동해요!</p>
           </>
         ) : (
           <div className="panel-placeholder">

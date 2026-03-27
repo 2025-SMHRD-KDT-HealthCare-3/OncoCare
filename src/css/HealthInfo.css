@@ -1,0 +1,150 @@
+.healthinfo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 50px 24px 60px;
+  background-color: #f5f5f5;
+}
+
+.healthinfo-box {
+  background-color: white;
+  padding: 4rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 700px;
+}
+
+.healthinfo-section {
+  margin-bottom: 40px;
+}
+
+.healthinfo-section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 20px;
+}
+
+.healthinfo-label {
+  display: block;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+/* 2열 기본 행 */
+.healthinfo-row {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.healthinfo-row.three-col .healthinfo-field {
+  flex: 1;
+}
+
+.healthinfo-row.align-start {
+  align-items: flex-start;
+}
+
+.healthinfo-field {
+  flex: 1;
+}
+
+/* 토글 그룹 */
+.healthinfo-toggle-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.healthinfo-toggle-group .healthinfo-label {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.healthinfo-toggle-desc {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+/* 알레르기 검색 */
+.allergy-search-box {
+  position: relative;
+}
+
+.allergy-search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #aaa;
+  pointer-events: none;
+}
+
+/* 선택된 태그 */
+.allergy-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.allergy-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #8EBFA3;
+  color: #fff;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 13px;
+}
+
+.allergy-tag button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* 체크리스트 */
+.allergy-list {
+  margin-top: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 12px 8px 24px;
+}
+
+.allergy-item {
+  padding: 4px 0;
+  font-size: 14px;
+}
+
+/* 제출 버튼 */
+.healthinfo-submit-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.healthinfo-submit-btn {
+  background-color: #3d3d3d;
+  color: #fff;
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.healthinfo-submit-btn:hover {
+  background-color: var(--text-main);
+  color: #fff;
+}
