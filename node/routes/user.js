@@ -74,12 +74,14 @@ router.post('/login', async (req, res) => {
 
                 // 세션에 유저 정보 기록
                 req.session.user = {
+                    user_idx: user.user_idx,
                     id: user.id,
                     name: user.name
                 };
 
                 res.json({ 
-                    result: '1', 
+                    result: '1',
+                    user_idx: user.user_idx,
                     user_name: user.name
                 });
             });
