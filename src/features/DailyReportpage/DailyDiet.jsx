@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './DailyReport.css'
 
@@ -6,6 +7,19 @@ const DailyDiet = () => {
   const [rating, setRating] = useState(0)
   const [hovered, setHovered] = useState(0)
   const [comment, setComment] = useState('')
+  const [dietName, setDietName] = useState('')
+
+  useEffect(() => {
+    const user_idx = sessionStorage.getItem('user_idx')
+    if (!user_idx) return
+    axios.get(`http://localhost:3000/recipe/dailydiet?user_idx=${user_idx}`)
+      .then(res => {
+        if (Array.isArray(res.data) && res.data.length > 0) {
+          setDietName(res.data[0].recipe_name)
+        }
+      })
+      .catch(err => console.error('일일 식단 조회 실패:', err))
+  }, [])
 
   const handleSave = () => {
     // TODO: axios.post로 백엔드 저장 연결
@@ -22,7 +36,7 @@ const DailyDiet = () => {
         {/* 왼쪽: 이미지 + 별점 */}
         <div className="daily-diet-recipe-placeholder">
           <div className="daily-diet-img-placeholder" />
-          <h4 className="daily-diet-name">오늘의 식단</h4>
+          <h4 className="daily-diet-name">{dietName || '오늘의 식단'}</h4>
           <div className="daily-diet-stars">
             {[1, 2, 3, 4, 5].map((star) => (
               <span

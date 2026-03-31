@@ -6,12 +6,12 @@ import RegisterIngredient from '../public/RegisterIngredient'
 
 
 const MainBody = () => {
-
+  const user_idx = sessionStorage.getItem('user_idx')
 
   return (
     <div >
       <MainTop></MainTop>
-      <MainRecipe></MainRecipe>
+      <MainRecipe user_idx={user_idx}></MainRecipe>
       <RegisterIngredient></RegisterIngredient>
     </div>
   )

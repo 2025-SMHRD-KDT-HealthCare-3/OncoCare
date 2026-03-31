@@ -15,7 +15,7 @@ const getDietList = async (user_idx) => {
             alert('건강 정보를 먼저 입력해주세요.')
             return; // 프론트에서 프로필 입력창을 띄우는 로직 처리, 
         }
-        setRecipes(response.data); // 레시피 리스트 배열 반환
+        setRecipes(Array.isArray(response.data) ? response.data : []); // 레시피 리스트 배열 반환
     } catch (error) {
         console.error("추천 식단 조회 에러:", error);
     }
@@ -29,10 +29,6 @@ const getDietList = async (user_idx) => {
   const filtered = recipes.filter((r) =>
     r.recipe_name?.includes(search)
   )
-
-  // 4개 / 나머지로 분리
-  const topRow = filtered.slice(0, 4)
-  const bottomRow = filtered.slice(4)
 
   return (
     <div className="recipe-section">
@@ -63,18 +59,10 @@ const getDietList = async (user_idx) => {
 
       {/* 카드 그리드 */}
       <div className="recipe-grid-top">
-        {topRow.map((recipes) => (
-          <RecipeCard key={recipes.recipe_idx} recipe={recipes} />
+        {filtered.map((recipe) => (
+          <RecipeCard key={recipe.recipe_idx} recipe={recipe} />
         ))}
       </div>
-
-      {bottomRow.length > 0 && (
-        <div className="recipe-grid-bottom">
-          {bottomRow.map((recipes) => (
-            <RecipeCard key={recipes.recipe_idx} recipe={recipes} />
-          ))}
-        </div>
-      )}
     </div>
   )
 }

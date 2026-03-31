@@ -12,23 +12,32 @@ const RecipeDetail = () => {
   const navigate = useNavigate()
   const [recipe, setRecipe] = useState(null)
   const [liked, setLiked] = useState(false)
-  const [openSection, setOpenSection] = useState('ingredients')
+  const [openSection, setOpenSection] = useState('cooking')
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/recipe/detail?${id}`)
+    axios.get(`http://localhost:3000/recipe/detail?recipe_idx=${id}`)
       .then(res => setRecipe(res.data))
       .catch(err => console.error('레시피 조회 실패:', err))
   }, [id])
 
-  const toggleSection = (section) => {
-    setOpenSection(openSection === section ? null : section)
-  }
+const toggleSection = (section) => {
+  setOpenSection(prev => (prev === section ? null : section))
+}
 
   const handleSelectDiet = async () => {
+    const user_idx = sessionStorage.getItem('user_idx')
+    if (!user_idx) { alert('로그인이 필요합니다.'); return }
     try {
-      await axios.post('http://localhost:3000/diet/select', { recipeId: id })
-      alert('식단이 선택되었습니다!')
-      navigate('/Main')
+      const res = await axios.post('http://localhost:3000/clickRecipe', {
+        user_idx,
+        recipe_idx
+      })
+      if (res.data === '1') {
+        alert('식단이 선택되었습니다!')
+        navigate('/Main')
+      } else {
+        alert('식단 선택에 실패했습니다.')
+      }
     } catch (err) {
       console.error('식단 선택 실패:', err)
       alert('식단 선택에 실패했습니다.')
@@ -36,15 +45,15 @@ const RecipeDetail = () => {
   }
 
   return (
-    <div className="page-layout">
+    <div className="page-layout main-content">
       <MainHeader />
-      <div className="recipe-detail-container main-content">
+      <div className="recipe-detail-container">
         <button className="recipe-detail-back" onClick={() => navigate(-1)}>
           ← 뒤로가기
         </button>
 
         <div className="recipe-detail-layout">
-          {/* 왼쪽: 이미지 */}
+          {/* 왼쪽: 이미지 placeholder */}
           <div className="recipe-detail-image-section">
             <button
               className={`recipe-heart-btn ${liked ? 'liked' : ''}`}
@@ -52,32 +61,30 @@ const RecipeDetail = () => {
             >
               ♥
             </button>
-            {recipe?.image_url
-              ? <img src={recipe.image_url} alt={recipe.name} className="recipe-detail-img" />
-              : <div className="recipe-detail-img-placeholder" />
-            }
+            <div className="recipe-detail-img-placeholder" />
           </div>
 
           {/* 오른쪽: 정보 */}
           <div className="recipe-detail-info">
-            <h1 className="recipe-detail-title">{recipe?.name || 'Recipe Name'}</h1>
-            <p className="recipe-detail-desc">{recipe?.description || ''}</p>
+            <h1 className="recipe-detail-title">{recipe?.recipe_name || 'Recipe Name'}</h1>
+            <p className="recipe-detail-desc">{recipe?.recipe_category || ''}</p>
 
             {/* 아코디언 */}
             <div className="recipe-accordion">
-              {/* 재료 */}
+
+              {/* 사용 재료 */}
               <div className="recipe-accordion-item">
                 <button
                   className="recipe-accordion-header"
                   onClick={() => toggleSection('ingredients')}
                 >
-                  <span>재료</span>
+                  <span>사용 재료</span>
                   <span>{openSection === 'ingredients' ? '∧' : '∨'}</span>
                 </button>
                 {openSection === 'ingredients' && (
                   <div className="recipe-accordion-body">
-                    {recipe?.ingredients?.length > 0
-                      ? <ul>{recipe.ingredients.map((ing, i) => <li key={i}>{ing}</li>)}</ul>
+                    {recipe?.main_ingredients
+                      ? <p>{recipe.main_ingredients}</p>
                       : <p>재료 정보가 없습니다.</p>
                     }
                   </div>
@@ -88,15 +95,15 @@ const RecipeDetail = () => {
               <div className="recipe-accordion-item">
                 <button
                   className="recipe-accordion-header"
-                  onClick={() => toggleSection('steps')}
+                  onClick={() => toggleSection('cooking')}
                 >
                   <span>조리방법</span>
-                  <span>{openSection === 'steps' ? '∧' : '∨'}</span>
+                  <span>{openSection === 'cooking' ? '∧' : '∨'}</span>
                 </button>
-                {openSection === 'steps' && (
+                {openSection === 'cooking' && (
                   <div className="recipe-accordion-body">
-                    {recipe?.steps?.length > 0
-                      ? <ol>{recipe.steps.map((step, i) => <li key={i}>{step}</li>)}</ol>
+                    {recipe?.cooking_method
+                      ? <p>{recipe.cooking_method}</p>
                       : <p>조리방법 정보가 없습니다.</p>
                     }
                   </div>
@@ -114,28 +121,10 @@ const RecipeDetail = () => {
                 </button>
                 {openSection === 'nutrition' && (
                   <div className="recipe-accordion-body">
-                    {recipe?.nutrition ? (
-                      <div className="nutrition-grid">
-                        <div className="nutrition-item">
-                          <span>칼로리</span>
-                          <span>{recipe.nutrition.calories} kcal</span>
-                        </div>
-                        <div className="nutrition-item">
-                          <span>단백질</span>
-                          <span>{recipe.nutrition.protein} g</span>
-                        </div>
-                        <div className="nutrition-item">
-                          <span>지방</span>
-                          <span>{recipe.nutrition.fat} g</span>
-                        </div>
-                        <div className="nutrition-item">
-                          <span>탄수화물</span>
-                          <span>{recipe.nutrition.carbs} g</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <p>영양 정보가 없습니다.</p>
-                    )}
+                    {recipe?.nutrition_info
+                      ? <p>{recipe.nutrition_info}</p>
+                      : <p>영양 정보가 없습니다.</p>
+                    }
                   </div>
                 )}
               </div>
