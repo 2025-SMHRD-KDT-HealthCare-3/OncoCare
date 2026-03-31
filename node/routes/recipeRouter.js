@@ -99,8 +99,7 @@ router.get('/dailydiet', async (req, res) => {
             FROM t_diet A
             JOIN t_recipe B ON A.recipe_idx = B.recipe_idx
             WHERE A.user_idx = ? 
-              AND A.created_at >= CURDATE() 
-              AND A.created_at < CURDATE() + INTERVAL 1 DAY
+                AND A.select_date = CURDATE()
         `;
 
         const [results] = await conn.query(sql, [user_idx]);
