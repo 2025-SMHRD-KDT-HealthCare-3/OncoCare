@@ -1,0 +1,49 @@
+.footer {
+  border-top: 1px solid #d0d0d0;
+  padding: 32px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: #fff;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #333;
+}
+
+.footer-brand {
+  font-size: 28px;
+  font-weight: 600;
+  color: #4CAF50;
+  margin-bottom: 16px;
+}
+
+.footer-left,
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footer-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #999;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.footer-text {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.7;
+}
+
+.footer-link {
+  font-size: 13px;
+  color: #4CAF50;
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}
