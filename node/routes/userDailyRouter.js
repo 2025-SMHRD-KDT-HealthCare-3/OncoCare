@@ -57,78 +57,71 @@ router.get('/userDaily', async (req, res) => {
 
 /**
  * 10. 일일 기록 저장 및 수정 (userDailySave)
- * POST /daily/userDailySave
- * 배변 기록은 기존 기록에 추가(Append) 방식으로 동작합니다.
  */
-router.post('/userDailySave', async (req, res) => {
+
+/*
+ * 일일 컨디션 및 수분 섭취 저장/수정
+ */
+router.post('/saveCondition', async (req, res) => {
     try {
-        const { 
-            day, user_idx, diet_feedback, rating, 
-            new_defecation_time, new_defecation_type, // 새로 추가할 배변 기록 1건
-            condition_score, sleep_time, water_intake, stomach_pain, pain_level 
-        } = req.body;
+        const { user_idx, condition_score, water_intake, stomach_pain, pain_level } = req.body;
 
-        // 기존 기록이 있는지 확인하고 기존 배변 리스트를 가져옵니다.
-        const checkSql = `SELECT record_idx, defecation_list FROM t_daily_record WHERE user_idx = ? AND DATE(record_date) = ?`;
-        const [existing] = await conn.query(checkSql, [user_idx, day]);
+        const finalStomachScore = (stomach_pain === 'N') ? 0 : (pain_level || 0);
 
-        let currentDefecationList = [];
-
-        // 기존 기록이 있다면 배변 리스트를 파싱하여 복구합니다.
-        if (existing.length > 0 && existing[0].defecation_list) {
-            try {
-                currentDefecationList = JSON.parse(existing[0].defecation_list);
-            } catch (e) {
-                currentDefecationList = [];
-            }
-        }
-
-        // 사용자가 새로운 배변 시간을 입력했다면 기존 배열에 추가합니다.
-        if (new_defecation_time && new_defecation_type) {
-            currentDefecationList.push({
-                time: new_defecation_time,
-                type: new_defecation_type
-            });
-        }
-
-        // 누적된 배변 배열을 다시 문자열로 변환하여 DB에 저장할 준비를 합니다.
-        const defecation_str = JSON.stringify(currentDefecationList);
+        const checkSql = `
+            SELECT condition_idx FROM t_condition 
+            WHERE user_idx = ? AND DATE(created_at) = CURDATE()
+        `;
+        const [existing] = await conn.query(checkSql, [user_idx]);
 
         if (existing.length > 0) {
-            // 기록이 이미 존재하면 UPDATE
             const updateSql = `
-                UPDATE t_daily_record SET 
-                    diet_feedback = ?, rating = ?, defecation_list = ?, 
-                    condition_score = ?, sleep_time = ?, water_intake = ?, 
-                    stomach_pain = ?, pain_level = ?
-                WHERE user_idx = ? AND DATE(record_date) = ?
+                UPDATE t_condition SET 
+                    condition_score = ?, 
+                    water_intake = ?, 
+                    stomach_pain = ?, 
+                    stomach_score = ?
+                WHERE condition_idx = ?
             `;
             await conn.query(updateSql, [
-                diet_feedback, rating, defecation_str, 
-                condition_score, sleep_time, water_intake, 
-                stomach_pain, pain_level, user_idx, day
+                condition_score, water_intake, stomach_pain, finalStomachScore, existing[0].condition_idx
             ]);
         } else {
-            // 기록이 없다면 INSERT
             const insertSql = `
-                INSERT INTO t_daily_record (
-                    user_idx, record_date, diet_feedback, rating, 
-                    defecation_list, condition_score, sleep_time, 
-                    water_intake, stomach_pain, pain_level
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO t_condition (user_idx, condition_score, water_intake, stomach_pain, stomach_score, created_at)
+                VALUES (?, ?, ?, ?, ?, NOW())
             `;
-            await conn.query(insertSql, [
-                user_idx, day, diet_feedback, rating, 
-                defecation_str, condition_score, sleep_time, 
-                water_intake, stomach_pain, pain_level
-            ]);
+            await conn.query(insertSql, [user_idx, condition_score, water_intake, stomach_pain, finalStomachScore]);
         }
 
-        res.send('1'); // 성공
-
+        res.send('1');
     } catch (err) {
-        console.error("일일 기록 저장 에러:", err);
-        res.send('0'); // 실패
+        console.error("컨디션 저장 에러:", err);
+        res.send('0');
+    }
+});
+
+/**
+ * 배변 기록 등록
+ */
+router.post('/saveBowelLog', async (req, res) => {
+    try {
+        const { user_idx, bowel_status } = req.body;
+
+        if (!user_idx || !bowel_status) {
+            return res.send('0');
+        }
+
+        const sql = `
+            INSERT INTO t_bowel_log (user_idx, bowel_status, created_at)
+            VALUES (?, ?, NOW())
+        `;
+
+        await conn.query(sql, [user_idx, bowel_status]);
+        res.send('1');
+    } catch (err) {
+        console.error("배변 로그 저장 에러:", err);
+        res.send('0');
     }
 });
 
