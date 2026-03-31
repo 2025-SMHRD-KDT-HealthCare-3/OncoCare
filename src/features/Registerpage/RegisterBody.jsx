@@ -99,10 +99,6 @@ const RegisterBody = ({ mode = 'register' }) => {
     const update = async (e) => {
         e.preventDefault();
 
-        if (!sex) {
-            alert('성별을 선택해주세요.');
-            return;
-        }
         if (password && password !== confirmPassword) {
             setError('비밀번호가 일치하지 않습니다.')
             return

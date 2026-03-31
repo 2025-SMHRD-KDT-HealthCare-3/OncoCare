@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import axios from 'axios'
 import MainHeader from '../public/MainHeader'
 import WeeklyReport from './WeeklyReport'
 import MonthlyReport from './MonthlyReport'
@@ -8,9 +9,57 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import './Report.css'
 import Footer from '../public/Footer'
 
-
 const Report = () => {
   const location = useLocation()
+  const user_idx = sessionStorage.getItem('user_idx')
+
+  const [weeklyData, setWeeklyData] = useState(null)
+  const [monthlyData, setMonthlyData] = useState(null)
+  const [prevMonthlyData, setPrevMonthlyData] = useState(null)
+
+  useEffect(() => {
+    if (!user_idx) return
+
+    // 주간 리포트: 이번 주 없으면 지난 주로 재시도
+    axios.get(`http://localhost:3000/report/weekly?user_idx=${user_idx}`)
+      .then(res => {
+        if (res.data && res.data !== '0') {
+          setWeeklyData(res.data)
+        } else {
+          const lastWeek = new Date()
+          lastWeek.setDate(lastWeek.getDate() - 7)
+          const lastWeekStr = lastWeek.toISOString().split('T')[0]
+          return axios.get(`http://localhost:3000/report/weekly?user_idx=${user_idx}&day=${lastWeekStr}`)
+        }
+      })
+      .then(res => { if (res && res.data && res.data !== '0') setWeeklyData(res.data) })
+      .catch(err => console.error('주간 리포트 조회 실패:', err))
+
+    // 이번 달 월간 리포트: 없으면 지난 달로 재시도
+    const now = new Date()
+    const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear()
+    const prevMonth = now.getMonth() === 0 ? 12 : now.getMonth()
+    const prevMonthStr = `${prevYear}-${String(prevMonth).padStart(2, '0')}`
+
+    axios.get(`http://localhost:3000/report/monthly?user_idx=${user_idx}`)
+      .then(res => {
+        if (res.data && res.data !== '0') {
+          setMonthlyData(res.data)
+        } else {
+          return axios.get(`http://localhost:3000/report/monthly?user_idx=${user_idx}&month=${prevMonthStr}`)
+        }
+      })
+      .then(res => { if (res && res.data && res.data !== '0') setMonthlyData(res.data) })
+      .catch(err => console.error('월간 리포트 조회 실패:', err))
+
+    // 지난 달 월간 리포트 (전월 비교용)
+    const twoMonthsAgo = now.getMonth() <= 1
+      ? `${now.getFullYear() - 1}-${String(12 + now.getMonth()).padStart(2, '0')}`
+      : `${now.getFullYear()}-${String(now.getMonth() - 1).padStart(2, '0')}`
+    axios.get(`http://localhost:3000/report/monthly?user_idx=${user_idx}&month=${twoMonthsAgo}`)
+      .then(res => { if (res.data && res.data !== '0') setPrevMonthlyData(res.data) })
+      .catch(err => console.error('전월 리포트 조회 실패:', err))
+  }, [])
 
   useEffect(() => {
     const contentEl = document.getElementById('report-content')
@@ -23,7 +72,6 @@ const Report = () => {
     }
   }, [])
 
-  // URL 해시(#monthly 등)에 맞춰 해당 섹션으로 스크롤
   useEffect(() => {
     const hash = location.hash.replace('#', '')
     if (!hash) return
@@ -61,10 +109,10 @@ const Report = () => {
           tabIndex="0"
         >
           <section id="weekly">
-            <WeeklyReport />
+            <WeeklyReport data={weeklyData} />
           </section>
           <section id="monthly">
-            <MonthlyReport />
+            <MonthlyReport data={monthlyData} prevData={prevMonthlyData} />
           </section>
           <Footer />
         </div>

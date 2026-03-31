@@ -13,6 +13,8 @@ const RecipeDetail = () => {
   const [recipe, setRecipe] = useState(null)
   const [liked, setLiked] = useState(false)
   const [openSection, setOpenSection] = useState('cooking')
+  const [mealsPerDay, setMealsPerDay] = useState(3)
+  const [mealType, setMealType] = useState('')
 
   useEffect(() => {
     axios.get(`http://localhost:3000/recipe/detail?recipe_idx=${id}`)
@@ -20,19 +22,35 @@ const RecipeDetail = () => {
       .catch(err => console.error('레시피 조회 실패:', err))
   }, [id])
 
-const toggleSection = (section) => {
-  setOpenSection(prev => (prev === section ? null : section))
-}
+  useEffect(() => {
+    const user_idx = sessionStorage.getItem('user_idx')
+    if (!user_idx) return
+    axios.get(`http://localhost:3000/register/healthSelect?user_idx=${user_idx}`)
+      .then(res => {
+        if (res.data?.meals_per_day) {
+          setMealsPerDay(Number(res.data.meals_per_day))
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  const toggleSection = (section) => {
+    setOpenSection(prev => (prev === section ? null : section))
+  }
+
+  const mealLabels = ['첫번째끼', '두번째끼', '세번째끼', '네번째끼', '다섯번째끼', '여섯번째끼']
 
   const handleSelectDiet = async () => {
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) { alert('로그인이 필요합니다.'); return }
+    if (!mealType) { alert('몇 번째 끼니인지 선택해주세요.'); return }
     try {
       const res = await axios.post('http://localhost:3000/clickRecipe', {
         user_idx,
-        recipe_idx
+        recipe_idx: id,
+        meal_type: mealType
       })
-      if (res.data === '1') {
+      if (res.data == 1 || res.data === '1') {
         alert('식단이 선택되었습니다!')
         navigate('/Main')
       } else {
@@ -127,6 +145,23 @@ const toggleSection = (section) => {
                     }
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* 끼니 선택 */}
+            <div className="recipe-meal-select">
+              <label className="recipe-meal-label">몇 번째 끼니?</label>
+              <div className="recipe-meal-options">
+                {mealLabels.slice(0, mealsPerDay).map((label, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`recipe-meal-btn ${mealType === label ? 'selected' : ''}`}
+                    onClick={() => setMealType(label)}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
             </div>
 

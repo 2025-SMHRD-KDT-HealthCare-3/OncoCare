@@ -22,12 +22,13 @@ const IngredientForm = () => {
 
   useEffect(() => {
     if (!isEdit) return
-    axios.get(`http://localhost:3000/ingredient/${id}`)
+    axios.get(`http://localhost:3000/recipe/ingredient/detail?ingre_idx=${id}`)
       .then(res => {
-        setName(res.data.name || '')
-        setCategory(res.data.category || '')
-        setStorageType(res.data.storageType || '')
-        setQuantity(res.data.quantity || '')
+        if (!res.data || res.data === '0') return
+        setName(res.data.ingre_name || '')
+        setCategory(res.data.ingre_type || '')
+        setStorageType(res.data.ingre_storage || '')
+        setQuantity(res.data.cnt || '')
       })
       .catch(err => console.error('식재료 조회 실패:', err))
   }, [id, isEdit])
@@ -39,15 +40,23 @@ const IngredientForm = () => {
     if (!storageType) { alert('보관 형태를 선택해주세요.'); return }
     if (!quantity.trim()) { alert('수량을 입력해주세요.'); return }
 
-    const payload = { name, category, storageType, quantity }
+    const user_idx = sessionStorage.getItem('user_idx')
+    if (!user_idx) { alert('로그인이 필요합니다.'); return }
+
+    const payload = { user_idx, name, type: category, storage: storageType, cnt: quantity }
 
     try {
       if (isEdit) {
-        await axios.put(`http://localhost:3000/ingredient/${id}`, payload)
+        await axios.put(`http://localhost:3000/recipe/ingredient/register/${id}`, payload)
         alert('식재료가 수정되었습니다!')
       } else {
-        await axios.post('http://localhost:3000/ingredient', payload)
-        alert('식재료가 등록되었습니다!')
+        const res = await axios.post('http://localhost:3000/recipe/ingredient/register', payload)
+        if (res.data == '1') {
+          alert('식재료가 등록되었습니다!')
+        } else {
+          alert('식재료 등록에 실패했습니다.')
+          return
+        }
       }
       navigate('/Fridge')
     } catch (err) {
@@ -131,11 +140,20 @@ const IngredientForm = () => {
             <div className="ingredient-form-group">
               <label className="ingredient-form-label">수량(g, ml, 개)</label>
               <input
-                type="text"
+                type="number"
                 className="ingredient-form-input"
                 placeholder="Value"
                 value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
+                min="0"
+                max="10000"
+                step="0.1"
+                onChange={(e) => {
+                  const val = e.target.value
+                  if (val === '') { setQuantity(''); return }
+                  if (parseFloat(val) > 10000) return
+                  if (/^\d+(\.\d{2,})$/.test(val)) return
+                  setQuantity(val)
+                }}
               />
             </div>
 

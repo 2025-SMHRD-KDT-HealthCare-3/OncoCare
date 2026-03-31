@@ -1,21 +1,21 @@
-import React, { useState } from 'react'
-import { BsCamera, BsPencil } from 'react-icons/bs'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './Fridge.css'
 import '../public/root.css'
 
-// TODO: axios로 백엔드에서 식재료 목록 받아오기
-const dummyIngredients = [
-  { id: 1, name: '식재료1', desc: '유통기한: 2026-04-01', warning: false },
-  { id: 2, name: '식재료2', desc: '유통기한이 임박합니다', warning: true },
-  { id: 3, name: '식재료3', desc: '유통기한: 2026-05-10', warning: false },
-  { id: 4, name: '식재료4', desc: '유통기한: 2026-04-20', warning: false },
-  { id: 5, name: '식재료5', desc: '유통기한: 2026-03-30', warning: false },
-  { id: 6, name: '식재료6', desc: '유통기한: 2026-06-01', warning: false },
-]
-
 const FridgeBody = () => {
-  const [ingredients] = useState(dummyIngredients)
+  const navigate = useNavigate()
+  const [ingredients, setIngredients] = useState([])
+
+  useEffect(() => {
+    const user_idx = sessionStorage.getItem('user_idx')
+    if (!user_idx) return
+    axios.get(`http://localhost:3000/recipe/ingredient?user_idx=${user_idx}`)
+      .then(res => { if (Array.isArray(res.data)) setIngredients(res.data) })
+      .catch(err => console.error('식재료 조회 실패:', err))
+  }, [])
 
   return (
     <div className="main-content">
@@ -34,17 +34,21 @@ const FridgeBody = () => {
 
         {/* 식재료 카드 그리드 */}
         <div className="fridge-grid">
-          {ingredients.map((item) => (
-            <div key={item.id} className="fridge-card">
-              <div className="fridge-card-img-placeholder" />
-              <div className="fridge-card-info">
-                <h5 className="fridge-card-name">{item.name}</h5>
-                <p className={`fridge-card-desc ${item.warning ? 'warning' : ''}`}>
-                  {item.desc}
-                </p>
+          {ingredients.length === 0 ? (
+            <p style={{ color: '#aaa', fontSize: '14px' }}>등록된 식재료가 없습니다.</p>
+          ) : (
+            ingredients.map((item) => (
+              <div key={item.ingre_idx} className="fridge-card" onDoubleClick={() => navigate(`/IngredientForm/${item.ingre_idx}`)} style={{ cursor: 'pointer' }}>
+                <div className="fridge-card-img-placeholder" />
+                <div className="fridge-card-info">
+                  <h5 className="fridge-card-name">{item.ingre_name}</h5>
+                  <p className="fridge-card-desc">
+                    {item.ingre_type} · {item.ingre_storage} · {item.cnt}개
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
       </div>

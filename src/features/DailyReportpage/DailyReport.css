@@ -134,3 +134,70 @@
   background-color: #222;
   color: #fff;
 }
+
+/* 끼니 탭 */
+.daily-meal-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.daily-meal-tab-wrap {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid #ccc;
+  border-radius: 20px;
+  background: #fff;
+  overflow: hidden;
+  transition: all 0.15s;
+}
+
+.daily-meal-tab-wrap.active {
+  background: #3d3d3d;
+  border-color: #3d3d3d;
+}
+
+.daily-meal-tab-label {
+  padding: 6px 12px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+}
+
+.daily-meal-tab-wrap.active .daily-meal-tab-label {
+  color: #fff;
+}
+
+.daily-meal-tab-delete {
+  padding: 4px 8px;
+  background: none;
+  border: none;
+  border-left: 1px solid #ddd;
+  font-size: 15px;
+  color: #aaa;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.daily-meal-tab-wrap.active .daily-meal-tab-delete {
+  border-left-color: #666;
+  color: #ccc;
+}
+
+.daily-meal-tab-delete:hover {
+  color: #e74c3c;
+}
+
+/* 끼니 배지 */
+.daily-meal-type-badge {
+  display: inline-block;
+  background: #f0f0f0;
+  color: #555;
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 12px;
+  margin-top: 6px;
+}

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './DailyReport.css'
 
@@ -12,29 +11,26 @@ const bristolLabels = {
   7: '7형 - 고형물 없는 액체 (심한 설사)',
 }
 
-const DailyBowel = () => {
-  const [datetime, setDatetime] = useState('')
-  const [bristolType, setBristolType] = useState(4)
-
-  const handleSave = () => {
-    // TODO: axios.post로 백엔드 저장 연결
-    console.log({ datetime, bristolType })
-    alert('저장되었습니다.')
-  }
-
+const DailyBowel = ({
+  defecationTime, setDefecationTime,
+  defecationType, setDefecationType,
+  bowelList,
+  onSave
+}) => {
   return (
     <div className="daily-diet-card">
       <h2 className="daily-section-title">배변일지 등록</h2>
       <span className="daily-section-sub">배변 시간과 형태를 기록해주세요.</span>
 
-      {/* 배변 일시 */}
+      {/* 배변 시간 (30분 단위) */}
       <div className="daily-diet-comment">
-        <span className="daily-diet-label">배변 일시</span>
+        <span className="daily-diet-label">배변 시간</span>
         <input
-          type="datetime-local"
+          type="time"
           className="form-control"
-          value={datetime}
-          onChange={(e) => setDatetime(e.target.value)}
+          step="1800"
+          value={defecationTime}
+          onChange={(e) => setDefecationTime(e.target.value)}
         />
       </div>
 
@@ -47,25 +43,43 @@ const DailyBowel = () => {
           min={1}
           max={7}
           step={1}
-          value={bristolType}
-          onChange={(e) => setBristolType(Number(e.target.value))}
+          value={defecationType}
+          onChange={(e) => setDefecationType(Number(e.target.value))}
         />
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#888' }}>
           {[1, 2, 3, 4, 5, 6, 7].map((n) => <span key={n}>{n}</span>)}
         </div>
         <div className="form-control" style={{ marginTop: '8px', background: '#f8f9fa', color: '#333', fontSize: '14px' }}>
-          {bristolLabels[bristolType]}
+          {bristolLabels[defecationType]}
         </div>
       </div>
 
-      {/* 저장 버튼 */}
       <button
         className="btn daily-diet-save-btn"
-        onClick={handleSave}
+        onClick={onSave}
         style={{ marginTop: '16px' }}
       >
         저장
       </button>
+
+      {/* 오늘 저장된 배변 기록 목록 */}
+      {bowelList && bowelList.length > 0 && (
+        <div style={{ marginTop: '24px' }}>
+          <span className="daily-diet-label">오늘 기록된 배변</span>
+          <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {bowelList.map((item) => (
+              <div
+                key={item.bowel_idx}
+                className="form-control"
+                style={{ display: 'flex', justifyContent: 'space-between', background: '#f8f9fa', fontSize: '14px' }}
+              >
+                <span style={{ color: '#555' }}>{item.bowel_time}</span>
+                <span style={{ color: '#333' }}>{bristolLabels[Number(item.bowel_status)] || `${item.bowel_status}형`}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

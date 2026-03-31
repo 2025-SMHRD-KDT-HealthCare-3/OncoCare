@@ -45,15 +45,15 @@ const HealthInfoBody = () => {
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) return
 
-    axios.get(`http://localhost:3000/register/getHealth/${user_idx}`)
+    axios.get(`http://localhost:3000/register/healthSelect?user_idx=${user_idx}`)
       .then((res) => {
         const d = res.data
         if (!d) return
         if (d.height)        setHeight(d.height)
         if (d.weight)        setWeight(d.weight)
         if (d.cancer_stage)  setDiagnosisStage(String(d.cancer_stage))
-        if (d.surgery_date)  setSurgeryDate(d.surgery_date)
-        if (d.discharge_date) setDischargeDate(d.discharge_date)
+        if (d.surgery_date)  setSurgeryDate(String(d.surgery_date).split('T')[0])
+        if (d.discharge_date) setDischargeDate(String(d.discharge_date).split('T')[0])
         setHasOstomy(d.stoma_status === 'Y' || d.stoma_status === 1)
         setHasChemo(d.chemo_status === 'Y' || d.chemo_status === 1)
         if (d.meals_per_day) setMealsPerDay(String(d.meals_per_day))
@@ -113,7 +113,16 @@ const HealthInfoBody = () => {
                 className="form-control"
                 placeholder="Value"
                 value={height}
-                onChange={(e) => setHeight(e.target.value)}
+                min="0"
+                max="999"
+                step="0.1"
+                onChange={(e) => {
+                  const val = e.target.value
+                  if (val === '') { setHeight(''); return }
+                  if (parseFloat(val) > 999) return
+                  if (/^\d+(\.\d{2,})$/.test(val)) return
+                  setHeight(val)
+                }}
                 />
             </div>
             <div className="healthinfo-field">
@@ -123,7 +132,16 @@ const HealthInfoBody = () => {
                 className="form-control"
                 placeholder="Value"
                 value={weight}
-                onChange={(e) => setWeight(e.target.value)}
+                min="0"
+                max="999"
+                step="0.1"
+                onChange={(e) => {
+                  const val = e.target.value
+                  if (val === '') { setWeight(''); return }
+                  if (parseFloat(val) > 999) return
+                  if (/^\d+(\.\d{2,})$/.test(val)) return
+                  setWeight(val)
+                }}
                 />
             </div>
             </div>
