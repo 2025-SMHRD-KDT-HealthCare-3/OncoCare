@@ -7,20 +7,20 @@ const conn = require('../config/database');
  */
 /**
  * [조회] 오늘의 식단 기록 조회
- * GET /main/getDailyDiet?user_idx=1
+ * 
  */
 router.get('/getDailyDiet', async (req, res) => {
     try {
-        const { user_idx } = req.query;
+        const { user_idx, date } = req.query;
         const sql = `
             SELECT 
                 A.diet_idx, B.recipe_name, A.meal_type, 
                 A.diet_feedback, A.diet_rating
             FROM t_diet A
             JOIN t_recipe B ON A.recipe_idx = B.recipe_idx
-            WHERE A.user_idx = ? AND A.select_date = CURDATE()
+            WHERE A.user_idx = ? AND A.select_date = ?
         `;
-        const [results] = await conn.query(sql, [user_idx]);
+        const [results] = await conn.query(sql, [user_idx, date]);
         res.json(results);
     } catch (err) {
         console.error(err);
@@ -45,31 +45,30 @@ router.post('/deleteDiet', async (req, res) => {
 
 /**
  * [조회] 오늘의 배변 기록 조회
- * GET /main/getBowelLog?user_idx=1
+ * 
  */
 router.get('/getBowelLog', async (req, res) => {
     try {
-        const { user_idx } = req.query;
+        const { user_idx, date } = req.query;
         const sql = `
             SELECT 
                 bowel_idx, 
                 DATE_FORMAT(bowel_at, '%H:%i') AS bowel_time, 
                 bowel_status
             FROM t_bowel_log
-            WHERE user_idx = ? AND DATE(created_at) = CURDATE()
+            WHERE user_idx = ? AND DATE(bowel_at) = ?
             ORDER BY bowel_at ASC
         `;
-        const [results] = await conn.query(sql, [user_idx]);
+        const [results] = await conn.query(sql, [user_idx, date]);
         res.json(results);
     } catch (err) {
-        console.error(err);
         res.status(500).send('0');
     }
 });
 
 /**
  * [삭제] 배변 기록 삭제
- * POST /main/deleteBowelLog
+ *
  */
 router.post('/deleteBowelLog', async (req, res) => {
     try {
@@ -84,22 +83,21 @@ router.post('/deleteBowelLog', async (req, res) => {
 
 /**
  * [조회] 오늘의 컨디션 조회
- * GET /main/getCondition?user_idx=1
+ *
  */
 router.get('/getCondition', async (req, res) => {
     try {
-        const { user_idx } = req.query;
+        const { user_idx, date } = req.query;
         const sql = `
             SELECT 
                 condition_idx, condition_score, water_intake, 
-                stomach_pain, stomach_score, created_at
+                stomach_pain, stomach_score
             FROM t_condition
-            WHERE user_idx = ? AND DATE(created_at) = CURDATE()
+            WHERE user_idx = ? AND DATE(created_at) = ?
         `;
-        const [results] = await conn.query(sql, [user_idx]);
-        res.json(results[0] || {}); // 데이터가 없으면 빈 객체 반환
+        const [results] = await conn.query(sql, [user_idx, date]);
+        res.json(results[0] || {});
     } catch (err) {
-        console.error(err);
         res.status(500).send('0');
     }
 });
