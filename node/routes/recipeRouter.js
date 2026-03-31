@@ -115,29 +115,27 @@ router.get('/dailydiet', async (req, res) => {
 
 /**
  * [식재료 삭제]
- *
+ * 
  */
 router.post('/ingredient/delete', async (req, res) => {
     try {
-        const { ingre_idx } = req.body;
+        const { ingre_idx, user_idx } = req.body;
 
-        // 필수 값 체크
-        if (!ingre_idx) {
+        if (!ingre_idx || !user_idx) {
             return res.send('0');
         }
 
-        const sql = `DELETE FROM t_ingredient WHERE ingre_idx = ?`;
-        const [result] = await conn.query(sql, [ingre_idx]);
+        const sql = `DELETE FROM t_ingredient WHERE ingre_idx = ? AND user_idx = ?`;
+        const [result] = await conn.query(sql, [ingre_idx, user_idx]);
 
-        // 실제로 삭제된 행이 있는지 확인
         if (result.affectedRows > 0) {
-            res.send('1'); // 삭제 성공
+            res.send('1'); 
         } else {
-            res.send('0'); // 이미 삭제되었거나 해당 idx가 없음
+            res.send('0'); 
         }
     } catch (err) {
         console.error('식재료 삭제 에러:', err);
-        res.send('0'); // 서버 에러 발생 시
+        res.send('0');
     }
 });
 
@@ -149,16 +147,16 @@ router.post('/ingredient/update', async (req, res) => {
     try {
         const { 
             ingre_idx, 
+            user_idx,
             ingre_name, 
             ingre_type, 
             ingre_storage, 
             cnt 
         } = req.body;
 
-        if (!ingre_idx) {
+        if (!ingre_idx || !user_idx) {
             return res.send('0');
         }
-
         const sql = `
             UPDATE t_ingredient 
             SET 
@@ -166,7 +164,7 @@ router.post('/ingredient/update', async (req, res) => {
                 ingre_type = ?, 
                 ingre_storage = ?, 
                 cnt = ?
-            WHERE ingre_idx = ?
+            WHERE ingre_idx = ? AND user_idx = ?
         `;
 
         const [result] = await conn.query(sql, [
@@ -174,7 +172,8 @@ router.post('/ingredient/update', async (req, res) => {
             ingre_type,
             ingre_storage,
             cnt, 
-            ingre_idx
+            ingre_idx,
+            user_idx
         ]);
 
         if (result.affectedRows > 0) {
