@@ -87,20 +87,30 @@ router.post('/clickRecipe', async (req, res) => {
  * 7. 레시피 식단 선택 취소 (삭제)
  * POST /main/unClickRecipe
  */
+/**
+ * 7. 레시피 식단 선택 취소 (삭제)
+ * POST /main/unClickRecipe
+ */
 router.post('/unClickRecipe', async (req, res) => {
     try {
-        const { user_idx, recipe_idx } = req.body;
-        const sql = `
-            DELETE FROM t_diet 
-            WHERE user_idx = ? 
-            AND recipe_idx = ? 
-            AND DATE(created_at) = CURDATE()
-        `;
-        await conn.connect.query(sql, [user_idx, recipe_idx]);
-        res.send('1'); // 성공
+        const { diet_idx } = req.body;
+
+        if (!diet_idx) {
+            return res.send('0');
+        }
+
+        const sql = `DELETE FROM t_diet WHERE diet_idx = ?`;
+        
+        const [result] = await conn.query(sql, [diet_idx]);
+        
+        if (result.affectedRows > 0) {
+            res.send('1');
+        } else {
+            res.send('0');
+        }
     } catch (err) {
         console.error('식단 취소 에러:', err);
-        res.send('0'); // 실패
+        res.send('0');
     }
 });
 
