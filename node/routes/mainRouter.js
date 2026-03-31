@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const conn = require('../config/database');
 
 
 /**
@@ -14,7 +14,7 @@ router.get('/dietList/:user_idx', async (req, res) => {
     try {
         // [STEP 1] 우선 건강 프로필(t_health_profile)이 있는지 확인
         const profileSql = 'SELECT user_idx FROM t_health_profile WHERE user_idx = ?';
-        const [profile] = await db.query(profileSql, [user_idx]);
+        const [profile] = await conn.query(profileSql, [user_idx]);
 
         // 프로필 정보가 없는 초기 상황이면 '0' 반환 (리액트에서 정보 입력창 띄우기용)
         if (profile.length === 0) {
@@ -36,7 +36,7 @@ router.get('/dietList/:user_idx', async (req, res) => {
         `;
 
         // 주의: user_idx 파라미터를 반드시 배열에 담아 전달해야 합니다.
-        const [recipes] = await db.query(recipeSql, [user_idx]);
+        const [recipes] = await conn.query(recipeSql, [user_idx]);
 
         // 결과가 1개라도 있으면 데이터를 보내고, 아예 없으면 '0'을 보냅니다.
         if (recipes.length > 0) {
@@ -96,7 +96,7 @@ router.post('/unClickRecipe', async (req, res) => {
             AND recipe_idx = ? 
             AND DATE(created_at) = CURDATE()
         `;
-        await db.query(sql, [user_idx, recipe_idx]);
+        await conn.connect.query(sql, [user_idx, recipe_idx]);
         res.send('1'); // 성공
     } catch (err) {
         console.error('식단 취소 에러:', err);
