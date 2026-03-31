@@ -4,7 +4,7 @@ const conn = require('../config/database');
 
 /**
  * 8. 레시피 상세 정보 조회 (detailRecipe)
- * GET /recipe/detail?recipe_idx=1
+ *
  */
 router.get('/detail', async (req, res) => {
     try {
@@ -26,7 +26,7 @@ router.get('/detail', async (req, res) => {
 
 /**
  * 15. 내 식재료 리스트 조회 (ingredient)
- * GET /recipe/ingredient?user_idx=1
+ * 
  */
 router.get('/ingredient', async (req, res) => {
     try {
@@ -46,7 +46,7 @@ router.get('/ingredient', async (req, res) => {
 
 /**
  * 16. 식재료 상세 정보 조회 (detailIngredient)
- * GET /recipe/ingredient/detail?ingre_idx=1
+ * 
  */
 router.get('/ingredient/detail', async (req, res) => {
     try {
@@ -68,7 +68,7 @@ router.get('/ingredient/detail', async (req, res) => {
 
 /**
  * 17. 식재료 직접 등록 (registerIngredient)
- * POST /recipe/ingredient/register
+ *
  */
 router.post('/ingredient/register', async (req, res) => {
     try {
@@ -113,6 +113,80 @@ router.get('/dailydiet', async (req, res) => {
     }
 });
 
+/**
+ * [식재료 삭제]
+ *
+ */
+router.post('/ingredient/delete', async (req, res) => {
+    try {
+        const { ingre_idx } = req.body;
+
+        // 필수 값 체크
+        if (!ingre_idx) {
+            return res.send('0');
+        }
+
+        const sql = `DELETE FROM t_ingredient WHERE ingre_idx = ?`;
+        const [result] = await conn.query(sql, [ingre_idx]);
+
+        // 실제로 삭제된 행이 있는지 확인
+        if (result.affectedRows > 0) {
+            res.send('1'); // 삭제 성공
+        } else {
+            res.send('0'); // 이미 삭제되었거나 해당 idx가 없음
+        }
+    } catch (err) {
+        console.error('식재료 삭제 에러:', err);
+        res.send('0'); // 서버 에러 발생 시
+    }
+});
+
+/**
+ * [식재료 수정]
+ *
+ */
+router.post('/ingredient/update', async (req, res) => {
+    try {
+        const { 
+            ingre_idx, 
+            ingre_name, 
+            ingre_type, 
+            ingre_storage, 
+            cnt 
+        } = req.body;
+
+        if (!ingre_idx) {
+            return res.send('0');
+        }
+
+        const sql = `
+            UPDATE t_ingredient 
+            SET 
+                ingre_name = ?, 
+                ingre_type = ?, 
+                ingre_storage = ?, 
+                cnt = ?
+            WHERE ingre_idx = ?
+        `;
+
+        const [result] = await conn.query(sql, [
+            ingre_name,
+            ingre_type,
+            ingre_storage,
+            cnt, 
+            ingre_idx
+        ]);
+
+        if (result.affectedRows > 0) {
+            res.send('1');
+        } else {
+            res.send('0');
+        }
+    } catch (err) {
+        console.error('식재료 수정 에러:', err);
+        res.send('0');
+    }
+});
 
 
 
