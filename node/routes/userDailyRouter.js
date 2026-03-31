@@ -15,7 +15,7 @@ router.get('/getDailyDiet', async (req, res) => {
         const sql = `
             SELECT 
                 A.diet_idx, B.recipe_name, A.meal_type, 
-                A.diet_feedback, A.rating
+                A.diet_feedback, A.diet_rating
             FROM t_diet A
             JOIN t_recipe B ON A.recipe_idx = B.recipe_idx
             WHERE A.user_idx = ? AND A.select_date = CURDATE()
