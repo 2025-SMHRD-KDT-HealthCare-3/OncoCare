@@ -52,22 +52,34 @@ router.get('/dietList/:user_idx', async (req, res) => {
     }
 });
 
+
 /**
  * 6. 레시피 식단 선택 (저장)
- * POST /main/clickRecipe
  */
 router.post('/clickRecipe', async (req, res) => {
     try {
-        const { user_idx, recipe_idx } = req.body;
+        const { user_idx, recipe_idx, meal_type } = req.body;
+
         const sql = `
-            INSERT INTO t_diet (user_idx, recipe_idx, start_date, end_date, created_at)
-            VALUES (?, ?, CURDATE(), CURDATE(), NOW())
+            INSERT INTO t_diet (
+                user_idx, 
+                recipe_idx, 
+                meal_type, 
+                select_date, 
+                end_date, 
+                diet_feedback,
+                diet_rating,
+                created_at
+            )
+            VALUES (?, ?, ?, CURDATE(), CURDATE(), ?, ?, NOW())
         `;
-        await db.query(sql, [user_idx, recipe_idx]);
-        res.send('1'); // 성공
+
+        await conn.query(sql, [user_idx, recipe_idx, meal_type, '', 0]);
+        
+        res.send('1');
     } catch (err) {
-        console.error('식단 선택 에러:', err);
-        res.send('0'); // 실패
+        console.error('식단 저장 에러:', err);
+        res.send('0');
     }
 });
 
@@ -89,6 +101,43 @@ router.post('/unClickRecipe', async (req, res) => {
     } catch (err) {
         console.error('식단 취소 에러:', err);
         res.send('0'); // 실패
+    }
+});
+
+/**
+ * 식단 피드백 및 평점 수정 (updateDiet)
+ * POST /main/updateDiet
+ */
+router.post('/updateDiet', async (req, res) => {
+
+    try {
+        const { diet_idx, diet_feedback, diet_rating } = req.body;
+
+        if (!diet_idx) {
+            return res.send('0');
+        }
+
+        const sql = `
+            UPDATE t_diet 
+            SET 
+                diet_feedback = ?, 
+                diet_rating = ?,
+                end_date = CURDATE()
+            WHERE diet_idx = ?
+        `;
+
+        const [result] = await conn.query(sql, [diet_feedback, diet_rating, diet_idx]);
+
+        if (result.affectedRows > 0) {
+            console.log(`✅ 식단 수정 완료: ID ${diet_idx}`);
+            res.send('1');
+        } else {
+            res.send('0');
+        }
+
+    } catch (err) {
+        console.error('❌ 식단 수정 에러:', err);
+        res.send('0');
     }
 });
 
