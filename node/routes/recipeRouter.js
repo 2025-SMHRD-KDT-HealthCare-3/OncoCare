@@ -92,7 +92,10 @@ router.get('/dailydiet', async (req, res) => {
         const user_idx = req.query.user_idx;
 
         const sql = `
-            SELECT B.recipe_name 
+            SELECT 
+                B.recipe_name, 
+                A.meal_type, 
+                A.select_date
             FROM t_diet A
             JOIN t_recipe B ON A.recipe_idx = B.recipe_idx
             WHERE A.user_idx = ? 
