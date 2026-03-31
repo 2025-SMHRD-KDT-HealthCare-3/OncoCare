@@ -4,56 +4,123 @@ const conn = require('../config/database');
 
 /**
  * 9. 일일 기록 및 선택된 식단 조회 (userDaily)
- * GET /daily/userDaily?day=2026-03-24&user_idx=1
  */
-router.get('/userDaily', async (req, res) => {
+/**
+ * [조회] 오늘의 식단 기록 조회
+ * GET /main/getDailyDiet?user_idx=1
+ */
+router.get('/getDailyDiet', async (req, res) => {
     try {
-        const { day, user_idx } = req.query;
-
-        // 1. 해당 날짜에 선택된 식단(레시피) 목록 가져오기 (UI 상단의 '오늘의 식단' 카드용)
-        const dietSql = `
-            SELECT r.recipe_idx, r.recipe_name, r.recipe_category
-            FROM t_diet d
-            JOIN t_recipe r ON d.recipe_idx = r.recipe_idx
-            WHERE d.user_idx = ? AND DATE(d.created_at) = ?
-        `;
-        const [dietRows] = await conn.query(dietSql, [user_idx, day]);
-
-        // 2. 해당 날짜의 건강/상태 일일 기록 가져오기 (UI 하단의 슬라이더, 텍스트 유지용)
-        const recordSql = `
+        const { user_idx } = req.query;
+        const sql = `
             SELECT 
-                diet_feedback, rating, defecation_list, 
-                condition_score, sleep_time, water_intake, 
-                stomach_pain, pain_level 
-            FROM t_daily_record 
-            WHERE user_idx = ? AND DATE(record_date) = ?
+                A.diet_idx, B.recipe_name, A.meal_type, 
+                A.diet_feedback, A.rating
+            FROM t_diet A
+            JOIN t_recipe B ON A.recipe_idx = B.recipe_idx
+            WHERE A.user_idx = ? AND A.select_date = CURDATE()
         `;
-        const [recordRows] = await conn.query(recordSql, [user_idx, day]);
-
-        let dailyRecord = recordRows.length > 0 ? recordRows[0] : null;
-
-        // 배변 기록이 문자열로 저장되어 있다면 배열로 변환하여 리액트에 전달
-        if (dailyRecord && dailyRecord.defecation_list) {
-            try {
-                dailyRecord.defecation_list = JSON.parse(dailyRecord.defecation_list);
-            } catch (e) {
-                dailyRecord.defecation_list = []; // 파싱 실패 시 빈 배열
-            }
-        } else if (dailyRecord) {
-            dailyRecord.defecation_list = [];
-        }
-
-        // 선택된 식단 배열과 일일 기록 객체를 한 번에 묶어서 반환
-        res.json({
-            selectedDiets: dietRows, // 이 배열의 길이만큼 리액트에서 map()으로 카드를 렌더링합니다.
-            dailyRecord: dailyRecord
-        });
-
+        const [results] = await conn.query(sql, [user_idx]);
+        res.json(results);
     } catch (err) {
-        console.error("일일 기록 조회 에러:", err);
-        res.status(500).json({ error: '서버 에러' });
+        console.error(err);
+        res.status(500).send('0');
     }
 });
+
+/**
+ * [삭제] 식단 기록 삭제
+ * POST /main/deleteDiet
+ */
+router.post('/deleteDiet', async (req, res) => {
+    try {
+        const { diet_idx } = req.body;
+        const sql = `DELETE FROM t_diet WHERE diet_idx = ?`;
+        await conn.query(sql, [diet_idx]);
+        res.send('1');
+    } catch (err) {
+        res.send('0');
+    }
+});
+
+/**
+ * [조회] 오늘의 배변 기록 조회
+ * GET /main/getBowelLog?user_idx=1
+ */
+router.get('/getBowelLog', async (req, res) => {
+    try {
+        const { user_idx } = req.query;
+        const sql = `
+            SELECT 
+                bowel_idx, 
+                DATE_FORMAT(bowel_at, '%H:%i') AS bowel_time, 
+                bowel_status
+            FROM t_bowel_log
+            WHERE user_idx = ? AND DATE(created_at) = CURDATE()
+            ORDER BY bowel_at ASC
+        `;
+        const [results] = await conn.query(sql, [user_idx]);
+        res.json(results);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('0');
+    }
+});
+
+/**
+ * [삭제] 배변 기록 삭제
+ * POST /main/deleteBowelLog
+ */
+router.post('/deleteBowelLog', async (req, res) => {
+    try {
+        const { bowel_idx } = req.body;
+        const sql = `DELETE FROM t_bowel_log WHERE bowel_idx = ?`;
+        await conn.query(sql, [bowel_idx]);
+        res.send('1');
+    } catch (err) {
+        res.send('0');
+    }
+});
+
+/**
+ * [조회] 오늘의 컨디션 조회
+ * GET /main/getCondition?user_idx=1
+ */
+router.get('/getCondition', async (req, res) => {
+    try {
+        const { user_idx } = req.query;
+        const sql = `
+            SELECT 
+                condition_idx, condition_score, water_intake, 
+                stomach_pain, stomach_score, created_at
+            FROM t_condition
+            WHERE user_idx = ? AND DATE(created_at) = CURDATE()
+        `;
+        const [results] = await conn.query(sql, [user_idx]);
+        res.json(results[0] || {}); // 데이터가 없으면 빈 객체 반환
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('0');
+    }
+});
+
+/**
+ * [삭제] 컨디션 기록 삭제 (초기화)
+ * POST /main/deleteCondition
+ */
+router.post('/deleteCondition', async (req, res) => {
+    try {
+        const { condition_idx } = req.body;
+        const sql = `DELETE FROM t_condition WHERE condition_idx = ?`;
+        await conn.query(sql, [condition_idx]);
+        res.send('1');
+    } catch (err) {
+        res.send('0');
+    }
+});
+
+
+
 
 /**
  * 10. 일일 기록 저장 및 수정 (userDailySave)
@@ -106,19 +173,29 @@ router.post('/saveCondition', async (req, res) => {
  */
 router.post('/saveBowelLog', async (req, res) => {
     try {
-        const { user_idx, bowel_status } = req.body;
+        // 리액트에서 아예 bowel_at 이라는 이름으로 보낸다고 가정
+        const { user_idx, bowel_status, bowel_at } = req.body; 
 
-        if (!user_idx || !bowel_status) {
-            return res.send('0');
+        if (!user_idx || !bowel_status) return res.send('0');
+
+        let finalAt = null;
+
+        if (bowel_at) { // 변수명이 통일되어 보기 편함
+            const now = new Date();
+            const kstDate = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+            const dateStr = kstDate.toISOString().split('T')[0];
+            
+            finalAt = `${dateStr} ${bowel_at}:00`; 
         }
 
         const sql = `
-            INSERT INTO t_bowel_log (user_idx, bowel_status, created_at)
-            VALUES (?, ?, NOW())
+            INSERT INTO t_bowel_log (user_idx, bowel_status, bowel_at, created_at)
+            VALUES (?, ?, ?, NOW())
         `;
 
-        await conn.query(sql, [user_idx, bowel_status]);
+        await conn.query(sql, [user_idx, bowel_status, finalAt]);
         res.send('1');
+
     } catch (err) {
         console.error("배변 로그 저장 에러:", err);
         res.send('0');
