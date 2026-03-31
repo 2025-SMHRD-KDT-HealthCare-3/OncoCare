@@ -86,4 +86,30 @@ router.post('/ingredient/register', async (req, res) => {
     }
 });
 
+// 14. 일일 식단 조회
+router.get('/dailydiet', async (req, res) => {
+    try {
+        const user_idx = req.query.user_idx;
+
+        const sql = `
+            SELECT B.recipe_name 
+            FROM t_diet A
+            JOIN t_recipe B ON A.recipe_idx = B.recipe_idx
+            WHERE A.user_idx = ? 
+              AND A.created_at >= CURDATE() 
+              AND A.created_at < CURDATE() + INTERVAL 1 DAY
+        `;
+
+        const [results] = await conn.query(sql, [user_idx]);
+        
+        res.json(results.length > 0 ? results : []);
+    } catch (err) {
+        console.error('일일 식단 조회 에러:', err);
+        res.status(500).send('0');
+    }
+});
+
+
+
+
 module.exports = router;
