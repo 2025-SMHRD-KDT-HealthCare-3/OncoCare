@@ -93,6 +93,8 @@ router.get('/dailydiet', async (req, res) => {
 
         const sql = `
             SELECT 
+                A.diet_idx,
+                A.recipe_idx,
                 B.recipe_name, 
                 A.meal_type, 
                 A.select_date
