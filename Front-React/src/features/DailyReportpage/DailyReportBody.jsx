@@ -4,8 +4,24 @@ import DailyDiet from './DailyDiet'
 import DailyBowel from './DailyBowel'
 import DailyCondition from './DailyCondition'
 
-const DailyReportBody = () => {
+const bristolLabels = {
+  1: '1형 - 분리된 딱딱한 덩어리 (심한 변비)',
+  2: '2형 - 울퉁불퉁한 소시지 모양 (경한 변비)',
+  3: '3형 - 표면에 균열 있는 소시지 모양 (정상)',
+  4: '4형 - 부드럽고 매끄러운 소시지 모양 (정상)',
+  5: '5형 - 경계가 뚜렷한 부드러운 덩어리 (섬유질 부족)',
+  6: '6형 - 경계가 불분명한 푹신한 덩어리 (경한 설사)',
+  7: '7형 - 고형물 없는 액체 (심한 설사)',
+}
+
+const today = () => {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+}
+
+const DailyReportBody = ({ date }) => {
   const user_idx = sessionStorage.getItem('user_idx')
+  const targetDate = date || today()
 
   // 식단
   const [selectedDiets, setSelectedDiets] = useState([])
@@ -26,14 +42,14 @@ const DailyReportBody = () => {
 
   const fetchBowelList = () => {
     if (!user_idx) return
-    axios.get(`http://localhost:3000/daily/getBowelLog?user_idx=${user_idx}`)
+    axios.get(`http://localhost:3000/daily/getBowelLog?user_idx=${user_idx}&date=${targetDate}`)
       .then(res => { if (Array.isArray(res.data)) setBowelList(res.data) })
       .catch(err => console.error('배변 기록 조회 실패:', err))
   }
 
   const fetchCondition = () => {
     if (!user_idx) return
-    axios.get(`http://localhost:3000/daily/getCondition?user_idx=${user_idx}`)
+    axios.get(`http://localhost:3000/daily/getCondition?user_idx=${user_idx}&date=${targetDate}`)
       .then(res => {
         if (res.data && Object.keys(res.data).length > 0) {
           setConditionData(res.data)
@@ -41,6 +57,8 @@ const DailyReportBody = () => {
           if (res.data.water_intake)   setWaterIntake(String(res.data.water_intake))
           setStomachPain(res.data.stomach_pain === 'Y')
           if (res.data.stomach_score)  setPainLevel(Number(res.data.stomach_score))
+        } else {
+          setConditionData(null)
         }
       })
       .catch(err => console.error('컨디션 조회 실패:', err))
@@ -49,13 +67,11 @@ const DailyReportBody = () => {
   useEffect(() => {
     if (!user_idx) return
 
-    // 식단 목록 (diet_idx, meal_type, select_date)
-    axios.get(`http://localhost:3000/recipe/dailydiet?user_idx=${user_idx}`)
+    axios.get(`http://localhost:3000/recipe/dailydiet?user_idx=${user_idx}&date=${targetDate}`)
       .then(res => { if (Array.isArray(res.data)) setSelectedDiets(res.data) })
       .catch(err => console.error('식단 조회 실패:', err))
 
-    // 식단 피드백/별점 (저장된 값 pre-fill용)
-    axios.get(`http://localhost:3000/daily/getDailyDiet?user_idx=${user_idx}`)
+    axios.get(`http://localhost:3000/daily/getDailyDiet?user_idx=${user_idx}&date=${targetDate}`)
       .then(res => {
         if (Array.isArray(res.data)) {
           const map = {}
@@ -69,7 +85,7 @@ const DailyReportBody = () => {
 
     fetchBowelList()
     fetchCondition()
-  }, [])
+  }, [targetDate])
 
   const handleDietSave = async (diet_idx, feedback, rating) => {
     if (!user_idx) { alert('로그인이 필요합니다.'); return }
@@ -90,14 +106,30 @@ const DailyReportBody = () => {
     }
   }
 
+  const handleBowelDelete = async (bowel_idx) => {
+    if (!window.confirm('배변 기록을 삭제할까요?')) return
+    try {
+      const res = await axios.post('http://localhost:3000/daily/deleteBowelLog', { bowel_idx })
+      if (res.data == 1 || res.data === '1') {
+        fetchBowelList()
+      } else {
+        alert('삭제에 실패했습니다.')
+      }
+    } catch (err) {
+      console.error('배변 삭제 실패:', err)
+      alert('삭제에 실패했습니다.')
+    }
+  }
+
   const handleBowelSave = async () => {
     if (!user_idx) { alert('로그인이 필요합니다.'); return }
     if (!defecationTime) { alert('배변 시간을 입력해주세요.'); return }
     try {
       const res = await axios.post('http://localhost:3000/daily/saveBowelLog', {
         user_idx,
-        bowel_status: String(defecationType),
+        bowel_status: bristolLabels[defecationType],
         bowel_at: defecationTime,
+        date: targetDate,
       })
       if (res.data == 1 || res.data === '1') {
         setDefecationTime('')
@@ -123,6 +155,7 @@ const DailyReportBody = () => {
         water_intake: waterIntake !== '' ? parseInt(waterIntake) : 0,
         stomach_pain: stomachPain ? 'Y' : 'N',
         pain_level: painLevel || 1,
+        date: targetDate,
       })
       if (res.data == 1 || res.data === '1') {
         fetchCondition()
@@ -152,6 +185,7 @@ const DailyReportBody = () => {
           setDefecationType={setDefecationType}
           bowelList={bowelList}
           onSave={handleBowelSave}
+          onDelete={handleBowelDelete}
         />
         <DailyCondition
           condition={condition}

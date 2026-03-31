@@ -15,7 +15,8 @@ const DailyBowel = ({
   defecationTime, setDefecationTime,
   defecationType, setDefecationType,
   bowelList,
-  onSave
+  onSave,
+  onDelete
 }) => {
   return (
     <div className="daily-diet-card">
@@ -71,10 +72,17 @@ const DailyBowel = ({
               <div
                 key={item.bowel_idx}
                 className="form-control"
-                style={{ display: 'flex', justifyContent: 'space-between', background: '#f8f9fa', fontSize: '14px' }}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8f9fa', fontSize: '14px' }}
               >
                 <span style={{ color: '#555' }}>{item.bowel_time}</span>
-                <span style={{ color: '#333' }}>{bristolLabels[Number(item.bowel_status)] || `${item.bowel_status}형`}</span>
+                <span style={{ color: '#333', flex: 1, marginLeft: '12px' }}>{item.bowel_status}</span>
+                <button
+                  onClick={() => onDelete(item.bowel_idx)}
+                  style={{ background: 'none', border: 'none', color: '#aaa', fontSize: '16px', cursor: 'pointer', padding: '0 4px' }}
+                  title="삭제"
+                >
+                  ×
+                </button>
               </div>
             ))}
           </div>

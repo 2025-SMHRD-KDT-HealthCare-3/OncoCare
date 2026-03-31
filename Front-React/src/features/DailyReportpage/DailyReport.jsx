@@ -20,7 +20,7 @@ const DailyReport = () => {
           <p className="daily-hero-sub">{date}</p>
         </div>
       </div>
-      <DailyReportBody></DailyReportBody>
+      <DailyReportBody date={date}></DailyReportBody>
       <Footer></Footer>
     </div>
   )

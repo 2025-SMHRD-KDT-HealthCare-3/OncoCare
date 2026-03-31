@@ -1,27 +1,27 @@
 @font-face {
   font-family: 'KGPartofMe';
-  src: url('../assets/fonts/KGPartofMe.ttf') format('truetype');
+  src: url('../../assets/fonts/KGPartofMe.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Arenq';
-  src: url('../assets/fonts/Arenq.otf') format('opentype');  /* otf → opentype */
+  src: url('../../assets/fonts/Arenq.otf') format('opentype');  /* otf → opentype */
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'MERKIN__';
-  src: url('../assets/fonts/MERKIN__.ttf') format('truetype');
+  src: url('../../assets/fonts/MERKIN__.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'LTMuseum-Medium';
-  src: url('../assets/fonts/LTMuseum-Medium.ttf') format('truetype');
+  src: url('../../assets/fonts/LTMuseum-Medium.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }

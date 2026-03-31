@@ -34,10 +34,10 @@ const WeeklyReport = ({ data }) => {
       insight: condition?.insight || '컨디션 기록이 없습니다. 매일 체크해보세요!',
     },
   ]
+  const formatDate = (dateStr) => dateStr?.split('T')[0]
 
-  const periodText = data?.start_date && data?.end_date
-    ? `${data.start_date} ~ ${data.end_date}`
-    : data?.report_week_label || '기록된 날짜 범위가 표시됩니다'
+  const periodText = data?.start_date && data?.end_date? `${formatDate(data.start_date)} ~ ${formatDate(data.end_date)}`
+  : data?.report_week_label || '기록된 날짜 범위가 표시됩니다'
 
   return (
     <div className="report-section">
