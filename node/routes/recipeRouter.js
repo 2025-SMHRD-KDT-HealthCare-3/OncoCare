@@ -11,7 +11,7 @@ router.get('/detail', async (req, res) => {
         const recipe_idx = req.query.recipe_idx;
         
         const sql = `
-            SELECT recipe_name, recipe_category, cooking_method, nutrition_info 
+            SELECT recipe_name, main_ingredients, recipe_category, cooking_method, nutrition_info 
             FROM t_recipe
             WHERE recipe_idx = ?
         `;
