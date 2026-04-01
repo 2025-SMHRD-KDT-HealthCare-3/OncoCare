@@ -11,25 +11,29 @@ const RegisterIngredient = () => {
   const navigate = useNavigate()
 
   return (
-    <div className="ingredient-input-section">
-      <div className="recipe-section-header">
-        <h2 className="recipe-section-title">식재료 입력</h2>
-        <p className="recipe-section-sub">식재료를 등록하면 맞춤 식단을 추천해드려요.</p>
+    <section className="ingredient-section">
+      <div className="ingredient-header">
+        <h3 className="ingredient-title">Ingredient Input</h3>
+        <p className="ingredient-subtitle">
+          Register your ingredients to receive personalized meal recommendations.
+        </p>
       </div>
 
-      <div className="ingredient-btn-list">
-        <div className="ingredient-btn-row">
-          <img src={camera_icon} className='ingredient-pic' />
-          <button className="btn ingredient-btn">사진으로 식재료 입력하기</button>
-        </div>
-        <div className="ingredient-btn-row">
-          <img src={pencil_icon} className='ingredient-pic' />
-          <button className="btn ingredient-btn" onClick={() => navigate('/IngredientForm')}>
-            식재료 수기 작성
-          </button>
-        </div>
+      <div className="ingredient-action-list">
+        <button className="ingredient-action primary">
+          <span className="ingredient-action-icon">📷</span>
+          <span>Scan Receipt</span>
+        </button>
+
+        <button
+          className="ingredient-action secondary"
+          onClick={() => navigate('/IngredientForm')}
+        >
+          <span className="ingredient-action-icon">✏️</span>
+          <span>Manual Entry</span>
+        </button>
       </div>
-    </div>
+    </section>
   )
 }
 

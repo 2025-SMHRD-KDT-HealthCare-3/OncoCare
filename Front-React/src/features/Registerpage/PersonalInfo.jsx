@@ -1,13 +1,15 @@
-import MainHeader from '../public/MainHeader'
+import Sidebar from '../public/Sidebar'
 import RegisterBody from './RegisterBody'
 import Footer from '../public/Footer'
 
 const PersonalInfo = () => {
   return (
     <div className="page-layout">
-      <MainHeader />
-      <RegisterBody mode="edit" />
-      <Footer></Footer>
+      <Sidebar />
+      <div className="page-content-area">
+        <RegisterBody mode="edit" />
+        <Footer />
+      </div>
     </div>
   )
 }

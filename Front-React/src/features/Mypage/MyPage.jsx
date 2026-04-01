@@ -1,14 +1,16 @@
 import React from 'react'
-import MainHeader from '../public/MainHeader'
+import Sidebar from '../public/Sidebar'
 import MypageBody from './MypageBody'
 import Footer from '../public/Footer'
 
 const MyPage = () => {
   return (
     <div className="page-layout">
-      <MainHeader></MainHeader>
-      <MypageBody></MypageBody>
-      <Footer></Footer>
+      <Sidebar />
+      <div className="page-content-area">
+        <MypageBody />
+        <Footer />
+      </div>
     </div>
   )
 }

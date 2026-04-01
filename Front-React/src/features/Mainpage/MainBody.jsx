@@ -9,10 +9,10 @@ const MainBody = () => {
   const user_idx = sessionStorage.getItem('user_idx')
 
   return (
-    <div >
-      <MainTop></MainTop>
-      <MainRecipe user_idx={user_idx}></MainRecipe>
-      <RegisterIngredient></RegisterIngredient>
+    <div className="main-content">
+      <MainTop />
+      <MainRecipe user_idx={user_idx} />
+      <RegisterIngredient />
     </div>
   )
 }

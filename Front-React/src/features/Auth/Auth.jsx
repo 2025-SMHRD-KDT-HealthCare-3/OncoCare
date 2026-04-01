@@ -121,7 +121,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="page-layout auth-page">
+    <div className="auth-page">
 
       <div className="auth-screen">
         <div className="auth-bg">
