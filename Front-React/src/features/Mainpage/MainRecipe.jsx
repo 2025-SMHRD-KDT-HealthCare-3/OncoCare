@@ -9,7 +9,7 @@ const MainRecipe = ({ user_idx }) => {
 
 const getDietList = async (user_idx) => {
     try {
-        const response = await axios.get(`http://localhost:3000/dietList/${user_idx}`);
+        const response = await axios.get(`http://localhost:3000/api/diet/dietList/${user_idx}`);
         if (response.data === '0') {
             console.log("건강 프로필이 없거나 레시피가 없습니다.");
             alert('건강 정보를 먼저 입력해주세요.')

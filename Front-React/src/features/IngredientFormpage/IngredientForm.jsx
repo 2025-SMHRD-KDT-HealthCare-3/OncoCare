@@ -22,7 +22,7 @@ const IngredientForm = () => {
 
   useEffect(() => {
     if (!isEdit) return
-    axios.get(`http://localhost:3000/recipe/ingredient/detail?ingre_idx=${id}`)
+    axios.get(`http://localhost:3000/api/ingredient/detail?ingre_idx=${id}`)
       .then(res => {
         if (!res.data || res.data === '0') return
         setName(res.data.ingre_name || '')
@@ -43,14 +43,19 @@ const IngredientForm = () => {
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) { alert('로그인이 필요합니다.'); return }
 
-    const payload = { user_idx, name, type: category, storage: storageType, cnt: quantity }
-
     try {
       if (isEdit) {
-        await axios.put(`http://localhost:3000/recipe/ingredient/register/${id}`, payload)
-        alert('식재료가 수정되었습니다!')
+        const payload = { ingre_idx: id, user_idx, ingre_name: name, ingre_type: category, ingre_storage: storageType, cnt: quantity }
+        const res = await axios.post('http://localhost:3000/api/ingredient/update', payload)
+        if (res.data == '1') {
+          alert('식재료가 수정되었습니다!')
+        } else {
+          alert('식재료 수정에 실패했습니다.')
+          return
+        }
       } else {
-        const res = await axios.post('http://localhost:3000/recipe/ingredient/register', payload)
+        const payload = { user_idx, name, type: category, storage: storageType, cnt: quantity }
+        const res = await axios.post('http://localhost:3000/api/ingredient/register', payload)
         if (res.data == '1') {
           alert('식재료가 등록되었습니다!')
         } else {

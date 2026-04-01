@@ -25,15 +25,18 @@ const RegisterBody = ({ mode = 'register' }) => {
     // 수정 모드: 기존 유저 정보 불러와서 pre-fill
     useEffect(() => {
         if (!isEdit) return
-        // TODO: GET /user/info 백엔드 API 연결
-        // axios.get('http://localhost:3000/user/info')
-        //   .then((res) => {
-        //     setName(res.data.name)
-        //     setId(res.data.id)
-        //     setPhone(res.data.phone)
-        //     setBirth(res.data.birthdate)
-        //     setSex(res.data.gender)
-        //   })
+        const user_idx = sessionStorage.getItem('user_idx')
+        if (!user_idx) return
+        axios.get(`http://localhost:3000/api/auth/profile?user_idx=${user_idx}`)
+            .then((res) => {
+                if (!res.data || res.data === '0') return
+                setName(res.data.name || '')
+                setId(res.data.email || '')
+                setPhone(res.data.phone || '')
+                setBirth(res.data.birth || '')
+                setSex(res.data.gender || '')
+            })
+            .catch((err) => console.error('유저 정보 조회 실패:', err))
     }, [isEdit])
 
     const checkEmail = async () => {
@@ -42,7 +45,7 @@ const RegisterBody = ({ mode = 'register' }) => {
             return
         }
         try {
-            const response = await axios.post('http://localhost:3000/user/emailCheck', { email: id });
+            const response = await axios.post('http://localhost:3000/api/auth/emailCheck', { email: id });
             if (response.data == '1') {
                 setEmailCheck(true);
                 setEmailMessage('사용 가능한 이메일입니다.');
@@ -76,7 +79,7 @@ const RegisterBody = ({ mode = 'register' }) => {
         }
 
         try {
-            const response = await axios.post('http://localhost:3000/user/register', {
+            const response = await axios.post('http://localhost:3000/api/auth/register', {
                 email: id,
                 password: password,
                 name: name,
@@ -104,21 +107,23 @@ const RegisterBody = ({ mode = 'register' }) => {
             return
         }
 
-        // TODO: PUT /user/update 백엔드 API 연결
-        // try {
-        //     const response = await axios.put('http://localhost:3000/user/update', {
-        //         name, gender: sex, birthdate: birth, phone,
-        //         ...(password ? { password } : {})
-        //     })
-        //     if (response.data == '1') {
-        //         alert('수정 완료!')
-        //         nav('/MyPage')
-        //     }
-        // } catch (error) {
-        //     console.error(error)
-        // }
-        alert('수정 완료! (백엔드 연결 후 활성화)')
-        nav('/MyPage')
+        const user_idx = sessionStorage.getItem('user_idx')
+        if (!user_idx) { alert('로그인이 필요합니다.'); return }
+        try {
+            const response = await axios.post('http://localhost:3000/api/auth/update', {
+                user_idx, name, gender: sex, birth, phone,
+                ...(password ? { password } : {})
+            })
+            if (response.data == '1') {
+                alert('수정 완료!')
+                nav('/MyPage')
+            } else {
+                alert('수정에 실패했습니다.')
+            }
+        } catch (error) {
+            console.error(error)
+            alert('서버 통신 중 오류가 발생했습니다.')
+        }
     }
 
     return (

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './HealthInfo.css'
@@ -14,6 +15,7 @@ const ALL_ALLERGENS = [
 ]
 
 const HealthInfoBody = () => {
+  const navigate = useNavigate()
   // 기본 건강 정보
   const [height, setHeight] = useState('')
   const [weight, setWeight] = useState('')
@@ -45,7 +47,7 @@ const HealthInfoBody = () => {
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) return
 
-    axios.get(`http://localhost:3000/register/healthSelect?user_idx=${user_idx}`)
+    axios.get(`http://localhost:3000/api/user/health?user_idx=${user_idx}`)
       .then((res) => {
         const d = res.data
         if (!d) return
@@ -57,6 +59,7 @@ const HealthInfoBody = () => {
         setHasOstomy(d.stoma_status === 'Y' || d.stoma_status === 1)
         setHasChemo(d.chemo_status === 'Y' || d.chemo_status === 1)
         if (d.meals_per_day) setMealsPerDay(String(d.meals_per_day))
+        if (d.allergy) setSelectedAllergens(d.allergy.split(',').filter(a => a))
       })
       .catch(() => {
         // 데이터 없으면 빈 폼으로 진행
@@ -71,7 +74,7 @@ const HealthInfoBody = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/register/registerHealth', {
+      const response = await axios.post('http://localhost:3000/api/user/health/register', {
         user_idx,
         height,
         weight,
@@ -86,6 +89,7 @@ const HealthInfoBody = () => {
 
       if (response.data == '1') {
         alert('저장되었습니다.')
+        navigate('/MyPage')
       } else {
         alert('저장에 실패했습니다.')
       }

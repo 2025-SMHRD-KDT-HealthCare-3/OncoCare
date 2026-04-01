@@ -4,35 +4,21 @@ import './Header.css'
 import avater from '../../assets/avater.jpg'
 import icon from '../../assets/oncocare_icon.png'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
 
 const MainHeader = () => {
   const navigate = useNavigate()
   const [userName, setUserName] = useState('')
 
   useEffect(() => {
-    axios.get('http://localhost:3000/user/check')
-      .then((res) => {
-        if (res.data.loggedIn) {
-          setUserName(res.data.name)
-        }
-      })
-      .catch((err) => console.error('유저 정보 조회 실패:', err))
+    const storedName = sessionStorage.getItem('user_name')
+    if (storedName) {
+      setUserName(storedName)
+    }
   }, [])
 
-  const handleLogout = async () => {
-    try {
-      // 1. 서버에 로그아웃 요청 (세션 파기 및 쿠키 삭제)
-      const response = await axios.post('http://localhost:3000/user/logout');
-
-      if (response.status === 200) {
-        localStorage.removeItem('userName');
-        navigate('/');
-      }
-    } catch (error) {
-      console.error('로그아웃 중 에러 발생:', error);
-      alert('로그아웃 처리에 실패했습니다.');
-    }
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate('/');
   };
 
   return (
