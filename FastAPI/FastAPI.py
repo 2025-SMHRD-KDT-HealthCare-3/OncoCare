@@ -206,6 +206,9 @@ monthly_prompt = PromptTemplate(
     template="""당신은 환자의 장기적인 회복과 습관 형성을 돕고 멘탈을 케어하는 최고의 웰니스 코치입니다.
 한 달 동안의 '주간 레포트 요약본'과 환자의 '기본 건강 상태'를 바탕으로 월간 레포트를 작성해주세요.
 
+[분석 타겟 연월]
+{target_month}
+
 [환자 건강 프로필]
 {health_profile}
 
@@ -222,7 +225,7 @@ monthly_prompt = PromptTemplate(
 7. report_title은 한 달간의 변화를 가장 잘 보여주는 센스 있는 제목(이모지 1~2개 포함)을 15자 이내로 달아주세요.
 
 {format_instructions}""",
-    input_variables=["health_profile", "weekly_reports"],
+    input_variables=["health_profile", "weekly_reports", "target_month"],
     partial_variables={"format_instructions": monthly_parser.get_format_instructions()},
 )
 monthly_chain = monthly_prompt | llm | monthly_parser
@@ -430,7 +433,8 @@ async def generate_monthly_report(user_idx: int, month: int, background_tasks: B
                 with get_openai_callback() as cb:
                     ai_result = await monthly_chain.ainvoke({
                         "health_profile": json.dumps(health_profile, ensure_ascii=False),
-                        "weekly_reports": json.dumps(data.get("weekly_reports"), ensure_ascii=False)
+                        "weekly_reports": json.dumps(data.get("weekly_reports"), ensure_ascii=False),
+                        "target_month": data.get("target_year_month", f"{target_month}월")
                     })
                     
                     tracker.total_tokens += cb.total_tokens
