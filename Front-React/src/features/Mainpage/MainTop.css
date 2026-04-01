@@ -1,16 +1,191 @@
+.dashboard-top {
+  margin-bottom: 48px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.calendar-card,
+.wellness-card {
+  background: #fdfcf8;
+  border: 1px solid #ece8df;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.section-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-card-header h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #1b1c1a;
+}
+
+.status-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #e7f3eb;
+  color: #2d6b46;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.loading-text {
+  color: #888;
+  font-size: 14px;
+}
+
+.wellness-score-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0 32px;
+}
+
+.wellness-score-circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: conic-gradient(#2f8f46 0deg, #2f8f46 295deg, #e7e4dd 295deg, #e7e4dd 360deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wellness-score-inner {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background: #fdfcf8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.wellness-score-inner strong {
+  font-size: 44px;
+  font-weight: 800;
+  color: #1b1c1a;
+  line-height: 1;
+}
+
+.wellness-score-inner span {
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #777;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wellness-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.summary-box {
+  background: #fff;
+  border: 1px solid #ece8df;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.summary-box.full {
+  grid-column: 1 / -1;
+}
+
+.summary-label {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: #7d7d7d;
+  font-weight: 700;
+}
+
+.summary-value {
+  margin: 0;
+  font-size: 15px;
+  color: #1f1f1f;
+  font-weight: 700;
+}
+
+.wellness-comment {
+  margin-top: 18px;
+  background: #f3f7f2;
+  border-left: 4px solid #4caf50;
+  padding: 14px 16px;
+  border-radius: 12px;
+  color: #3a5c3f;
+  font-size: 14px;
+}
+
+.dashboard-top .react-calendar {
+  width: 100% !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.dashboard-top .react-calendar__navigation {
+  margin-bottom: 16px !important;
+}
+
+.dashboard-top .react-calendar__navigation button {
+  background: transparent !important;
+  min-width: 40px !important;
+  font-size: 18px !important;
+}
+
+.dashboard-top .react-calendar__tile {
+  border-radius: 14px !important;
+  padding: 18px 8px !important;
+}
+
+.dashboard-top .react-calendar__tile--active {
+  background: #2f8f46 !important;
+  color: #fff !important;
+}
+
+.dashboard-top .react-calendar__tile--now {
+  background: #eef5ef !important;
+  color: #2f8f46 !important;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+
 .two-column-wrapper {
   display: flex;
   flex-direction: row;
   gap: 2rem;
-  padding: 2rem;
-  padding-top: 120px;
+  padding: 0;
   box-sizing: border-box;
-  max-width: 70%;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 40px 0;
   align-items: stretch;
 }
 
-/* 왼쪽 패널 */
+/* 왼쪽 패널 
 .panel-box {
   flex: 2;
   background-color: white;
@@ -29,7 +204,7 @@
   margin-bottom: 1.2rem;
 }
 
-/* 건강 점수 */
+/* 건강 점수 
 .panel-score-row {
   display: flex;
   justify-content: space-between;
@@ -70,7 +245,7 @@
   transition: width 0.4s ease;
 }
 
-/* 요약 항목 */
+/* 요약 항목 
 .panel-summary-list {
   display: flex;
   flex-direction: column;
@@ -105,7 +280,7 @@
   margin: 0;
 }
 
-/* 한줄 코멘트 */
+/* 한줄 코멘트 
 .panel-comment {
   background: #f0f7f3;
   border-left: 3px solid #8EBFA3;
@@ -137,15 +312,14 @@
   font-size: 1rem;
 }
 
-/* 오른쪽 캘린더 */
+/* 오른쪽 캘린더 
 .calendar-box {
   flex: 2;
 
   display: flex;
   justify-content: center;
 }
-
-/* 캘린더 전체 */
+/* 캘린더 전체 
 .react-calendar {
   width: 100% !important;
   border: none !important;
@@ -154,21 +328,21 @@
   overflow: hidden !important;
 }
 
-/* 헤더 배경색 */
+/* 헤더 배경색 
 .react-calendar__navigation {
   background-color: var(--primary-dark) !important;
   margin-bottom: 0 !important;
   height: 80px !important;
 }
 
-/* 헤더 월 텍스트 */
+/* 헤더 월 텍스트 
 .react-calendar__navigation__label {
   color: white !important;
   font-size: 2.4rem !important;
   font-weight: 600 !important;
 }
 
-/* 화살표 버튼 */
+/* 화살표 버튼 
 .react-calendar__navigation__arrow {
   color: white !important;
   font-size: 2rem !important;
@@ -185,7 +359,7 @@
   background-color: #8EBFA3 !important;
 }
 
-/* 요일 */
+/* 요일 
 .react-calendar__month-view__weekdays {
   background-color: #e8f5ee !important;
   padding: 1rem 0 !important;
@@ -198,12 +372,12 @@
   font-size: 1.1rem !important;
 }
 
-/* 요일 밑줄 제거 */
+/* 요일 밑줄 제거 
 .react-calendar__month-view__weekdays__weekday abbr {
   text-decoration: none !important;
 }
 
-/* 날짜 칸 */
+/* 날짜 칸 
 .react-calendar__tile {
   padding: 1.8rem 1rem !important;
   font-size: 1.2rem !important;
@@ -214,7 +388,7 @@
   border-radius: 50% !important;
 }
 
-/* 선택된 날짜 */
+/* 선택된 날짜 
 .react-calendar__tile--active {
   background-color: var(--primary-dark) !important;
   border-radius: 50% !important;
@@ -226,7 +400,7 @@
   border-radius: 50% !important;
 }
 
-/* 오늘 날짜 */
+/* 오늘 날짜 
 .react-calendar__tile--now {
   background-color: #e8f5ee !important;
   border-radius: 50% !important;
@@ -234,18 +408,18 @@
   font-weight: bold !important;
 }
 
-/* 이번 달 아닌 날짜 */
+/* 이번 달 아닌 날짜 
 .react-calendar__month-view__days__day--neighboringMonth {
   color: #ccc !important;
 }
 
-/* 일요일 빨간색 */
+/* 일요일 빨간색 
 .react-calendar__month-view__days__day--weekend:nth-child(7n+1) {
   color: #ff6b6b !important;
 }
 
 
-/* 전체 글자 크기 */
+/* 전체 글자 크기 
 .react-calendar {
   font-size: 1rem !important;
-}
+} */

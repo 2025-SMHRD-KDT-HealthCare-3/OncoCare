@@ -1,14 +1,16 @@
 import React from 'react'
-import MainHeader from '../public/MainHeader'
+import Sidebar from '../public/Sidebar'
 import HealthInfoBody from './HealthInfoBody'
 import Footer from '../public/Footer'
 
 const HealthInfo = () => {
   return (
     <div className="page-layout">
-      <MainHeader />
-      <HealthInfoBody />
-      <Footer></Footer>
+      <Sidebar />
+      <div className="page-content-area">
+        <HealthInfoBody />
+        <Footer />
+      </div>
     </div>
   )
 }

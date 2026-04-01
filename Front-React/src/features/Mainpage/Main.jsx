@@ -1,16 +1,18 @@
-import React from 'react'
-import MainHeader from '../public/MainHeader'
 import MainBody from './MainBody'
+import Sidebar from '../public/Sidebar'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import Footer from '../public/Footer'
+import '../public/root.css'
 
 const Main = () => {
   return (
     <div className="page-layout">
-        <MainHeader></MainHeader>
-        <MainBody></MainBody>
-        <Footer></Footer>
+      <Sidebar />
+      <div className="page-content-area">
+        <MainBody />
+        <Footer />
+      </div>
     </div>
   )
 }

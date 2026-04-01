@@ -56,96 +56,75 @@ const MainTop = () => {
   }
 
   return (
-    <div className="main-content two-column-wrapper">
-      {/* 왼쪽 - 패널 */}
-      <div className="panel-box">
-        {selectedDate ? (
-          <>
-            <h5 className="panel-date">
-              {selectedDate.toLocaleDateString('ko-KR', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </h5>
-
-            {loading ? (
-              <p style={{ color: '#aaa', fontSize: '0.95rem' }}>불러오는 중...</p>
-            ) : (
-              <>
-                {/* 건강 점수 */}
-                <div className="panel-score-row">
-                  <span className="panel-score-label">건강 점수</span>
-                  <span className="panel-score-value">
-                    {score !== null ? score : '—'} 점{' '}
-                    <span className="panel-score-max">/ 100</span>
-                  </span>
-                </div>
-                <div className="panel-score-bar-bg">
-                  <div className="panel-score-bar" style={{ width: score !== null ? `${score}%` : '0%' }} />
-                </div>
-
-                {/* 요약 항목들 */}
-                <div className="panel-summary-list">
-                  <div className="panel-summary-item">
-                    <span className="panel-summary-icon">🍽️</span>
-                    <div>
-                      <p className="panel-summary-title">식단</p>
-                      <p className="panel-summary-desc">{getSummaryText(diet)}</p>
-                    </div>
-                  </div>
-                  <div className="panel-summary-item">
-                    <span className="panel-summary-icon">🚽</span>
-                    <div>
-                      <p className="panel-summary-title">배변</p>
-                      <p className="panel-summary-desc">{getSummaryText(bowel)}</p>
-                    </div>
-                  </div>
-                  <div className="panel-summary-item">
-                    <span className="panel-summary-icon">💪</span>
-                    <div>
-                      <p className="panel-summary-title">컨디션</p>
-                      <p className="panel-summary-desc">{getSummaryText(condition)}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 한줄 코멘트 */}
-                <div className="panel-comment">
-                  <p className="panel-comment-text">
-                    {comment ? `💬 ${comment}` : '💬 해당 날짜의 기록이 없습니다.'}
-                  </p>
-                </div>
-              </>
-            )}
-
-            
-          </>
-        ) : (
-          <div className="panel-placeholder">
-            <p>날짜를 선택하면</p>
-            <p>내용이 표시됩니다</p>
+   <section className="dashboard-top">
+      <div className="dashboard-grid">
+        <div className="calendar-card">
+          <div className="section-card-header">
+            <h3>Activity Calendar</h3>
           </div>
-        )}
-      </div>
 
-      {/* 오른쪽 - 미니 캘린더 */}
-      <div className="calendar-box">
-        <Calendar
-          onChange={(date) => { setSelectedDate(date); setSelectedDateStr(toLocalDateString(date)) }}
-          onClickDay={(date, event) => {
-            if (event.detail === 2) {
-              const dateform = toLocalDateString(date)
-              nav(`/DailyReport/${dateform}`)
-            }
-          }}
-          value={selectedDate}
-          locale="en-US"
-          formatDay={(locale, date) => date.getDate()}
-          calendarType="gregory"
-        />
+          <Calendar
+            onChange={(date) => {
+              setSelectedDate(date)
+              setSelectedDateStr(toLocalDateString(date))
+            }}
+            onClickDay={(date, event) => {
+              if (event.detail === 2) {
+                const dateform = toLocalDateString(date)
+                nav(`/DailyReport/${dateform}`)
+              }
+            }}
+            value={selectedDate}
+            locale="en-US"
+            formatDay={(locale, date) => date.getDate()}
+            calendarType="gregory"
+          />
+        </div>
+
+        <div className="wellness-card">
+          <div className="section-card-header">
+            <div>
+              <h3>Daily Wellness</h3>
+              <span className="status-badge">STABLE</span>
+            </div>
+          </div>
+
+          {loading ? (
+            <p className="loading-text">불러오는 중...</p>
+          ) : (
+            <>
+              <div className="wellness-score-wrap">
+                <div className="wellness-score-circle">
+                  <div className="wellness-score-inner">
+                    <strong>{score !== null ? score : '—'}</strong>
+                    <span>Score</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="wellness-summary-grid">
+                <div className="summary-box">
+                  <p className="summary-label">식단</p>
+                  <p className="summary-value">{getSummaryText(diet)}</p>
+                </div>
+                <div className="summary-box">
+                  <p className="summary-label">배변</p>
+                  <p className="summary-value">{getSummaryText(bowel)}</p>
+                </div>
+                <div className="summary-box full">
+                  <p className="summary-label">컨디션</p>
+                  <p className="summary-value">{getSummaryText(condition)}</p>
+                </div>
+              </div>
+
+              <div className="wellness-comment">
+                {comment ? `💬 ${comment}` : '💬 해당 날짜의 기록이 없습니다.'}
+              </div>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </section>
   )
 }
 
