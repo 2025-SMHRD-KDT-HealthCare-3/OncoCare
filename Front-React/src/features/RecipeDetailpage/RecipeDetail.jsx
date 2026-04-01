@@ -17,7 +17,7 @@ const RecipeDetail = () => {
   const [mealType, setMealType] = useState('')
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/recipe/detail?recipe_idx=${id}`)
+    axios.get(`http://localhost:3000/api/recipe/detail?recipe_idx=${id}`)
       .then(res => setRecipe(res.data))
       .catch(err => console.error('레시피 조회 실패:', err))
   }, [id])
@@ -25,7 +25,7 @@ const RecipeDetail = () => {
   useEffect(() => {
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) return
-    axios.get(`http://localhost:3000/register/healthSelect?user_idx=${user_idx}`)
+    axios.get(`http://localhost:3000/api/user/health?user_idx=${user_idx}`)
       .then(res => {
         if (res.data?.meals_per_day) {
           setMealsPerDay(Number(res.data.meals_per_day))
@@ -45,7 +45,7 @@ const RecipeDetail = () => {
     if (!user_idx) { alert('로그인이 필요합니다.'); return }
     if (!mealType) { alert('몇 번째 끼니인지 선택해주세요.'); return }
     try {
-      const res = await axios.post('http://localhost:3000/clickRecipe', {
+      const res = await axios.post('http://localhost:3000/api/diet/clickRecipe', {
         user_idx,
         recipe_idx: id,
         meal_type: mealType

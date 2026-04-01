@@ -12,7 +12,7 @@ const FridgeBody = () => {
   useEffect(() => {
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) return
-    axios.get(`http://localhost:3000/recipe/ingredient?user_idx=${user_idx}`)
+    axios.get(`http://localhost:3000/api/ingredient?user_idx=${user_idx}`)
       .then(res => { if (Array.isArray(res.data)) setIngredients(res.data) })
       .catch(err => console.error('식재료 조회 실패:', err))
   }, [])

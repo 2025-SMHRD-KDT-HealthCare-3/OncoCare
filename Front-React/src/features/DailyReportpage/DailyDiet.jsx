@@ -30,7 +30,7 @@ const DailyDiet = ({
   const handleDelete = async (diet) => {
     if (!window.confirm(`"${diet.recipe_name}" 식단을 삭제할까요?`)) return
     try {
-      const res = await axios.post('http://localhost:3000/unClickRecipe', { diet_idx: diet.diet_idx })
+      const res = await axios.post('http://localhost:3000/api/diet/unClickRecipe', { diet_idx: diet.diet_idx })
       if (res.data == 1 || res.data === '1') {
         const updated = selectedDiets.filter(d => d.diet_idx !== diet.diet_idx)
         setSelectedDiets(updated)

@@ -21,7 +21,7 @@ const Report = () => {
     if (!user_idx) return
 
     // 주간 리포트: 이번 주 없으면 지난 주로 재시도
-    axios.get(`http://localhost:3000/report/weekly?user_idx=${user_idx}`)
+    axios.get(`http://localhost:3000/api/report/weekly?user_idx=${user_idx}`)
       .then(res => {
         if (res.data && res.data !== '0') {
           setWeeklyData(res.data)
@@ -29,7 +29,7 @@ const Report = () => {
           const lastWeek = new Date()
           lastWeek.setDate(lastWeek.getDate() - 7)
           const lastWeekStr = lastWeek.toISOString().split('T')[0]
-          return axios.get(`http://localhost:3000/report/weekly?user_idx=${user_idx}&day=${lastWeekStr}`)
+          return axios.get(`http://localhost:3000/api/report/weekly?user_idx=${user_idx}&day=${lastWeekStr}`)
         }
       })
       .then(res => { if (res && res.data && res.data !== '0') setWeeklyData(res.data) })
@@ -41,12 +41,12 @@ const Report = () => {
     const prevMonth = now.getMonth() === 0 ? 12 : now.getMonth()
     const prevMonthStr = `${prevYear}-${String(prevMonth).padStart(2, '0')}`
 
-    axios.get(`http://localhost:3000/report/monthly?user_idx=${user_idx}`)
+    axios.get(`http://localhost:3000/api/report/monthly?user_idx=${user_idx}`)
       .then(res => {
         if (res.data && res.data !== '0') {
           setMonthlyData(res.data)
         } else {
-          return axios.get(`http://localhost:3000/report/monthly?user_idx=${user_idx}&month=${prevMonthStr}`)
+          return axios.get(`http://localhost:3000/api/report/monthly?user_idx=${user_idx}&month=${prevMonthStr}`)
         }
       })
       .then(res => { if (res && res.data && res.data !== '0') setMonthlyData(res.data) })
@@ -56,7 +56,7 @@ const Report = () => {
     const twoMonthsAgo = now.getMonth() <= 1
       ? `${now.getFullYear() - 1}-${String(12 + now.getMonth()).padStart(2, '0')}`
       : `${now.getFullYear()}-${String(now.getMonth() - 1).padStart(2, '0')}`
-    axios.get(`http://localhost:3000/report/monthly?user_idx=${user_idx}&month=${twoMonthsAgo}`)
+    axios.get(`http://localhost:3000/api/report/monthly?user_idx=${user_idx}&month=${twoMonthsAgo}`)
       .then(res => { if (res.data && res.data !== '0') setPrevMonthlyData(res.data) })
       .catch(err => console.error('전월 리포트 조회 실패:', err))
   }, [])

@@ -34,7 +34,7 @@ const MainTop = () => {
     if (!user_idx || !selectedDateStr) return
     setLoading(true)
     setReportData(null)
-    axios.get(`http://localhost:3000/report/detail?day=${selectedDateStr}&user_idx=${user_idx}`)
+    axios.get(`http://localhost:3000/api/report/detail?day=${selectedDateStr}&user_idx=${user_idx}`)
       .then(res => {
         setReportData(res.data && res.data !== '0' ? res.data : null)
       })

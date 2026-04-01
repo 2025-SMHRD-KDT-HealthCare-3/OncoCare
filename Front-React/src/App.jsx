@@ -1,6 +1,7 @@
 import React from 'react'
-import Register from './features/Registerpage/Register.jsx'
-import Login from './features/Loginpage/Login.jsx'
+// import Register from './features/Registerpage/Register.jsx'
+// import Login from './features/Loginpage/Login.jsx'
+import Auth from './features/Auth/Auth.jsx'
 import Main from './features/Mainpage/Main.jsx'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import MyPage from './features/Mypage/MyPage.jsx'
@@ -22,8 +23,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/Register" element={<Register />} />
+        {/* <Route path="/" element={<Login />} /> */}
+        {/* <Route path="/Register" element={<Register />} /> */}
+        <Route path="/" element={<Auth />} />
         <Route path="/Main" element={<Main />} />
         <Route path='/MyPage' element={<MyPage />}/>
         <Route path='/Fridge' element={<Fridge />}/>

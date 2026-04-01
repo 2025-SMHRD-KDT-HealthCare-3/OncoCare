@@ -42,18 +42,19 @@ const DailyReportBody = ({ date }) => {
 
   const fetchBowelList = () => {
     if (!user_idx) return
-    axios.get(`http://localhost:3000/daily/getBowelLog?user_idx=${user_idx}&date=${targetDate}`)
+    axios.get(`http://localhost:3000/api/bowel/log?user_idx=${user_idx}&date=${targetDate}`)
       .then(res => { if (Array.isArray(res.data)) setBowelList(res.data) })
       .catch(err => console.error('배변 기록 조회 실패:', err))
   }
 
   const fetchCondition = () => {
     if (!user_idx) return
-    axios.get(`http://localhost:3000/daily/getCondition?user_idx=${user_idx}&date=${targetDate}`)
+    axios.get(`http://localhost:3000/api/condition?user_idx=${user_idx}&date=${targetDate}`)
       .then(res => {
         if (res.data && Object.keys(res.data).length > 0) {
           setConditionData(res.data)
           if (res.data.condition_score) setCondition(Number(res.data.condition_score))
+          if (res.data.sleep_score)    setSleepTime(String(res.data.sleep_score))
           if (res.data.water_intake)   setWaterIntake(String(res.data.water_intake))
           setStomachPain(res.data.stomach_pain === 'Y')
           if (res.data.stomach_score)  setPainLevel(Number(res.data.stomach_score))
@@ -67,11 +68,11 @@ const DailyReportBody = ({ date }) => {
   useEffect(() => {
     if (!user_idx) return
 
-    axios.get(`http://localhost:3000/recipe/dailydiet?user_idx=${user_idx}&date=${targetDate}`)
+    axios.get(`http://localhost:3000/api/diet/dailydiet?user_idx=${user_idx}&date=${targetDate}`)
       .then(res => { if (Array.isArray(res.data)) setSelectedDiets(res.data) })
       .catch(err => console.error('식단 조회 실패:', err))
 
-    axios.get(`http://localhost:3000/daily/getDailyDiet?user_idx=${user_idx}&date=${targetDate}`)
+    axios.get(`http://localhost:3000/api/diet/getDailyDiet?user_idx=${user_idx}&date=${targetDate}`)
       .then(res => {
         if (Array.isArray(res.data)) {
           const map = {}
@@ -90,7 +91,7 @@ const DailyReportBody = ({ date }) => {
   const handleDietSave = async (diet_idx, feedback, rating) => {
     if (!user_idx) { alert('로그인이 필요합니다.'); return }
     try {
-      const res = await axios.post('http://localhost:3000/updateDiet', {
+      const res = await axios.post('http://localhost:3000/api/diet/updateDiet', {
         diet_idx,
         diet_feedback: feedback || '',
         diet_rating: rating || 0,
@@ -109,7 +110,7 @@ const DailyReportBody = ({ date }) => {
   const handleBowelDelete = async (bowel_idx) => {
     if (!window.confirm('배변 기록을 삭제할까요?')) return
     try {
-      const res = await axios.post('http://localhost:3000/daily/deleteBowelLog', { bowel_idx })
+      const res = await axios.post('http://localhost:3000/api/bowel/delete', { bowel_idx })
       if (res.data == 1 || res.data === '1') {
         fetchBowelList()
       } else {
@@ -125,7 +126,7 @@ const DailyReportBody = ({ date }) => {
     if (!user_idx) { alert('로그인이 필요합니다.'); return }
     if (!defecationTime) { alert('배변 시간을 입력해주세요.'); return }
     try {
-      const res = await axios.post('http://localhost:3000/daily/saveBowelLog', {
+      const res = await axios.post('http://localhost:3000/api/bowel/save', {
         user_idx,
         bowel_status: bristolLabels[defecationType],
         bowel_at: defecationTime,
@@ -148,7 +149,7 @@ const DailyReportBody = ({ date }) => {
   const handleConditionSave = async () => {
     if (!user_idx) { alert('로그인이 필요합니다.'); return }
     try {
-      const res = await axios.post('http://localhost:3000/daily/saveCondition', {
+      const res = await axios.post('http://localhost:3000/api/condition/save', {
         user_idx,
         condition_score: condition || 3,
         sleep_score: sleepTime !== '' ? parseFloat(sleepTime) : 0,
