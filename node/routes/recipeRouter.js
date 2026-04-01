@@ -89,23 +89,24 @@ router.post('/ingredient/register', async (req, res) => {
 // 14. 일일 식단 조회
 router.get('/dailydiet', async (req, res) => {
     try {
-        const user_idx = req.query.user_idx;
+        const { user_idx, date } = req.query;
+        const targetDate = date || new Date().toISOString().split('T')[0];
 
         const sql = `
-            SELECT 
+            SELECT
                 A.diet_idx,
                 A.recipe_idx,
-                B.recipe_name, 
-                A.meal_type, 
+                B.recipe_name,
+                A.meal_type,
                 A.select_date
             FROM t_diet A
             JOIN t_recipe B ON A.recipe_idx = B.recipe_idx
-            WHERE A.user_idx = ? 
-                AND A.select_date = CURDATE()
+            WHERE A.user_idx = ?
+                AND A.select_date = ?
         `;
 
-        const [results] = await conn.query(sql, [user_idx]);
-        
+        const [results] = await conn.query(sql, [user_idx, targetDate]);
+
         res.json(results.length > 0 ? results : []);
     } catch (err) {
         console.error('일일 식단 조회 에러:', err);

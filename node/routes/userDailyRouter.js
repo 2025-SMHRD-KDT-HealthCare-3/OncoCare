@@ -30,7 +30,7 @@ router.get('/getDailyDiet', async (req, res) => {
 
 /**
  * [삭제] 식단 기록 삭제
- * POST /main/deleteDiet
+ * 
  */
 router.post('/deleteDiet', async (req, res) => {
     try {
@@ -104,7 +104,7 @@ router.get('/getCondition', async (req, res) => {
 
 /**
  * [삭제] 컨디션 기록 삭제 (초기화)
- * POST /main/deleteCondition
+ * 
  */
 router.post('/deleteCondition', async (req, res) => {
     try {
@@ -171,14 +171,14 @@ router.post('/saveCondition', async (req, res) => {
  */
 router.post('/saveBowelLog', async (req, res) => {
     try {
-        // 리액트에서 아예 bowel_at 이라는 이름으로 보낸다고 가정
+
         const { user_idx, bowel_status, bowel_at } = req.body; 
 
         if (!user_idx || !bowel_status) return res.send('0');
 
         let finalAt = null;
 
-        if (bowel_at) { // 변수명이 통일되어 보기 편함
+        if (bowel_at) { 
             const now = new Date();
             const kstDate = new Date(now.getTime() + (9 * 60 * 60 * 1000));
             const dateStr = kstDate.toISOString().split('T')[0];
