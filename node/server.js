@@ -1,5 +1,5 @@
 const express = require('express');
-const setupMiddleware = require('./src/middlewares/appMiddleware');
+const setupMiddleware = require('./src/middleware/appMiddleware');
 const combinedRouter = require('./src/features/index');
 
 const app = express();
