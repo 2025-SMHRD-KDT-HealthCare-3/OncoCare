@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const conn = require('../config/database');
+const conn = require('../../../config/database');
 
 // =========================================================================
 // 1. [식단 추천] FastAPI에서 생성된 식단(레시피) 결과 수신 및 저장
