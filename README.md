@@ -38,14 +38,14 @@ npm start
 
 ---
 
-## 🐍 3. FastAPI 서버 설정 및 실행 (루트 경로)
+## 🐍 3. FastAPI 서버 설정 및 실행 (경로: `/FastAPI`)
 해당 파일로 먼저 들어간뒤 설정
 \`\`\`bash
 cd FastAPI
 \`\`\`
 
 ### 3-1. 가상 환경(Virtual Environment) 생성
-프로젝트 루트 경로 터미널에서 아래 명령어를 입력하여 독립된 파이썬 환경을 만듭니다.
+`FastAPI` 폴더 안으로 이동한 상태에서 아래 명령어를 입력하여 독립된 파이썬 환경을 만듭니다.
 \`\`\`bash
 python -m venv venv
 \`\`\`
