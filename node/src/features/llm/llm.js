@@ -173,6 +173,40 @@ router.post('/report/monthly', asyncWrap(async (req, res) => {
 }));
 
 /*
+  * [식재료 이미지 분석 결과 저장] FastAPI에서 감지한 식재료 목록 수신 및 벌크 저장
+ * POST /ai/ingredient/bulk
+ */
+router.post('/ingredient/bulk', asyncWrap(async (req, res) => {
+    const { user_idx, ingredients } = req.body;
+
+    console.log(`[FastAPI -> Node] 감지된 식재료 목록 수신 (User: ${user_idx}, 개수: ${ingredients ? ingredients.length : 0})`);
+
+    if (!user_idx || !ingredients || !Array.isArray(ingredients)) {
+        throw new Error("식재료 저장에 필요한 데이터가 누락되었습니다.");
+    }
+
+    if (ingredients.length === 0) {
+        return res.json({ success: true, message: "저장할 식재료가 없습니다.", inserted_ids: [] });
+    }
+
+    const sql = `
+        INSERT INTO t_ingredient 
+        (user_idx, ingre_name, ingre_type, ingre_storage, cnt)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+
+    const insertedIds = [];
+    for (const item of ingredients) {
+        const [result] = await conn.query(sql, [
+            user_idx, item.ingre_name, item.ingre_type, item.ingre_storage, item.cnt
+        ]);
+        insertedIds.push(result.insertId);
+    }
+
+    res.json({ success: true, message: `${ingredients.length}개의 식재료가 성공적으로 저장되었습니다.`, inserted_ids: insertedIds });
+}));
+
+/*
  * [식단 추천용 데이터 제공] FastAPI가 건강 프로필 & 냉장고 재고를 가져감
  * GET /ai/data/for-diet?user_idx=1
  */

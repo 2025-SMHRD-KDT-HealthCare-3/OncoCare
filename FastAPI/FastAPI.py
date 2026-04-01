@@ -1,23 +1,23 @@
 import os
 import json
 import httpx
+import cv2
+import numpy as np
 from datetime import datetime
 
 # FastAPI 관련
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI, BackgroundTasks, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List
 
-# 스케줄러 관련 (필요시 사용)
-from apscheduler.schedulers.background import BackgroundScheduler
-
-# LangChain 관련
+# LangChain 및 AI 모델 관련
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_community.callbacks.manager import get_openai_callback
+from ultralytics import YOLO
 # 기존 모듈 임포트 아래에 추가
 from vector_search import get_relevant_medical_guides # 외부 파일에서 검색 함수 불러오기
 
@@ -35,7 +35,6 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
-scheduler = BackgroundScheduler()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 NODE_SERVER_URL = os.getenv("NODE_SERVER_URL", "http://localhost:3000/ai")
@@ -230,6 +229,79 @@ monthly_prompt = PromptTemplate(
 )
 monthly_chain = monthly_prompt | llm | monthly_parser
 
+# -------------------------------------------------------------------------
+# [2-5] 식재료 이미지 분석 (YOLO Vision)
+# -------------------------------------------------------------------------
+# YOLO 모델 로드 (서버 시작 시 메모리에 1번만 로드)
+# 💡 직접 학습시킨 식재료 탐지 모델이 있다면 'yolov8n.pt' 대신 'best.pt' 등으로 경로를 수정하세요.
+try:
+    yolo_model = YOLO("yolov8n.pt")
+except Exception as e:
+    print(f"YOLO 모델 로드 실패: {e}")
+    yolo_model = None
+
+# YOLO 영문 클래스명을 한글 DB 스키마에 맞게 매핑하는 사전 (원하시는 대로 커스텀하세요)
+CLASS_MAPPING = {
+    # 🍎 과일 / 견과
+    "apple": {"name": "사과", "type": "과일", "storage": "냉장"},
+    "strawberry": {"name": "딸기", "type": "과일", "storage": "냉장"},
+    "banana": {"name": "바나나", "type": "과일", "storage": "실온"},
+    "pear_raw": {"name": "배", "type": "과일", "storage": "냉장"},
+    "tomato": {"name": "토마토", "type": "채소", "storage": "냉장"},
+    "almond": {"name": "아몬드", "type": "기타", "storage": "실온"},
+    "walnut": {"name": "호두", "type": "기타", "storage": "실온"},
+    "peanut_raw": {"name": "땅콩", "type": "기타", "storage": "실온"},
+    
+    # 🥬 채소
+    "eggplant": {"name": "가지", "type": "채소", "storage": "냉장"},
+    "garlic": {"name": "마늘", "type": "채소", "storage": "실온"},
+    "garlic chives": {"name": "부추", "type": "채소", "storage": "냉장"},
+    "napa cabbage": {"name": "배추", "type": "채소", "storage": "냉장"},
+    "oyster mushroom": {"name": "느타리버섯", "type": "채소", "storage": "냉장"},
+    "perilla leaves": {"name": "깻잎", "type": "채소", "storage": "냉장"},
+    "shiitake mushroom": {"name": "표고버섯", "type": "채소", "storage": "냉장"},
+    "green_chili_pepper": {"name": "청양고추", "type": "채소", "storage": "냉장"},
+    "red_cabbage": {"name": "적양배추", "type": "채소", "storage": "냉장"},
+    "red_chili_pepper": {"name": "홍고추", "type": "채소", "storage": "냉장"},
+    "bell pepper": {"name": "파프리카", "type": "채소", "storage": "냉장"},
+    "carrot": {"name": "당근", "type": "채소", "storage": "냉장"},
+    "green onion": {"name": "대파", "type": "채소", "storage": "냉장"},
+    "kabocha_squash": {"name": "단호박", "type": "채소", "storage": "실온"},
+    "bokchoy": {"name": "청경채", "type": "채소", "storage": "냉장"},
+    "broccoli": {"name": "브로콜리", "type": "채소", "storage": "냉장"},
+    "chicory": {"name": "치커리", "type": "채소", "storage": "냉장"},
+    "daikon_radish": {"name": "무", "type": "채소", "storage": "냉장"},
+    "deodeokroot": {"name": "더덕", "type": "채소", "storage": "냉장"},
+    "ginger_raw": {"name": "생강", "type": "채소", "storage": "냉장"},
+    "mallow_leaves_raw": {"name": "아욱", "type": "채소", "storage": "냉장"},
+    "mung_bean_sprouts_raw": {"name": "숙주나물", "type": "채소", "storage": "냉장"},
+    "spinach": {"name": "시금치", "type": "채소", "storage": "냉장"},
+    "tofdeodeok_root": {"name": "더덕", "type": "채소", "storage": "냉장"},
+    
+    # 🥩 육류 / 해산물
+    "beef": {"name": "소고기", "type": "육류", "storage": "냉동"},
+    "chicken": {"name": "닭고기", "type": "육류", "storage": "냉동"},
+    "pork": {"name": "돼지고기", "type": "육류", "storage": "냉동"},
+    "abalone": {"name": "전복", "type": "해산물", "storage": "냉동"},
+    "crab_meat": {"name": "게맛살", "type": "해산물", "storage": "냉장"},
+    "cutlassfish": {"name": "갈치", "type": "해산물", "storage": "냉동"},
+    "fish": {"name": "생선", "type": "해산물", "storage": "냉동"},
+    "pollack roe": {"name": "명란젓", "type": "해산물", "storage": "냉장"},
+    "shellfish": {"name": "조개", "type": "해산물", "storage": "냉장"},
+    "shrimp": {"name": "새우", "type": "해산물", "storage": "냉동"},
+    
+    # 🥛 유제품 / 곡류 / 기타
+    "butter": {"name": "버터", "type": "유제품", "storage": "냉장"},
+    "cheese": {"name": "치즈", "type": "유제품", "storage": "냉장"},
+    "milk": {"name": "우유", "type": "유제품", "storage": "냉장"},
+    "egg": {"name": "계란", "type": "기타", "storage": "냉장"},
+    "mung bean": {"name": "녹두", "type": "곡류", "storage": "실온"},
+    "black_bean": {"name": "검은콩", "type": "곡류", "storage": "실온"},
+    "sesame seeds": {"name": "참깨", "type": "양념/소스", "storage": "실온"},
+    "tofu_raw": {"name": "두부", "type": "기타", "storage": "냉장"},
+    
+    "default": {"name": "미분류 식재료", "type": "기타", "storage": "냉장"}
+}
 
 # =========================================================================
 # 🚀 3. API 라우터 (엔드포인트)
@@ -453,3 +525,58 @@ async def generate_monthly_report(user_idx: int, month: int, background_tasks: B
 
     background_tasks.add_task(process_monthly, user_idx, month)
     return {"success": True, "message": f"User {user_idx}의 {month}월 월간 레포트 생성이 시작되었습니다."}
+
+# --- 식재료 사진 분석 (YOLO) ---
+@app.post("/analyze-fridge-image/{user_idx}")
+async def analyze_fridge_image(user_idx: int, file: UploadFile = File(...)):
+    try:
+        print(f"\n[식재료 이미지 분석] User {user_idx} 이미지 수신 완료: {file.filename}")
+        
+        if yolo_model is None:
+            return {"success": False, "message": "YOLO 모델이 로드되지 않아 분석할 수 없습니다."}
+
+        image_bytes = await file.read()
+        # 바이트 배열을 numpy 배열로 변환 후 OpenCV 이미지로 디코딩
+        nparr = np.frombuffer(image_bytes, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        
+        print("[AI 분석 중...] YOLO 모델로 식재료 탐지 중...")
+        # YOLO 추론 (conf=0.25는 25% 이상 확신하는 객체만 감지한다는 뜻입니다)
+        results = yolo_model(img, conf=0.25)
+        
+        # 탐지된 객체 카운팅 (딕셔너리에 누적)
+        detected_counts = {}
+        for r in results:
+            for box in r.boxes:
+                cls_id = int(box.cls[0])
+                class_name = yolo_model.names[cls_id]
+                detected_counts[class_name] = detected_counts.get(class_name, 0) + 1
+                
+        # Node.js 서버로 보낼 배열 조립
+        ingredients = []
+        for name, count in detected_counts.items():
+            # 클래스명 매핑 (사전에 없으면 default 값 사용)
+            mapping_info = CLASS_MAPPING.get(name.lower(), CLASS_MAPPING["default"])
+            
+            ingredients.append({
+                "ingre_name": mapping_info["name"] if mapping_info["name"] != "미분류 식재료" else name,
+                "ingre_type": mapping_info["type"],
+                "ingre_storage": mapping_info["storage"],
+                "cnt": float(count)
+            })
+            
+        print(f"[추출 완료] {len(ingredients)}종류의 식재료 감지됨: {detected_counts}")
+        
+        if len(ingredients) > 0:
+            # Node.js로 한 번에 저장하도록 벌크 전송
+            async with httpx.AsyncClient() as client:
+                payload = { "user_idx": user_idx, "ingredients": ingredients }
+                post_res = await client.post(f"{NODE_SERVER_URL}/ingredient/bulk", json=payload)
+                post_res.raise_for_status()
+                print(f"저장 결과: {post_res.json()}")
+                
+        return {"success": True, "message": f"{len(ingredients)}종류의 식재료가 감지되어 저장되었습니다.", "ingredients": ingredients}
+        
+    except Exception as e:
+        print(f"식재료 이미지 분석 중 에러 발생: {e}")
+        return {"success": False, "message": "이미지 분석 중 오류가 발생했습니다."}
