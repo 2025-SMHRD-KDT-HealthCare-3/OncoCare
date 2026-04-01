@@ -3,16 +3,16 @@ import axios from 'axios'
 import './MainRecipe.css'
 
 const categoryImageMap = {
-  '죽/스프': '/images/categories/porridge.jpg',
-  '밥류': '/images/categories/rice.jpg',
-  '국/탕류': '/images/categories/soup.jpg',
-  '반찬류': '/images/categories/side.jpg',
-  '면류': '/images/categories/noodle.jpg',
-  '단백질요리': '/images/categories/protein.jpg',
-  '샐러드': '/images/categories/salad.jpg',
-  '과일': '/images/categories/fruit.jpg',
-  '간식': '/images/categories/snack.jpg',
-  '음료': '/images/categories/drink.jpg',
+  '죽/스프':    'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&q=80',
+  '밥류':       'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&q=80',
+  '국/탕류':    'https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=80',
+  '반찬류':     'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=600&q=80',
+  '면류':       'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600&q=80',
+  '단백질요리': 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=600&q=80',
+  '샐러드':     'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80',
+  '과일':       'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=600&q=80',
+  '간식':       'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80',
+  '음료':       'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80',
 }
 
 const categoryBadge = {
