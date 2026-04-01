@@ -10,10 +10,13 @@ const bcrypt = require('bcrypt');
 const asyncWrap = require('../../middleware/asyncWrap');
 const saltRounds = 10; 
 
-// [이메일 중복 체크]
+/*
+ * [이메일 중복 체크]
+ */
 router.post('/emailCheck', asyncWrap(async (req, res) => {
     const { email } = req.body;
     
+
     if (!email) {
         const error = new Error("이메일을 입력해주세요.");
         error.status = 400;
@@ -25,11 +28,13 @@ router.post('/emailCheck', asyncWrap(async (req, res) => {
     res.send(results[0].count === 0 ? '1' : '0');
 }));
 
-// [회원가입]
+
+/*
+ * [회원가입]
+ */
 router.post('/register', asyncWrap(async (req, res) => {
     const { email, password, name } = req.body;
 
-    // 필수 정보 누락 시 400 에러
     if (!email || !password || !name) {
         const error = new Error("이메일, 비밀번호, 이름은 필수 입력 사항입니다.");
         error.status = 400;
@@ -46,7 +51,9 @@ router.post('/register', asyncWrap(async (req, res) => {
     res.send('1');
 }));
 
-// [로그인]
+/*
+ * [로그인]
+ */
 router.post('/login', asyncWrap(async (req, res, next) => {
     const { id, pw } = req.body; 
 
