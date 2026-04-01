@@ -81,58 +81,53 @@ router.post('/deleteBowelLog', async (req, res) => {
     }
 });
 
+
 /**
  * [조회] 오늘의 컨디션 조회
- *
  */
-router.get('/getCondition', async (req, res) => {
+router.get('/getCondition', async (req, res, next) => {
     try {
         const { user_idx, date } = req.query;
         const sql = `
             SELECT 
                 condition_idx, condition_score, water_intake, 
-                stomach_pain, stomach_score
+                stomach_pain, stomach_score, sleep_score
             FROM t_condition
             WHERE user_idx = ? AND DATE(created_at) = ?
         `;
         const [results] = await conn.query(sql, [user_idx, date]);
         res.json(results[0] || {});
     } catch (err) {
-        res.status(500).send('0');
+        next(err); 
     }
 });
 
 /**
  * [삭제] 컨디션 기록 삭제 (초기화)
- * 
  */
-router.post('/deleteCondition', async (req, res) => {
+router.post('/deleteCondition', async (req, res, next) => {
     try {
         const { condition_idx } = req.body;
         const sql = `DELETE FROM t_condition WHERE condition_idx = ?`;
         await conn.query(sql, [condition_idx]);
         res.send('1');
     } catch (err) {
-        res.send('0');
+        next(err);
     }
 });
 
-
-
-
 /**
- * 10. 일일 기록 저장 및 수정 (userDailySave)
+ * [저장/수정] 일일 컨디션 및 수분, 수면 점수 저장
  */
-
-/*
- * 일일 컨디션 및 수분 섭취 저장/수정
- */
-router.post('/saveCondition', async (req, res) => {
+router.post('/saveCondition', async (req, res, next) => {
     try {
-        const { user_idx, condition_score, water_intake, stomach_pain, pain_level } = req.body;
+        const { 
+            user_idx, condition_score, sleep_score, 
+            water_intake, stomach_pain, pain_level 
+        } = req.body;
 
         const finalStomachScore = (stomach_pain === 'N') ? 0 : (pain_level || 0);
-
+        
         const checkSql = `
             SELECT condition_idx FROM t_condition 
             WHERE user_idx = ? AND DATE(created_at) = CURDATE()
@@ -145,24 +140,39 @@ router.post('/saveCondition', async (req, res) => {
                     condition_score = ?, 
                     water_intake = ?, 
                     stomach_pain = ?, 
-                    stomach_score = ?
+                    stomach_score = ?,
+                    sleep_score = ?
                 WHERE condition_idx = ?
             `;
             await conn.query(updateSql, [
-                condition_score, water_intake, stomach_pain, finalStomachScore, existing[0].condition_idx
+                condition_score || 0, 
+                water_intake || 0, 
+                stomach_pain || 'N', 
+                finalStomachScore, 
+                sleep_score || 0,
+                existing[0].condition_idx
             ]);
         } else {
             const insertSql = `
-                INSERT INTO t_condition (user_idx, condition_score, water_intake, stomach_pain, stomach_score, created_at)
-                VALUES (?, ?, ?, ?, ?, NOW())
+                INSERT INTO t_condition (
+                    user_idx, condition_score, water_intake, 
+                    stomach_pain, stomach_score, sleep_score, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, NOW())
             `;
-            await conn.query(insertSql, [user_idx, condition_score, water_intake, stomach_pain, finalStomachScore]);
+            await conn.query(insertSql, [
+                user_idx, 
+                condition_score || 0, 
+                water_intake || 0, 
+                stomach_pain || 'N', 
+                finalStomachScore, 
+                sleep_score || 0
+            ]);
         }
 
         res.send('1');
     } catch (err) {
         console.error("컨디션 저장 에러:", err);
-        res.send('0');
+        next(err); 
     }
 });
 

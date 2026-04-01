@@ -51,4 +51,24 @@ app.use('/daily', userDailyRouter);
 app.use('/report', reportRouter);
 app.use('/api', llmRouter);
 
+/**
+ * [전역 에러 핸들러]
+ * 
+ */
+app.use((err, req, res, next) => {
+    console.error("----- [ERROR DETECTED] -----");
+    console.error("경로:", req.method, req.url);
+    console.error("내용:", err.message);
+    console.error("위치:", err.stack);
+    console.error("----------------------------");
+
+    const statusCode = err.status || 500;
+
+    res.status(statusCode).json({
+        result: '0', 
+        message: err.message || "서버 내부 오류가 발생했습니다."
+    });
+});
+
+
 app.listen(3000);
