@@ -4,11 +4,11 @@
 
 ## 🟩 1. Node.js 서버 설정 및 실행 (경로: `oncocare/node`)
 
-Node.js 서버는 `oncocare/node` 폴더 내에 위치해 있습니다. 새로운 터미널을 열고 아래 순서대로 진행해 주세요.
+Node.js 서버는 `/node` 폴더 내에 위치해 있습니다. 새로운 터미널을 열고 아래 순서대로 진행해 주세요.
 
 ### 1-1. 폴더 이동 및 패키지 설치
 \`\`\`bash
-cd oncocare/node
+cd node
 npm install
 \`\`\`
 
@@ -22,11 +22,11 @@ npm start
 
 ## ⚛️ 2. React 프론트엔드 설정 및 실행 (경로: `oncocare`)
 
-React 프론트엔드는 `oncocare` 폴더 내에 위치해 있습니다. 새로운 터미널을 열고 아래 순서대로 진행해 주세요.
+React 프론트엔드는 `/Front-React` 폴더 내에 위치해 있습니다. 새로운 터미널을 열고 아래 순서대로 진행해 주세요.
 
 ### 2-1. 폴더 이동 및 패키지 설치
 \`\`\`bash
-cd oncocare
+cd Front-React
 npm install
 \`\`\`
 
@@ -39,6 +39,10 @@ npm start
 ---
 
 ## 🐍 3. FastAPI 서버 설정 및 실행 (루트 경로)
+해당 파일로 먼저 들어간뒤 설정
+\`\`\`bash
+cd FastAPI
+\`\`\`
 
 ### 3-1. 가상 환경(Virtual Environment) 생성
 프로젝트 루트 경로 터미널에서 아래 명령어를 입력하여 독립된 파이썬 환경을 만듭니다.
