@@ -30,3 +30,8 @@ dist-ssr
 venv/
 __pycache__/
 *.pyc
+
+# FastAPI 원본 데이터 및 벡터 DB 무시
+FastAPI/data/
+chroma_db/
+*.sqlite3
