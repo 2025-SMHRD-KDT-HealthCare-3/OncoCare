@@ -1,4 +1,5 @@
 import os
+import glob
 from dotenv import load_dotenv # 💡 추가됨: 환경 변수 로드 모듈
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -25,36 +26,68 @@ def init_vector_db():
     if vector_store is not None:
         return
 
-    print("📚 [Vector DB] 대장암 영양 가이드 문서 로드 중...")
+    persist_dir = os.path.join(os.path.dirname(__file__), "chroma_db")
+    
+    # 이미 만들어진 벡터 DB가 있으면 디스크에서 불러옵니다 (API 비용 및 시간 절약)
+    if os.path.exists(persist_dir) and os.listdir(persist_dir):
+        print("📚 [Vector DB] 기존에 저장된 로컬 Chroma DB를 불러옵니다...")
+        vector_store = Chroma(persist_directory=persist_dir, embedding_function=embeddings)
+        print("✅ [Vector DB] 로드 완료!")
+        return
+
+    print("📚 [Vector DB] 대장암 영양 가이드 문서 로드 및 새로운 벡터 DB 생성 중...")
     
     docs = []
-    # 상대경로 : FastAPIdata\canner_knowlege.txt, FastAPIdata\canner_knowlege.txt 파일이 폴더에 있는지 확인하고 로드합니다.
-    # 수정 필요
-    for file_name in ["1.txt", "2.txt"]:
-        if os.path.exists(file_name):
-            try:
-                # 텍스트 파일 읽기 (인코딩 에러 방지용 utf-8)
-                loader = TextLoader(file_name, encoding="utf-8")
-                docs.extend(loader.load())
-                print(f" - {file_name} 로드 성공")
-            except Exception as e:
-                print(f" - {file_name} 로드 에러: {e}")
-        else:
-            print(f" - ⚠️ {file_name} 파일이 없습니다. (나중에 추가해주세요)")
+    data_dir = os.path.join(os.path.dirname(__file__), "data")
+    
+    # data 폴더 안의 모든 .txt 파일 찾기
+    txt_files = glob.glob(os.path.join(data_dir, "*.txt"))
+    
+    if not txt_files:
+        print(f"⚠️ {data_dir} 폴더에 로드할 .txt 파일이 없습니다.")
+        return
             
-    # 파일이 하나도 없으면 그냥 종료 (에러 방지)
+    for file_path in txt_files:
+        try:
+            loader = TextLoader(file_path, encoding="utf-8")
+            docs.extend(loader.load())
+            print(f" - {os.path.basename(file_path)} 로드 성공")
+        except Exception as e:
+            try:
+                # UTF-8 로드 실패 시 Windows 기본 인코딩(CP949)으로 재시도
+                loader = TextLoader(file_path, encoding="cp949")
+                docs.extend(loader.load())
+                print(f" - {os.path.basename(file_path)} 로드 성공 (CP949)")
+            except Exception as e2:
+                print(f" - {os.path.basename(file_path)} 로드 에러: {e2}")
+
     if not docs:
         print("⚠️ 로드할 문서가 없어 벡터 DB를 비워둡니다.")
         return
 
-    # 문서를 500글자씩 쪼개기 (문맥 유지를 위해 50글자씩 겹치게 설정)
-    # 레시피 떄문에 글자수 더 늘려야 될지도
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    # 문서를 1000글자씩 쪼개기 (문맥과 레시피를 충분히 담기 위해 크기 증가)
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=2000,
+        chunk_overlap=200,
+        separators=[
+            "\n제",                  # 지식 문서의 "제1장", "제2장" 등을 분리 (예시)
+            "\nQ.",                  # 질의응답 형태가 있다면 분리 (예시)
+            "\n==================",  # 요리닥터 레시피 구분선
+            "\n레시피 이름 :",         # 식사 가이드 레시피 구분선
+            "\n\n",                  # 일반 문단
+            "\n",                    # 줄바꿈
+            " "
+        ]
+    )   
     splits = text_splitter.split_documents(docs)
     
-    # 쪼갠 문서를 ChromaDB에 임베딩하여 저장 (메모리상에 띄움)
-    vector_store = Chroma.from_documents(documents=splits, embedding=embeddings)
-    print("✅ [Vector DB] 임베딩 및 로드 완료!")
+    # 쪼갠 문서를 ChromaDB에 임베딩하여 로컬 폴더(chroma_db)에 저장
+    vector_store = Chroma.from_documents(
+        documents=splits, 
+        embedding=embeddings,
+        persist_directory=persist_dir
+    )
+    print("✅ [Vector DB] 임베딩 및 디스크 저장 완료!")
 
 async def get_relevant_medical_guides(health_profile: dict, ingredients: list) -> str:
     """환자 상태와 재료를 바탕으로 가장 연관성 높은 문서를 찾아옵니다."""
@@ -89,3 +122,7 @@ async def get_relevant_medical_guides(health_profile: dict, ingredients: list) -
     except Exception as e:
         print(f"벡터 검색 중 에러: {e}")
         return "의학 가이드 검색에 실패했습니다."
+
+# 💡 [추가됨] 이 스크립트를 직접 실행하면 서버를 켜지 않고도 즉시 벡터 DB를 생성합니다.
+if __name__ == "__main__":
+    init_vector_db()
