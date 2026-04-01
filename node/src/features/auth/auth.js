@@ -82,4 +82,30 @@ router.post('/login', asyncWrap(async (req, res, next) => {
     }
 }));
 
+/*
+ * [유저 정보 조회 - 수정 모드 pre-fill용]
+ */
+router.get('/profile', asyncWrap(async (req, res) => {
+    const { user_idx } = req.query;
+
+    if (!user_idx) {
+        const err = new Error("사용자 식별 번호가 필요합니다.");
+        err.status = 400;
+        throw err;
+    }
+
+    const sql = `
+        SELECT id AS email, name, phone, gender, DATE_FORMAT(birthdate, '%Y-%m-%d') as birth 
+        FROM t_user 
+        WHERE user_idx = ?
+    `;
+    const [results] = await conn.query(sql, [user_idx]);
+
+    if (results.length === 0) {
+        res.json({ result: '0' }); 
+    } else {
+        res.json(results[0]);
+    }
+}));
+
 module.exports = router;
