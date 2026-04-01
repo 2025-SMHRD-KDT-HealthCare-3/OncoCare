@@ -171,22 +171,13 @@ const DailyReportBody = ({ date }) => {
   }
 
   return (
-    <div className='main-content'>
-      <div className='daily-body'>
+    <div className="daily-log-container">
+      <div className="daily-log-left">
         <DailyDiet
           selectedDiets={selectedDiets}
           setSelectedDiets={setSelectedDiets}
           savedDietFeedbacks={savedDietFeedbacks}
           onSave={handleDietSave}
-        />
-        <DailyBowel
-          defecationTime={defecationTime}
-          setDefecationTime={setDefecationTime}
-          defecationType={defecationType}
-          setDefecationType={setDefecationType}
-          bowelList={bowelList}
-          onSave={handleBowelSave}
-          onDelete={handleBowelDelete}
         />
         <DailyCondition
           condition={condition}
@@ -201,6 +192,17 @@ const DailyReportBody = ({ date }) => {
           setPainLevel={setPainLevel}
           conditionData={conditionData}
           onSave={handleConditionSave}
+        />
+      </div>
+      <div className="daily-log-right">
+        <DailyBowel
+          defecationTime={defecationTime}
+          setDefecationTime={setDefecationTime}
+          defecationType={defecationType}
+          setDefecationType={setDefecationType}
+          bowelList={bowelList}
+          onSave={handleBowelSave}
+          onDelete={handleBowelDelete}
         />
       </div>
     </div>
