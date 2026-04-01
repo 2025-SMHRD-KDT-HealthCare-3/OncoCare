@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const conn = require('../config/database');
+const conn = require('../../../config/database');
 
 // =========================================================================
 // 1. [식단 추천] FastAPI에서 생성된 식단(레시피) 결과 수신 및 저장
@@ -9,40 +9,58 @@ const conn = require('../config/database');
 router.post('/diet', async (req, res) => {
     try {
         // t_recipe 테이블 스키마에 맞춰 FastAPI에서 보내주는 데이터 수신
-        const { 
-            user_idx, 
-            recipe_name, 
-            cooking_method, 
-            nutrition_info, 
-            recipe_category 
-        } = req.body;
+        const { user_idx, recipes, missing_ingredients } = req.body;
 
-        console.log(`[FastAPI -> Node] 레시피 수신 (User: ${user_idx}, Recipe: ${recipe_name})`);
+        console.log(`[FastAPI -> Node] 레시피 목록 수신 (User: ${user_idx}, 개수: ${recipes ? recipes.length : 0})`);
 
         // 유효성 검사 (필수 값이 다 들어왔는지 체크)
-        if (!user_idx || !recipe_name || !cooking_method || !nutrition_info || !recipe_category) {
+        if (!user_idx || !recipes || !Array.isArray(recipes) || recipes.length === 0) {
             return res.status(400).json({ success: false, message: "레시피 저장에 필요한 데이터가 누락되었습니다." });
         }
 
         const sql = `
             INSERT INTO t_recipe 
-            (user_idx, recipe_name, cooking_method, nutrition_info, recipe_category)
-            VALUES (?, ?, ?, ?, ?)
+            (user_idx, recipe_name, main_ingredients, cooking_method, nutrition_info, recipe_category)
+            VALUES (?, ?, ?, ?, ?, ?)
         `;
         
-        // DB에 INSERT 실행
-        const [result] = await conn.query(sql, [
-            user_idx, 
-            recipe_name, 
-            cooking_method, 
-            nutrition_info, 
-            recipe_category
-        ]);
+        // 💡 배열로 받은 7개의 레시피를 순회하며 DB에 모두 저장
+        const insertedIds = [];
+        for (const recipe of recipes) {
+            const [result] = await conn.query(sql, [
+                user_idx, 
+                recipe.recipe_name, 
+                recipe.main_ingredients,
+                recipe.cooking_method, 
+                recipe.nutrition_info, 
+                recipe.recipe_category
+            ]);
+            insertedIds.push(result.insertId);
+        }
+
+        // 💡 [추가] 부족한 식재료 안내 메시지가 있다면 t_alert 테이블에 알림으로 저장
+        if (missing_ingredients && missing_ingredients.trim() !== "") {
+            const alertSql = `
+                INSERT INTO t_alert
+                (user_idx, alert_type, alert_msg, sent_at, received_at)
+                VALUES (?, ?, ?, ?, ?)
+            `;
+            const now = new Date();
+            await conn.query(alertSql, [
+                user_idx,
+                '부족한 식재료',       // 알림 유형
+                missing_ingredients, // 알림 메시지
+                now,                 // 발신 시간
+                now                  // 수신 시간 (즉시 수신으로 가정)
+            ]);
+            console.log(`[알림 저장 완료] User ${user_idx}에게 부족한 식재료 알림을 저장했습니다.`);
+        }
 
         res.json({ 
             success: true, 
-            message: "추천 레시피가 성공적으로 저장되었습니다.",
-            recipe_idx: result.insertId // 방금 생성된 레시피의 식별자(PK)를 반환해주면 유용합니다.
+            message: "7개의 추천 레시피가 성공적으로 저장되었습니다.",
+            missing_ingredients: missing_ingredients, // 💡 AI가 파악한 부족한 식재료 안내 메시지 전달
+            recipe_idxs: insertedIds // 생성된 7개 레시피의 PK 배열 반환
         });
 
     } catch (err) {
@@ -58,8 +76,8 @@ router.post('/diet', async (req, res) => {
 router.post('/report/daily', async (req, res) => {
     try {
         const { 
-            user_idx, report_date, report_score, report_diet, 
-            report_bowel, report_condition, report_comment 
+            user_idx, report_date, report_score, 
+            report_diet, report_bowel, report_condition, report_comment 
         } = req.body;
 
         console.log(`[FastAPI -> Node] 일일 레포트 수신 (User: ${user_idx}, Date: ${report_date})`);
@@ -77,8 +95,8 @@ router.post('/report/daily', async (req, res) => {
         `;
 
         await conn.query(sql, [
-            user_idx, report_date, report_score, report_diet, 
-            report_bowel, report_condition, report_comment
+            user_idx, report_date, report_score, 
+            report_diet, report_bowel, report_condition, report_comment
         ]);
 
         res.json({ success: true, message: "일일 레포트 저장 완료" });
@@ -96,27 +114,32 @@ router.post('/report/weekly', async (req, res) => {
     try {
         const { 
             user_idx, start_date, end_date, report_week_label, 
-            report_title, report_score, report_diet, report_bowel, report_condition 
+            report_title, report_score, report_score_list, report_score_list_comment,
+            report_diet, report_bowel, report_condition, report_comment
         } = req.body;
 
         console.log(`[FastAPI -> Node] 주간 레포트 수신 (User: ${user_idx}, Start: ${start_date})`);
 
         const sql = `
             INSERT INTO t_weekly_report 
-            (user_idx, start_date, end_date, report_week_label, report_title, report_score, report_diet, report_bowel, report_condition)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (user_idx, start_date, end_date, report_week_label, report_title, report_score, report_score_list, report_score_list_comment, report_diet, report_bowel, report_condition, report_comment)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
             report_week_label = VALUES(report_week_label),
             report_title = VALUES(report_title),
             report_score = VALUES(report_score),
+            report_score_list = VALUES(report_score_list),
+            report_score_list_comment = VALUES(report_score_list_comment),
             report_diet = VALUES(report_diet),
             report_bowel = VALUES(report_bowel),
-            report_condition = VALUES(report_condition)
+            report_condition = VALUES(report_condition),
+            report_comment = VALUES(report_comment)
         `;
 
         await conn.query(sql, [
             user_idx, start_date, end_date, report_week_label, report_title, 
-            report_score, report_diet, report_bowel, report_condition
+            report_score, report_score_list, report_score_list_comment,
+            report_diet, report_bowel, report_condition, report_comment
         ]);
 
         res.json({ success: true, message: "주간 레포트 저장 완료" });
@@ -133,18 +156,23 @@ router.post('/report/weekly', async (req, res) => {
 router.post('/report/monthly', async (req, res) => {
     try {
         const { 
-            user_idx, report_month, report_score, report_diet, 
-            report_bowel, report_condition, report_comment 
+            user_idx, report_month, report_week_label, report_title,
+            report_score, report_score_list, report_score_list_comment, 
+            report_diet, report_bowel, report_condition, report_comment 
         } = req.body;
 
         console.log(`[FastAPI -> Node] 월간 레포트 수신 (User: ${user_idx}, Month: ${report_month})`);
 
         const sql = `
             INSERT INTO t_monthly_report 
-            (user_idx, report_month, report_score, report_diet, report_bowel, report_condition, report_comment)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (user_idx, report_month, report_week_label, report_title, report_score, report_score_list, report_score_list_comment, report_diet, report_bowel, report_condition, report_comment)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
+            report_week_label = VALUES(report_week_label),
+            report_title = VALUES(report_title),
             report_score = VALUES(report_score),
+            report_score_list = VALUES(report_score_list),
+            report_score_list_comment = VALUES(report_score_list_comment),
             report_diet = VALUES(report_diet),
             report_bowel = VALUES(report_bowel),
             report_condition = VALUES(report_condition),
@@ -152,8 +180,9 @@ router.post('/report/monthly', async (req, res) => {
         `;
 
         await conn.query(sql, [
-            user_idx, report_month, report_score, report_diet, 
-            report_bowel, report_condition, report_comment
+            user_idx, report_month, report_week_label, report_title,
+            report_score, report_score_list, report_score_list_comment, 
+            report_diet, report_bowel, report_condition, report_comment
         ]);
 
         res.json({ success: true, message: "월간 레포트 저장 완료" });
@@ -175,7 +204,7 @@ router.get('/for-diet', async (req, res) => {
         // 1-1. 등록된 건강 프로필 1건 조회
         const profileSql = `
             SELECT height, weight, cancer_stage, surgery_date, discharge_date, 
-                   stoma_status, chemo_status, alergy, meals_per_day 
+                   stoma_status, chemo_status, allergy, meals_per_day 
             FROM t_health_profile 
             WHERE user_idx = ? 
         `;
@@ -189,10 +218,35 @@ router.get('/for-diet', async (req, res) => {
         `;
         const [ingredientRows] = await conn.query(ingredientSql, [user_idx]);
 
+        // 1-3. 어제의 컨디션 및 식단 피드백(평점) 조회 추가
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const y_year = yesterday.getFullYear();
+        const y_month = String(yesterday.getMonth() + 1).padStart(2, '0');
+        const y_day = String(yesterday.getDate()).padStart(2, '0');
+        const yesterday_str = `${y_year}-${y_month}-${y_day}`;
+
+        const condSql = `
+            SELECT condition_score, sleep_score, water_intake, stomach_pain 
+            FROM t_condition 
+            WHERE user_idx = ? AND DATE(created_at) = ?
+        `;
+        const [condRows] = await conn.query(condSql, [user_idx, yesterday_str]);
+
+        const dietSql = `
+            SELECT d.diet_feedback, d.diet_rating, r.recipe_name, r.main_ingredients, r.cooking_method
+            FROM t_diet d
+            JOIN t_recipe r ON d.recipe_idx = r.recipe_idx
+            WHERE d.user_idx = ? AND ? BETWEEN d.select_date AND d.end_date
+        `;
+        const [dietRows] = await conn.query(dietSql, [user_idx, yesterday_str]);
+
         res.json({
             success: true,
             health_profile: profileRows.length > 0 ? profileRows[0] : null,
-            ingredients: ingredientRows
+            ingredients: ingredientRows,
+            yesterday_condition: condRows.length > 0 ? condRows[0] : null,
+            yesterday_diet: dietRows
         });
 
     } catch (err) {
@@ -222,7 +276,7 @@ router.get('/for-report', async (req, res) => {
 
         // 2-2. 당일 배변 기록 조회 (하루에 여러 번 할 수 있으므로 전체 목록)
         const bowelSql = `
-            SELECT bowel_status, TIME(created_at) as bowel_time
+            SELECT bowel_status, bowel_at as bowel_time
             FROM t_bowel_log 
             WHERE user_idx = ? AND DATE(created_at) = ?
             ORDER BY created_at ASC
@@ -233,11 +287,11 @@ router.get('/for-report', async (req, res) => {
         // start_date와 end_date 사이에 target_date가 포함되는 식단, 혹은 당일 등록된 식단
         const dietSql = `
             SELECT d.diet_feedback, d.diet_rating, 
-                   r.recipe_name, r.cooking_method, r.nutrition_info, r.recipe_category
+                   r.recipe_name, r.main_ingredients, r.cooking_method, r.nutrition_info, r.recipe_category
             FROM t_diet d
             JOIN t_recipe r ON d.recipe_idx = r.recipe_idx
             WHERE d.user_idx = ? 
-              AND ? BETWEEN d.start_date AND d.end_date
+              AND ? BETWEEN d.select_date AND d.end_date
         `;
         const [dietRows] = await conn.query(dietSql, [user_idx, target_date]);
 
