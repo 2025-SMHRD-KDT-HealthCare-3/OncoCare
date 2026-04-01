@@ -1,7 +1,6 @@
 import React from 'react'
 import Sidebar from '../public/Sidebar'
 import FridgeBody from './FridgeBody'
-import RegisterIngredient from '../public/RegisterIngredient'
 import Footer from '../public/Footer'
 
 const Fridge = () => {
@@ -10,7 +9,6 @@ const Fridge = () => {
       <Sidebar />
       <div className="page-content-area">
         <FridgeBody />
-        <RegisterIngredient />
         <Footer />
       </div>
     </div>

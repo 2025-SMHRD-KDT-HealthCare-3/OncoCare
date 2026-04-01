@@ -1,134 +1,254 @@
+/* ── 페이지 ── */
+.fr-page {
+  min-height: 100vh;
+  background: #f5f3ef;
+}
+
 /* ── 히어로 배너 ── */
-.fridge-hero {
-  background-color: #f5f5f5;
-  text-align: center;
-  padding: 100px 40px 60px;
+.fr-hero {
+  background: #1a4a2e;
+  padding: 48px 48px 52px;
+  display: flex;
+  align-items: flex-end;
 }
 
-.fridge-hero-title {
-  font-size: 48px;
+.fr-hero-text {
+  max-width: 560px;
+}
+
+.fr-hero-title {
+  font-size: 36px;
   font-weight: 800;
-  color: #111;
-  margin-bottom: 8px;
+  color: #fff;
+  margin: 0 0 10px;
+  line-height: 1.2;
 }
 
-.fridge-hero-sub {
-  font-size: 16px;
-  color: var(--text-sub);
+.fr-hero-sub {
+  font-size: 15px;
+  color: rgba(255,255,255,0.72);
+  margin: 0 0 28px;
+  line-height: 1.6;
 }
 
-/* ── 본문 영역 ── */
-.fridge-content {
-  padding: 40px 40px 60px;
-  max-width: 70%;
-  margin: 0 auto;
+.fr-hero-btns {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-/* ── 섹션 헤더 ── */
-.fridge-section-header {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 12px;
-  margin-bottom: 28px;
-}
-
-.fridge-section-title {
-  font-size: 20px;
+.fr-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-size: 15px;
   font-weight: 700;
-  color: #111;
-  margin-bottom: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.fridge-section-sub {
-  font-size: 14px;
-  color: #aaa;
+.fr-hero-btn-outline {
+  background: rgba(255,255,255,0.12);
+  border: 1.5px solid rgba(255,255,255,0.4);
+  color: #fff;
+}
+
+.fr-hero-btn-outline:hover {
+  background: rgba(255,255,255,0.22);
+}
+
+/* ── 본문 ── */
+.fr-body {
+  padding: 36px 48px 60px;
+}
+
+/* ── 인벤토리 헤더 ── */
+.fr-inventory-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.fr-inventory-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a1a1a;
   margin: 0;
 }
 
-/* ── 카드 그리드 (3열) ── */
-.fridge-grid {
+.fr-inventory-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.fr-action-icon {
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.15s;
+}
+
+.fr-action-icon:hover { color: #1a1a1a; }
+
+/* ── 카테고리 컬럼 그리드 ── */
+.fr-columns {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  margin-bottom: 48px;
 }
 
-/* ── 카드 ── */
-.fridge-card {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  padding: 16px;
+/* ── 카테고리 카드 ── */
+.fr-col-card {
+  background: #fff;
+  border: 1px solid #ece8df;
+  border-radius: 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.fridge-card-img-placeholder {
-  width: 120px;
-  height: 120px;
-  background: #e0e0e0;
-  border-radius: 8px;
+/* ── 카테고리 헤더 ── */
+.fr-col-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.fr-col-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #e8f5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-.fridge-card-info {
+.fr-col-icon { font-size: 18px; }
+
+.fr-col-name {
   flex: 1;
-}
-
-.fridge-card-name {
   font-size: 16px;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.fr-col-badge {
+  font-size: 12px;
   font-weight: 700;
-  color: #111;
-  margin-bottom: 6px;
+  color: #1a4a2e;
+  background: #e8f5e9;
+  border-radius: 999px;
+  padding: 2px 10px;
 }
 
-.fridge-card-desc {
-  font-size: 13px;
-  color: var(--text-sub);
-  margin: 0;
-  line-height: 1.5;
-}
-
-.fridge-card-desc.warning {
-  color: #e74c3c;
-  font-weight: 500;
-}
-
-.fridge-card:hover {
-  transform: translateY(-2px);
-}
-
-/* ── 식재료 입력 버튼 ── */
-.fridge-input-section {
+/* ── 아이템 목록 ── */
+.fr-item-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  align-items: center;
+  gap: 8px;
 }
 
-.fridge-input-row {
+.fr-item {
   display: flex;
   align-items: center;
-  gap: 32px;
-  width: 100%;
-  max-width: 680px;
+  gap: 12px;
+  background: #f9f7f4;
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
 }
 
-.fridge-input-icon {
-  color: #333;
+.fr-item:hover { background: #f0ede8; }
+
+.fr-item-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: #dedad4;
   flex-shrink: 0;
 }
 
-.fridge-input-btn {
+.fr-item-info {
   flex: 1;
-  background-color: #3d3d3d;
-  color: #fff;
-  font-size: 18px;
-  padding: 18px 0;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.fridge-input-btn:hover {
-  background-color: #222;
+.fr-item-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.fr-item-meta {
+  font-size: 12px;
+  color: #8a9189;
+}
+
+.fr-item-urgent {
+  font-size: 10px;
+  font-weight: 800;
+  color: #c62828;
+  background: #fce4ec;
+  border-radius: 6px;
+  padding: 3px 8px;
+  flex-shrink: 0;
+}
+
+/* ── 카테고리 추가 버튼 ── */
+.fr-col-add-btn {
+  background: none;
+  border: none;
+  color: #1a4a2e;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 0 0;
+  text-align: left;
+  transition: opacity 0.15s;
+}
+
+.fr-col-add-btn:hover { opacity: 0.7; }
+
+/* ── 빈 상태 ── */
+.fr-empty {
+  text-align: center;
+  padding: 60px 0;
+  color: #aaa;
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.fr-add-first-btn {
+  background: #1a4a2e;
   color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ── 반응형 ── */
+@media (max-width: 1100px) {
+  .fr-columns { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .fr-hero  { padding: 32px 24px 40px; }
+  .fr-body  { padding: 24px 24px 48px; }
+  .fr-columns { grid-template-columns: 1fr; }
 }

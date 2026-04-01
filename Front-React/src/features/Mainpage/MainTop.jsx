@@ -13,6 +13,9 @@ const toLocalDateString = (date) => {
   return `${yyyy}-${mm}-${dd}`
 }
 
+const getMonthLabel = (date) =>
+  date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+
 const parseSummary = (raw) => {
   if (!raw) return null
   try {
@@ -25,10 +28,24 @@ const parseSummary = (raw) => {
 const MainTop = () => {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedDateStr, setSelectedDateStr] = useState(toLocalDateString(new Date()))
+  const [activeStartDate, setActiveStartDate] = useState(new Date())
+  const [recordDates, setRecordDates] = useState(new Set())
   const [reportData, setReportData] = useState(null)
   const [loading, setLoading] = useState(false)
   const nav = useNavigate()
   const user_idx = sessionStorage.getItem('user_idx')
+
+  const handlePrevMonth = () => {
+    const d = new Date(activeStartDate)
+    d.setMonth(d.getMonth() - 1)
+    setActiveStartDate(d)
+  }
+
+  const handleNextMonth = () => {
+    const d = new Date(activeStartDate)
+    d.setMonth(d.getMonth() + 1)
+    setActiveStartDate(d)
+  }
 
   useEffect(() => {
     if (!user_idx || !selectedDateStr) return
@@ -36,7 +53,11 @@ const MainTop = () => {
     setReportData(null)
     axios.get(`http://localhost:3000/api/report/detail?day=${selectedDateStr}&user_idx=${user_idx}`)
       .then(res => {
-        setReportData(res.data && res.data !== '0' ? res.data : null)
+        const data = res.data && res.data !== '0' ? res.data : null
+        setReportData(data)
+        if (data) {
+          setRecordDates(prev => new Set([...prev, selectedDateStr]))
+        }
       })
       .catch(() => setReportData(null))
       .finally(() => setLoading(false))
@@ -59,25 +80,41 @@ const MainTop = () => {
    <section className="dashboard-top">
       <div className="dashboard-grid">
         <div className="calendar-card">
-          <div className="section-card-header">
-            <h3>Activity Calendar</h3>
+          <div className="cal-card-header">
+            <h3 className="cal-title">
+              <span className="cal-icon">📅</span> Activity Calendar
+            </h3>
+            <div className="cal-nav-controls">
+              <button className="cal-nav-btn" onClick={handlePrevMonth}>‹</button>
+              <span className="cal-nav-label">{getMonthLabel(activeStartDate)}</span>
+              <button className="cal-nav-btn" onClick={handleNextMonth}>›</button>
+            </div>
           </div>
 
           <Calendar
+            showNavigation={false}
+            activeStartDate={activeStartDate}
+            onActiveStartDateChange={({ activeStartDate: d }) => d && setActiveStartDate(d)}
             onChange={(date) => {
               setSelectedDate(date)
               setSelectedDateStr(toLocalDateString(date))
             }}
             onClickDay={(date, event) => {
               if (event.detail === 2) {
-                const dateform = toLocalDateString(date)
-                nav(`/DailyReport/${dateform}`)
+                nav(`/DailyReport/${toLocalDateString(date)}`)
               }
             }}
             value={selectedDate}
             locale="en-US"
             formatDay={(locale, date) => date.getDate()}
             calendarType="gregory"
+            tileContent={({ date, view }) => {
+              if (view !== 'month') return null
+              const ds = toLocalDateString(date)
+              return recordDates.has(ds)
+                ? <span className="cal-dot" />
+                : null
+            }}
           />
         </div>
 
