@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import 'bootstrap/dist/css/bootstrap.min.css'
 import './DailyReport.css'
+
+const EMOJIS = ['😞', '😟', '😐', '😊', '😄']
 
 const DailyDiet = ({
   selectedDiets, setSelectedDiets,
@@ -11,11 +12,12 @@ const DailyDiet = ({
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [hovered, setHovered] = useState(0)
   const [dietData, setDietData] = useState({})
+  const [savedSet, setSavedSet] = useState(new Set())
 
-  // 저장된 피드백/별점으로 초기화
   useEffect(() => {
     if (savedDietFeedbacks && Object.keys(savedDietFeedbacks).length > 0) {
       setDietData(savedDietFeedbacks)
+      setSavedSet(new Set(Object.keys(savedDietFeedbacks).map(String)))
     }
   }, [savedDietFeedbacks])
 
@@ -44,90 +46,113 @@ const DailyDiet = ({
     }
   }
 
+  const handleSave = async (diet_idx, feedback, rating) => {
+    await onSave(diet_idx, feedback, rating)
+    setSavedSet(prev => new Set([...prev, String(diet_idx)]))
+  }
+
   const formatDate = (dateStr) => {
     if (!dateStr) return ''
     const d = new Date(dateStr)
-    const yyyy = d.getFullYear()
-    const mm = String(d.getMonth() + 1).padStart(2, '0')
-    const dd = String(d.getDate()).padStart(2, '0')
-    return `${yyyy}-${mm}-${dd}`
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
   }
 
   const selectedDiet = selectedDiets?.[selectedIdx]
 
+  // 저장된 식단 목록 (savedSet에 있는 것들)
+  const savedDietItems = (selectedDiets || []).filter(d => savedSet.has(String(d.diet_idx)))
+
   return (
-    <div className="daily-diet-card">
-      <h2 className="daily-section-title">식단은 어떠셨나요?</h2>
-      <span className="daily-section-sub">오늘의 식단을 평가해주세요.</span>
+    <div className="dr-card">
+      <h2 className="dr-card-title">🍽 Nutrition Feedback</h2>
+      <span className="dr-section-label">오늘의 식단을 평가해주세요</span>
 
       {!selectedDiets || selectedDiets.length === 0 ? (
-        <div style={{ marginTop: '20px', color: '#aaa', fontSize: '14px' }}>
-          오늘 선택한 식단이 없습니다.
-        </div>
+        <div style={{ color: '#aaa', fontSize: '14px' }}>오늘 선택한 식단이 없습니다.</div>
       ) : (
         <>
-          {/* 끼니 탭 */}
-          <div className="daily-meal-tabs">
+          <div className="dr-meal-tabs">
             {selectedDiets.map((diet, i) => (
-              <div key={i} className={`daily-meal-tab-wrap ${selectedIdx === i ? 'active' : ''}`}>
-                <button className="daily-meal-tab-label" onClick={() => setSelectedIdx(i)}>
+              <div key={i} className={`dr-meal-tab ${selectedIdx === i ? 'active' : ''}`}>
+                <button className="dr-meal-tab-btn" onClick={() => setSelectedIdx(i)}>
                   {diet.meal_type || `${i + 1}번째 끼니`}
                 </button>
-                <button className="daily-meal-tab-delete" onClick={() => handleDelete(diet)} title="식단 삭제">
+                <button className="dr-meal-tab-del" onClick={() => handleDelete(diet)} title="식단 삭제">
                   ×
                 </button>
               </div>
             ))}
           </div>
 
-          <div className="daily-diet-inner">
-            {/* 왼쪽: 이미지 + 정보 */}
-            <div className="daily-diet-recipe-placeholder">
-              <div className="daily-diet-img-placeholder" />
-              <div className="daily-meal-type-badge">{selectedDiet?.meal_type}</div>
-              <h4 className="daily-diet-name">{selectedDiet?.recipe_name || '오늘의 식단'}</h4>
-              <div style={{ fontSize: '12px', color: '#aaa', marginTop: '4px' }}>
-                {formatDate(selectedDiet?.select_date)}
-              </div>
+          <div className="dr-recipe-row">
+            <div className="dr-recipe-img-box" />
+            <div className="dr-recipe-meta">
+              <p className="dr-recipe-type-label">{selectedDiet?.meal_type} Recommendation</p>
+              <p className="dr-recipe-name">{selectedDiet?.recipe_name || '오늘의 식단'}</p>
+              <p className="dr-recipe-date">{formatDate(selectedDiet?.select_date)}</p>
             </div>
+          </div>
 
-            {/* 오른쪽: 평가 */}
-            {selectedDiet && (() => {
-              const { feedback, rating } = getCurrentData(selectedDiet.diet_idx)
-              return (
-                <div className="daily-diet-comment">
-                  <span className="daily-diet-label">오늘 식단 별점</span>
-                  <div className="daily-diet-stars" style={{ marginBottom: '12px' }}>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span
+          {selectedDiet && (() => {
+            const { feedback, rating } = getCurrentData(selectedDiet.diet_idx)
+            return (
+              <>
+                <div className="dr-rating-header">
+                  <span className="dr-rating-q">How did it feel?</span>
+                </div>
+                <div className="dr-emoji-row">
+                  {EMOJIS.map((emoji, i) => {
+                    const star = i + 1
+                    return (
+                      <button
                         key={star}
-                        className={`daily-diet-star ${star <= (hovered || rating) ? 'active' : ''}`}
+                        className={`dr-emoji-btn ${star <= (hovered || rating) ? 'active' : ''}`}
                         onClick={() => setRating(selectedDiet.diet_idx, star)}
                         onMouseEnter={() => setHovered(star)}
                         onMouseLeave={() => setHovered(0)}
                       >
-                        ★
-                      </span>
-                    ))}
-                  </div>
-                  <span className="daily-diet-label">식단에 대하여..</span>
-                  <textarea
-                    className="form-control"
-                    rows={5}
-                    placeholder="오늘 식단에 대한 메모를 남겨보세요."
-                    value={feedback}
-                    onChange={(e) => setFeedback(selectedDiet.diet_idx, e.target.value)}
-                  />
+                        {emoji}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                <div className="dr-field-label">✏ Digestive Comfort Notes</div>
+                <textarea
+                  className="dr-textarea"
+                  rows={3}
+                  placeholder="Add any notes about how you felt after this meal..."
+                  value={feedback}
+                  onChange={(e) => setFeedback(selectedDiet.diet_idx, e.target.value)}
+                />
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <button
-                    className="btn daily-diet-save-btn"
-                    onClick={() => onSave(selectedDiet.diet_idx, feedback, rating)}
+                    className="dr-save-btn"
+                    onClick={() => handleSave(selectedDiet.diet_idx, feedback, rating)}
                   >
                     저장
                   </button>
                 </div>
-              )
-            })()}
-          </div>
+              </>
+            )
+          })()}
+
+          {/* 저장된 기록 목록 */}
+          {savedDietItems.length > 0 && (
+            <div className="dr-saved-list">
+              <span className="dr-saved-list-label">저장된 식단 기록</span>
+              {savedDietItems.map((diet) => {
+                const { feedback, rating } = getCurrentData(diet.diet_idx)
+                return (
+                  <div key={diet.diet_idx} className="dr-saved-item">
+                    <span className="dr-saved-meal-type">{diet.meal_type || '끼니'}</span>
+                    <span className="dr-saved-emoji">{rating > 0 ? EMOJIS[rating - 1] : '—'}</span>
+                    <span className="dr-saved-feedback">{feedback || '메모 없음'}</span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </>
       )}
     </div>

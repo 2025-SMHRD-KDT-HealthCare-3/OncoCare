@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import 'bootstrap/dist/css/bootstrap.min.css'
 import './DailyReport.css'
 
 const conditionLabels = {
@@ -14,6 +13,32 @@ const conditionLabels = {
   5: '완전히 정상 상태 / 불편 없음',
 }
 
+const getConditionBadge = (val) => {
+  if (val <= 2) return 'high'
+  if (val <= 3) return 'moderate'
+  return 'minimal'
+}
+
+const getConditionBadgeLabel = (val) => {
+  if (val <= 2) return 'Severe'
+  if (val <= 3) return 'Moderate'
+  if (val <= 4) return 'Mild'
+  return 'Good'
+}
+
+const getPainBadge = (val) => {
+  if (val >= 4) return 'high'
+  if (val >= 3) return 'moderate'
+  return 'minimal'
+}
+
+const getPainBadgeLabel = (val) => {
+  if (val >= 4) return 'Severe'
+  if (val >= 3) return 'Moderate'
+  if (val >= 2) return 'Mild'
+  return 'Minimal'
+}
+
 const DailyCondition = ({
   condition, setCondition,
   sleepTime, setSleepTime,
@@ -25,181 +50,142 @@ const DailyCondition = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false)
 
-  // 저장된 데이터 표시 모드
   if (conditionData && !isEditing) {
     return (
-      <div className="daily-diet-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 className="daily-section-title">컨디션 기록</h2>
-          <button
-            className="btn daily-diet-save-btn"
-            style={{ marginTop: 0 }}
-            onClick={() => setIsEditing(true)}
-          >
-            수정
-          </button>
+      <div className="dr-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+          <h2 className="dr-card-title">💪 Physical Vitality</h2>
+          <button className="dr-cancel-btn" onClick={() => setIsEditing(true)}>수정</button>
         </div>
-        <span className="daily-section-sub">오늘 저장된 컨디션 기록입니다.</span>
+        <span className="dr-section-label">오늘 저장된 컨디션 기록입니다</span>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
-          {/* 기분/피로도 */}
-          <div className="form-control" style={{ background: '#f8f9fa', fontSize: '14px' }}>
-            <span style={{ color: '#888', marginRight: '8px' }}>기분 / 피로도</span>
-            <strong>{conditionData.condition_score}단계</strong>
-            {' — '}
-            {conditionLabels[conditionData.condition_score] || ''}
-          </div>
-
-          {/* 물 섭취량 */}
-          <div className="form-control" style={{ background: '#f8f9fa', fontSize: '14px' }}>
-            <span style={{ color: '#888', marginRight: '8px' }}>물 섭취량</span>
-            <strong>{conditionData.water_intake} ml</strong>
-          </div>
-
-          {/* 복통 여부 */}
-          <div className="form-control" style={{ background: '#f8f9fa', fontSize: '14px' }}>
-            <span style={{ color: '#888', marginRight: '8px' }}>복통 여부</span>
-            <strong style={{ color: conditionData.stomach_pain === 'Y' ? '#e74c3c' : '#333' }}>
-              {conditionData.stomach_pain === 'Y' ? '있음' : '없음'}
-            </strong>
-            {conditionData.stomach_pain === 'Y' && conditionData.stomach_score && (
-              <span style={{ color: '#e74c3c', marginLeft: '8px' }}>
-                — 통증 {conditionData.stomach_score}단계
-              </span>
-            )}
-          </div>
+        <div className="dr-info-row">
+          <span className="dr-info-label">기분 / 피로도</span>
+          <span className="dr-info-value">{conditionData.condition_score}단계 — {conditionLabels[conditionData.condition_score] || ''}</span>
+        </div>
+        <div className="dr-info-row">
+          <span className="dr-info-label">물 섭취량</span>
+          <span className="dr-info-value">{conditionData.water_intake} ml</span>
+        </div>
+        <div className="dr-info-row">
+          <span className="dr-info-label">복통 여부</span>
+          <span className={`dr-info-value ${conditionData.stomach_pain === 'Y' ? 'danger' : ''}`}>
+            {conditionData.stomach_pain === 'Y' ? `있음 — 통증 ${conditionData.stomach_score}단계` : '없음'}
+          </span>
         </div>
       </div>
     )
   }
 
-  // 입력 폼 모드
   return (
-    <div className="daily-diet-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 className="daily-section-title">컨디션 기록</h2>
+    <div className="dr-card">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+        <h2 className="dr-card-title">💪 Physical Vitality</h2>
         {conditionData && (
-          <button
-            className="btn"
-            style={{ fontSize: '13px', color: '#888' }}
-            onClick={() => setIsEditing(false)}
-          >
-            취소
-          </button>
+          <button className="dr-cancel-btn" onClick={() => setIsEditing(false)}>취소</button>
         )}
       </div>
-      <span className="daily-section-sub">오늘의 컨디션을 기록해주세요.</span>
+      <span className="dr-section-label">오늘의 컨디션을 기록해주세요</span>
 
-      {/* 기분/피로도 */}
-      <div className="daily-diet-comment">
-        <span className="daily-diet-label">기분 / 피로도</span>
-        <input
-          type="range"
-          className="form-range"
-          min={1}
-          max={5}
-          step={0.5}
-          value={condition}
-          onChange={(e) => setCondition(Number(e.target.value))}
-        />
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#888' }}>
-          {[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((n) => <span key={n}>{n}</span>)}
-        </div>
-        <div className="form-control" style={{ marginTop: '8px', background: '#f8f9fa', color: '#333', fontSize: '14px' }}>
-          {condition}단계 — {conditionLabels[condition]}
-        </div>
-      </div>
-
-      {/* 수면시간 */}
-      <div className="daily-diet-comment" style={{ marginTop: '16px' }}>
-        <span className="daily-diet-label">수면 시간 (시간)</span>
-        <input
-          type="number"
-          className="form-control"
-          min={0}
-          max={24}
-          step={0.5}
-          placeholder="예: 7.5"
-          value={sleepTime}
-          onChange={(e) => {
-            const val = e.target.value
-            if (val === '') { setSleepTime(''); return }
-            const num = parseFloat(val)
-            if (num > 24) return
-            if (num % 0.5 !== 0 && val.includes('.')) {
-              const decimal = val.split('.')[1]
-              if (decimal && decimal !== '0' && decimal !== '5') return
-            }
-            setSleepTime(val)
-          }}
-        />
-      </div>
-
-      {/* 물 섭취량 */}
-      <div className="daily-diet-comment" style={{ marginTop: '16px' }}>
-        <span className="daily-diet-label">물 섭취량 (ml)</span>
-        <input
-          type="number"
-          className="form-control"
-          min={0}
-          max={9999}
-          step={1}
-          placeholder="예: 1500"
-          value={waterIntake}
-          onChange={(e) => {
-            const val = e.target.value
-            if (val === '') { setWaterIntake(''); return }
-            if (val.includes('.')) return
-            if (parseInt(val) >= 10000) return
-            setWaterIntake(val)
-          }}
-        />
-      </div>
-
-      {/* 복통 여부 토글 */}
-      <div className="daily-diet-comment" style={{ marginTop: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span className="daily-diet-label" style={{ marginBottom: 0 }}>복통 여부</span>
-          <div className="form-check form-switch" style={{ margin: 0 }}>
-            <input
-              className="form-check-input"
-              type="checkbox"
-              role="switch"
-              checked={stomachPain}
-              onChange={(e) => setStomachPain(e.target.checked)}
-            />
-          </div>
-          <span style={{ fontSize: '14px', color: stomachPain ? '#e74c3c' : '#888' }}>
-            {stomachPain ? '있음' : '없음'}
+      <div className="dr-vitality-grid">
+        {/* 기분/피로도 */}
+        <div className="dr-vitality-sub">
+          <div className="dr-vitality-sub-title">Fatigue Level</div>
+          <span className={`dr-vitality-badge ${getConditionBadge(condition)}`}>
+            {getConditionBadgeLabel(condition)}
           </span>
+          <input
+            type="range"
+            className="dr-slider"
+            min={1} max={5} step={0.5}
+            value={condition}
+            onChange={(e) => setCondition(Number(e.target.value))}
+          />
+          <div className="dr-slider-labels">
+            <span>Energetic</span>
+            <span>Exhausted</span>
+          </div>
         </div>
 
-        {stomachPain && (
-          <div style={{ marginTop: '12px' }}>
-            <span className="daily-diet-label">통증 정도 (1~5)</span>
-            <input
-              type="range"
-              className="form-range"
-              min={1}
-              max={5}
-              step={1}
-              value={painLevel}
-              onChange={(e) => setPainLevel(Number(e.target.value))}
-            />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#888' }}>
-              {[1, 2, 3, 4, 5].map((n) => <span key={n}>{n}</span>)}
-            </div>
-            <div className="form-control" style={{ marginTop: '8px', background: '#fff0f0', color: '#c0392b', fontSize: '14px' }}>
-              통증 {painLevel}단계
-            </div>
+        {/* 복통 */}
+        <div className="dr-vitality-sub">
+          <div className="dr-vitality-sub-title">Pain / Discomfort</div>
+          <span className={`dr-vitality-badge ${stomachPain ? getPainBadge(painLevel) : 'minimal'}`}>
+            {stomachPain ? getPainBadgeLabel(painLevel) : 'Minimal'}
+          </span>
+          <input
+            type="range"
+            className="dr-slider"
+            min={1} max={5} step={1}
+            value={stomachPain ? painLevel : 1}
+            onChange={(e) => {
+              setStomachPain(true)
+              setPainLevel(Number(e.target.value))
+            }}
+          />
+          <div className="dr-slider-labels">
+            <span>No Pain</span>
+            <span>Severe</span>
           </div>
-        )}
+        </div>
+      </div>
+
+      <div className="dr-form-row">
+        <div className="dr-form-group">
+          <label className="dr-form-label">수면 시간 (h)</label>
+          <input
+            type="number"
+            className="dr-form-input"
+            min={0} max={24} step={0.5}
+            placeholder="예: 7.5"
+            value={sleepTime}
+            onChange={(e) => {
+              const val = e.target.value
+              if (val === '') { setSleepTime(''); return }
+              const num = parseFloat(val)
+              if (num > 24) return
+              setSleepTime(val)
+            }}
+          />
+        </div>
+        <div className="dr-form-group">
+          <label className="dr-form-label">물 섭취량 (ml)</label>
+          <input
+            type="number"
+            className="dr-form-input"
+            min={0} max={9999} step={1}
+            placeholder="예: 1500"
+            value={waterIntake}
+            onChange={(e) => {
+              const val = e.target.value
+              if (val === '') { setWaterIntake(''); return }
+              if (val.includes('.')) return
+              if (parseInt(val) >= 10000) return
+              setWaterIntake(val)
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="dr-toggle-row">
+        <span className="dr-form-label">복통 여부</span>
+        <div className="form-check form-switch" style={{ margin: 0 }}>
+          <input
+            className="form-check-input"
+            type="checkbox"
+            role="switch"
+            checked={stomachPain}
+            onChange={(e) => setStomachPain(e.target.checked)}
+          />
+        </div>
+        <span style={{ fontSize: '13px', color: stomachPain ? '#e74c3c' : '#8a9189', fontWeight: 600 }}>
+          {stomachPain ? '있음' : '없음'}
+        </span>
       </div>
 
       <button
-        className="btn daily-diet-save-btn"
+        className="dr-save-btn full"
         onClick={() => { onSave(); setIsEditing(false) }}
-        style={{ marginTop: '16px' }}
       >
         저장
       </button>
