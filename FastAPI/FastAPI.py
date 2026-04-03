@@ -1,4 +1,5 @@
 import os
+import time
 import json
 import httpx
 import cv2
@@ -29,26 +30,42 @@ from vector_search import get_relevant_medical_guides # 외부 파일에서 검�
 # =========================================================================
 load_dotenv()
 
+# --- ⏰ 전체 유저 목록 조회 ---
+async def get_all_users():
+    async with httpx.AsyncClient() as client:
+        try:
+            res = await client.get(f"{NODE_SERVER_URL}/data/all-users")
+            res.raise_for_status()
+            data = res.json()
+            if data.get("success"):
+                return data.get("users", [])
+            return []
+        except Exception as e:
+            print(f"전체 유저 목록 조회 실패: {e}")
+            return []
+
 # --- ⏰ 자동화 스케줄러 작업 정의 ---
 async def scheduled_daily_report():
     print("\n⏰ [자동 실행] 일일 레포트 스케줄러 작동!")
     today_str = datetime.now().strftime("%Y-%m-%d")
-    # TODO: 실제 환경에서는 Node.js에서 전체 유저 목록을 받아와 반복 실행해야 합니다.
-    users = [1] # 임시로 1번 유저에게만 실행
+    users = await get_all_users()
+    print(f"➡️ 총 {len(users)}명의 유저에게 일일 레포트를 생성합니다.")
     for uid in users:
         await process_daily(uid, today_str)
 
 async def scheduled_weekly_report():
     print("\n⏰ [자동 실행] 주간 레포트 스케줄러 작동!")
     today_str = datetime.now().strftime("%Y-%m-%d")
-    users = [1]
+    users = await get_all_users()
+    print(f"➡️ 총 {len(users)}명의 유저에게 주간 레포트를 생성합니다.")
     for uid in users:
         await process_weekly(uid, today_str)
 
 async def scheduled_monthly_report():
     print("\n⏰ [자동 실행] 월간 레포트 스케줄러 작동!")
     current_month = datetime.now().month
-    users = [1]
+    users = await get_all_users()
+    print(f"➡️ 총 {len(users)}명의 유저에게 월간 레포트를 생성합니다.")
     for uid in users:
         await process_monthly(uid, current_month)
 
@@ -77,7 +94,7 @@ app.add_middleware(
 )
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-NODE_SERVER_URL = os.getenv("NODE_SERVER_URL", "http://localhost:3000/api/ai")
+NODE_SERVER_URL = "http://localhost:3000/api/ai"
 
 # 모델 초기화
 llm = ChatOpenAI(
@@ -230,7 +247,7 @@ weekly_chain = weekly_prompt | llm | weekly_parser
 # [2-4] 월간 레포트 (Monthly) - 건강 프로필 주입 완료
 # -------------------------------------------------------------------------
 class MonthlyReportOut(BaseModel):
-    report_week_label: str = Field(description="UI 표시용 월 라벨 (예: 26년 3월)")
+    report_month_label: str = Field(description="UI 표시용 월 라벨 (예: 26년 3월)")
     report_title: str = Field(description="월간 타이틀 15자 이내 (예: 한 달간의 놀라운 기적 🎉)")
     report_score: int = Field(description="월간 평균 점수 (0~100점). 제공된 '주간 레포트'들의 점수를 평균 내어 산정하세요.")
     report_score_list : str = Field(description="주간 점수 리스트 (예: '80, 85, 90, 95' 처럼 각 주차의 점수를 콤마로 구분하여 문자열로 작성)")
@@ -260,7 +277,7 @@ monthly_prompt = PromptTemplate(
 3. 대장암 수술 및 항암/장루 관리라는 힘든 과정을 겪고 있는 환자입니다. 수술/퇴원 일자를 고려해 시간이 지남에 따라 얼마나 잘 회복하고 있는지 의미를 부여하고 크게 칭찬해주세요.
 4. 첫째 주와 마지막 주를 비교하여, 배변이나 컨디션 점수가 어떻게 안정화되고 있는지 거시적인 트렌드를 짚어주세요.
 5. report_comment는 환자가 질병에 지치지 않고 건강 관리를 할 수 있도록 진심이 담긴 강력한 동기부여와 폭풍 칭찬을 3~4줄로 꽉 채워 작성해주세요.
-6. report_week_label은 'YY년 M월' 형식으로 만들어주세요.
+6. report_month_label은 'YY년 M월' 형식으로 만들어주세요.
 7. report_title은 한 달간의 변화를 가장 잘 보여주는 센스 있는 제목(이모지 1~2개 포함)을 15자 이내로 달아주세요.
 
 {format_instructions}""",
@@ -355,6 +372,7 @@ def read_root():
 @app.post("/generate-diet/{user_idx}")
 async def generate_diet(user_idx: int, background_tasks: BackgroundTasks):
     async def process_diet_recommendation(uid: int):
+        start_time = time.time()
         async with httpx.AsyncClient() as client:
             try:
                 print(f"\n[식단 추천 시작] User {uid} 데이터 가져오는 중...")
@@ -408,6 +426,7 @@ async def generate_diet(user_idx: int, background_tasks: BackgroundTasks):
                 print(f"[Node.js로 전송 중...] User {uid} 레시피 저장 요청")
                 post_res = await client.post(f"{NODE_SERVER_URL}/diet", json=payload)
                 print(f"저장 결과: {post_res.json()}")
+                print(f"⏱️ [소요 시간] 식단 추천 완료까지 {time.time() - start_time:.2f}초 소요됨")
 
             except httpx.ConnectError as e:
                 print(f"Node.js 서버({NODE_SERVER_URL}) 연결에 실패했습니다: {e}")
@@ -419,6 +438,7 @@ async def generate_diet(user_idx: int, background_tasks: BackgroundTasks):
 
 # --- 일일 레포트 ---
 async def process_daily(uid: int, date: str):
+    start_time = time.time()
     async with httpx.AsyncClient() as client:
         try:
             print(f"\n[일일 레포트] User {uid} 데이터 로드 중 ({date})")
@@ -434,10 +454,19 @@ async def process_daily(uid: int, date: str):
             bowel_logs = data.get("bowel_logs")
             diets = data.get("diets")
             
-            # 💡 [비용 절감 최적화] 당일 기록이 아예 없다면 LLM 호출 및 DB 저장을 생략하고 즉시 종료
-            if not condition and (not bowel_logs or len(bowel_logs) == 0) and (not diets or len(diets) == 0):
-                print(f"[{date}] User {uid}의 기록이 전혀 없어 레포트 생성을 취소합니다. (API 비용 및 DB 낭비 방지)")
+            # 💡 [데이터 누락 확인 및 상세 로깅]
+            missing_items = []
+            if not condition: missing_items.append("컨디션(t_condition)")
+            if not bowel_logs or len(bowel_logs) == 0: missing_items.append("배변기록(t_bowel_log)")
+            if not diets or len(diets) == 0: missing_items.append("섭취식단(t_diet)")
+            
+            if len(missing_items) == 3:
+                print(f"❌ [{date}] User {uid}의 기록이 전혀 없어 레포트 생성을 취소합니다. (누락된 데이터: {', '.join(missing_items)})")
                 return
+            elif len(missing_items) > 0:
+                print(f"⚠️ [{date}] User {uid}의 일부 데이터가 없습니다: {', '.join(missing_items)}. (존재하는 데이터만으로 분석을 진행합니다.)")
+            else:
+                print(f"✅ [{date}] User {uid}의 모든 필수 데이터가 존재합니다. 분석을 진행합니다.")
             
             # 2. 💡 건강 프로필 로드 (추가됨)
             profile_res = await client.get(f"{NODE_SERVER_URL}/data/for-diet?user_idx={uid}")
@@ -461,6 +490,7 @@ async def process_daily(uid: int, date: str):
             payload = { "user_idx": uid, "report_date": date, **ai_result }
             post_res = await client.post(f"{NODE_SERVER_URL}/report/daily", json=payload)
             print(f"[저장 완료] 일일 레포트: {post_res.json()}")
+            print(f"⏱️ [소요 시간] 일일 레포트 생성 및 저장까지 {time.time() - start_time:.2f}초 소요됨")
 
         except httpx.HTTPStatusError as e:
             print(f"Node.js 데이터 조회 실패 (상태 코드: {e.response.status_code}): {e.response.text}")
@@ -469,11 +499,17 @@ async def process_daily(uid: int, date: str):
 
 @app.post("/generate-daily-report/{user_idx}")
 async def generate_daily_report(user_idx: int, target_date: str, background_tasks: BackgroundTasks):
+    # 💡 '03-31'처럼 연도를 빼고 입력하더라도 자동으로 올해 연도(YYYY-)를 붙여줍니다.
+    if len(target_date) == 5 and "-" in target_date:
+        current_year = datetime.now().year
+        target_date = f"{current_year}-{target_date}"
+        
     background_tasks.add_task(process_daily, user_idx, target_date)
     return {"success": True, "message": f"User {user_idx}의 {target_date} 일일 레포트 생성이 시작되었습니다."}
 
 # --- 주간 레포트 ---
 async def process_weekly(uid: int, date: str):
+    start_time = time.time()
     async with httpx.AsyncClient() as client:
         try:
             print(f"\n[주간 레포트] User {uid} 데이터 로드 중 (기준일: {date})")
@@ -481,8 +517,14 @@ async def process_weekly(uid: int, date: str):
             res = await client.get(f"{NODE_SERVER_URL}/data/for-weekly-report?user_idx={uid}&target_date={date}")
             res.raise_for_status()
             data = res.json()
-            if not data.get("success") or not data.get("daily_reports"):
-                return print(f"주간 데이터가 부족하거나 조회에 실패했습니다.")
+            
+            daily_reports = data.get("daily_reports")
+            if not data.get("success"):
+                return print(f"❌ [주간 레포트] User {uid} (기준일: {date}) - Node.js API 조회 실패")
+            if not daily_reports or len(daily_reports) == 0:
+                return print(f"❌ [주간 레포트] User {uid} (기준일: {date}) - 해당 주간에 작성된 '일일 레포트(t_daily_report)' 데이터가 0건이라 생성을 취소합니다.")
+            
+            print(f"✅ [주간 레포트] User {uid}의 일일 레포트 {len(daily_reports)}건 확인됨. 분석을 진행합니다.")
             
             # 2. 💡 건강 프로필 로드 (추가됨)
             profile_res = await client.get(f"{NODE_SERVER_URL}/data/for-diet?user_idx={uid}")
@@ -508,6 +550,7 @@ async def process_weekly(uid: int, date: str):
             payload = { "user_idx": uid, "start_date": start_date, "end_date": end_date, **ai_result }
             post_res = await client.post(f"{NODE_SERVER_URL}/report/weekly", json=payload)
             print(f"[저장 완료] 주간 레포트: {post_res.json()}")
+            print(f"⏱️ [소요 시간] 주간 레포트 생성 및 저장까지 {time.time() - start_time:.2f}초 소요됨")
 
         except httpx.HTTPStatusError as e:
             print(f"Node.js 데이터 조회 실패 (상태 코드: {e.response.status_code}): {e.response.text}")
@@ -516,11 +559,17 @@ async def process_weekly(uid: int, date: str):
 
 @app.post("/generate-weekly-report/{user_idx}")
 async def generate_weekly_report(user_idx: int, target_date: str, background_tasks: BackgroundTasks):
+    # 💡 '03-31'처럼 연도를 빼고 입력하더라도 자동으로 올해 연도를 붙여줍니다.
+    if len(target_date) == 5 and "-" in target_date:
+        current_year = datetime.now().year
+        target_date = f"{current_year}-{target_date}"
+
     background_tasks.add_task(process_weekly, user_idx, target_date)
     return {"success": True, "message": f"User {user_idx}의 주간 레포트 생성이 시작되었습니다."}
 
 # --- 월간 레포트 ---
 async def process_monthly(uid: int, target_month: int):
+    start_time = time.time()
     async with httpx.AsyncClient() as client:
         try:
             print(f"\n[월간 레포트] User {uid} 데이터 로드 중 ({target_month}월)")
@@ -528,8 +577,14 @@ async def process_monthly(uid: int, target_month: int):
             res = await client.get(f"{NODE_SERVER_URL}/data/for-monthly-report?user_idx={uid}&month={target_month}")
             res.raise_for_status()
             data = res.json()
-            if not data.get("success") or not data.get("weekly_reports"):
-                return print(f"월간 데이터가 부족하거나 조회에 실패했습니다.")
+            
+            weekly_reports = data.get("weekly_reports")
+            if not data.get("success"):
+                return print(f"❌ [월간 레포트] User {uid} ({target_month}월) - Node.js API 조회 실패")
+            if not weekly_reports or len(weekly_reports) == 0:
+                return print(f"❌ [월간 레포트] User {uid} ({target_month}월) - 해당 월에 작성된 '주간 레포트(t_weekly_report)' 데이터가 0건이라 생성을 취소합니다.")
+                
+            print(f"✅ [월간 레포트] User {uid}의 주간 레포트 {len(weekly_reports)}건 확인됨. 분석을 진행합니다.")
             
             # 2. 💡 건강 프로필 로드 (추가됨)
             profile_res = await client.get(f"{NODE_SERVER_URL}/data/for-diet?user_idx={uid}")
@@ -555,6 +610,7 @@ async def process_monthly(uid: int, target_month: int):
             payload = { "user_idx": uid, "report_month": report_month_str, **ai_result }
             post_res = await client.post(f"{NODE_SERVER_URL}/report/monthly", json=payload)
             print(f"[저장 완료] 월간 레포트: {post_res.json()}")
+            print(f"⏱️ [소요 시간] 월간 레포트 생성 및 저장까지 {time.time() - start_time:.2f}초 소요됨")
 
         except httpx.HTTPStatusError as e:
             print(f"Node.js 데이터 조회 실패 (상태 코드: {e.response.status_code}): {e.response.text}")
@@ -569,6 +625,7 @@ async def generate_monthly_report(user_idx: int, month: int, background_tasks: B
 # --- 식재료 사진 분석 (YOLO) ---
 @app.post("/analyze-fridge-image/{user_idx}")
 async def analyze_fridge_image(user_idx: int, file: UploadFile = File(...)):
+    start_time = time.time()
     try:
         print(f"\n[식재료 이미지 분석] User {user_idx} 이미지 1장 수신 완료: {file.filename}")
         
@@ -609,6 +666,7 @@ async def analyze_fridge_image(user_idx: int, file: UploadFile = File(...)):
             })
             
         print(f"[최종 추출 완료] 감지된 식재료 목록: {react_ingredients}")
+        print(f"⏱️ [소요 시간] YOLO 이미지 분석 완료까지 {time.time() - start_time:.2f}초 소요됨")
         
         # 💡 [사용자 검수] DB에 바로 저장하지 않고, React 프론트엔드로 분석 결과만 반환합니다.
         return {

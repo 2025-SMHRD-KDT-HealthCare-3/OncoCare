@@ -140,7 +140,7 @@ router.post('/report/weekly', asyncWrap(async (req, res) => {
  */
 router.post('/report/monthly', asyncWrap(async (req, res) => {
     const { 
-        user_idx, report_month, report_week_label, report_title,
+        user_idx, report_month, report_month_label, report_title,
         report_score, report_score_list, report_score_list_comment, 
         report_diet, report_bowel, report_condition, report_comment 
     } = req.body;
@@ -149,10 +149,10 @@ router.post('/report/monthly', asyncWrap(async (req, res) => {
 
     const sql = `
         INSERT INTO t_monthly_report 
-        (user_idx, report_month, report_week_label, report_title, report_score, report_score_list, report_score_list_comment, report_diet, report_bowel, report_condition, report_comment)
+        (user_idx, report_month, report_month_label, report_title, report_score, report_score_list, report_score_list_comment, report_diet, report_bowel, report_condition, report_comment)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE 
-        report_week_label = VALUES(report_week_label),
+        report_month_label = VALUES(report_month_label),
         report_title = VALUES(report_title),
         report_score = VALUES(report_score),
         report_score_list = VALUES(report_score_list),
@@ -164,7 +164,7 @@ router.post('/report/monthly', asyncWrap(async (req, res) => {
     `;
 
     await conn.query(sql, [
-        user_idx, report_month, report_week_label, report_title,
+        user_idx, report_month, report_month_label, report_title,
         report_score, report_score_list, report_score_list_comment, 
         report_diet, report_bowel, report_condition, report_comment
     ]);
@@ -405,6 +405,17 @@ router.get('/data/for-monthly-report', asyncWrap(async (req, res) => {
         target_year_month: `${currentYear}년 ${month}월`,
         weekly_reports: weeklyReports
     });
+}));
+
+/*
+ * [전체 유저 목록 제공] 스케줄러에서 모든 유저를 대상으로 실행하기 위함
+ * GET /ai/data/all-users
+ */
+router.get('/data/all-users', asyncWrap(async (req, res) => {
+    const sql = `SELECT user_idx FROM t_user`;
+    const [rows] = await conn.query(sql);
+    const userList = rows.map(row => row.user_idx); // [1, 2, 3, ...] 형태로 변환
+    res.json({ success: true, users: userList });
 }));
 
 module.exports = router;
