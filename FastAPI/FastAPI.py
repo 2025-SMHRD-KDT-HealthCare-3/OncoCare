@@ -230,12 +230,42 @@ monthly_prompt = PromptTemplate(
 monthly_chain = monthly_prompt | llm | monthly_parser
 
 # -------------------------------------------------------------------------
-# [2-5] 식재료 이미지 분석 (YOLO Vision)
+# [2-5] 식재료 카테고리 자동 분류 (Ingredient Classification)
+# -------------------------------------------------------------------------
+class ClassifiedIngredient(BaseModel):
+    ingre_name: str = Field(description="식재료 이름")
+    ingre_type: str = Field(description="'채소', '과일', '육류', '해산물', '유제품', '곡류', '양념/소스', '기타' 중 하나로 분류")
+    ingre_storage: str = Field(description="'냉장', '냉동', '실온' 중 하나로 분류")
+    cnt: float = Field(description="식재료 수량")
+
+class ClassifiedIngredientList(BaseModel):
+    ingredients: List[ClassifiedIngredient]
+
+ingredient_parser = JsonOutputParser(pydantic_object=ClassifiedIngredientList)
+ingredient_prompt = PromptTemplate(
+    template="""사용자가 냉장고에 추가할 식재료 목록을 제공합니다.
+각 식재료의 이름(name)과 수량(count)을 확인하고, 알맞은 카테고리와 보관 방법을 분류해주세요.
+
+[분류 기준]
+- 카테고리(ingre_type): '채소', '과일', '육류', '해산물', '유제품', '곡류', '양념/소스', '기타' 중에서만 선택.
+- 보관 방법(ingre_storage): '냉장', '냉동', '실온' 중에서만 선택. (예: 육류/해산물은 주로 '냉동', 채소/과일/유제품은 '냉장', 곡류/양념은 '실온' 등 상식적으로 매칭)
+
+[식재료 목록]
+{ingredients_list}
+
+{format_instructions}""",
+    input_variables=["ingredients_list"],
+    partial_variables={"format_instructions": ingredient_parser.get_format_instructions()},
+)
+ingredient_chain = ingredient_prompt | llm | ingredient_parser
+
+# -------------------------------------------------------------------------
+# [2-6] 식재료 이미지 분석 (YOLO Vision)
 # -------------------------------------------------------------------------
 # YOLO 모델 로드 (서버 시작 시 메모리에 1번만 로드)
 # 💡 직접 학습시킨 식재료 탐지 모델이 있다면 'yolov8n.pt' 대신 'best.pt' 등으로 경로를 수정하세요.
 try:
-    yolo_model = YOLO("yolo11n.pt")
+    yolo_model = YOLO("best11.pt")
 except Exception as e:
     print(f"YOLO 모델 로드 실패: {e}")
     yolo_model = None
@@ -530,7 +560,7 @@ async def generate_monthly_report(user_idx: int, month: int, background_tasks: B
 @app.post("/analyze-fridge-image/{user_idx}")
 async def analyze_fridge_image(user_idx: int, file: UploadFile = File(...)):
     try:
-        print(f"\n[식재료 이미지 분석] User {user_idx} 이미지 수신 완료: {file.filename}")
+        print(f"\n[식재료 이미지 분석] User {user_idx} 이미지 1장 수신 완료: {file.filename}")
         
         if yolo_model is None:
             return {"success": False, "message": "YOLO 모델이 로드되지 않아 분석할 수 없습니다."}
@@ -540,7 +570,10 @@ async def analyze_fridge_image(user_idx: int, file: UploadFile = File(...)):
         nparr = np.frombuffer(image_bytes, np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         
-        print("[AI 분석 중...] YOLO 모델로 식재료 탐지 중...")
+        if img is None:
+            return {"success": False, "message": "이미지 디코딩에 실패했습니다."}
+
+        print(f"[AI 분석 중...] YOLO 모델로 식재료 탐지 중...")
         # YOLO 추론 (conf=0.25는 25% 이상 확신하는 객체만 감지한다는 뜻입니다)
         results = yolo_model(img, conf=0.25)
         
@@ -552,33 +585,75 @@ async def analyze_fridge_image(user_idx: int, file: UploadFile = File(...)):
                 class_name = yolo_model.names[cls_id]
                 detected_counts[class_name] = detected_counts.get(class_name, 0) + 1
                 
-        # Node.js 서버로 보낼 배열 조립
-        ingredients = []
+        # React로 반환할 심플한 데이터 조립 (이름과 개수만)
+        react_ingredients = []
         for name, count in detected_counts.items():
-            # 클래스명 매핑 (사전에 없으면 default 값 사용)
-            mapping_info = CLASS_MAPPING.get(name.lower(), CLASS_MAPPING["default"])
+            name_lower = name.lower()
             
-            ingredients.append({
-                "ingre_name": mapping_info["name"] if mapping_info["name"] != "미분류 식재료" else name,
-                "ingre_type": mapping_info["type"],
-                "ingre_storage": mapping_info["storage"],
-                "cnt": float(count)
+            mapping_info = CLASS_MAPPING.get(name_lower, CLASS_MAPPING["default"])
+            korean_name = mapping_info["name"] if mapping_info["name"] != "미분류 식재료" else name
+            
+            react_ingredients.append({
+                "name": korean_name,
+                "count": count
             })
             
-        print(f"[추출 완료] {len(ingredients)}종류의 식재료 감지됨: {detected_counts}")
+        print(f"[최종 추출 완료] 감지된 식재료 목록: {react_ingredients}")
         
-        if len(ingredients) > 0:
-            # Node.js로 한 번에 저장하도록 벌크 전송
-            # 💡 [테스트용] 서버 전송을 막기 위해 잠시 주석 처리합니다.
-            # async with httpx.AsyncClient() as client:
-            #     payload = { "user_idx": user_idx, "ingredients": ingredients }
-            #     post_res = await client.post(f"{NODE_SERVER_URL}/ingredient/bulk", json=payload)
-            #     post_res.raise_for_status()
-            #     print(f"저장 결과: {post_res.json()}")
-            pass
-                
-        return {"success": True, "message": f"{len(ingredients)}종류의 식재료가 감지되어 저장되었습니다.", "ingredients": ingredients}
-        
+        # 💡 [사용자 검수] DB에 바로 저장하지 않고, React 프론트엔드로 분석 결과만 반환합니다.
+        return {
+            "success": True, 
+            "message": f"{len(react_ingredients)}종류의 식재료가 감지되었습니다.", 
+            "ingredients": react_ingredients
+        }
+
     except Exception as e:
         print(f"식재료 이미지 분석 중 에러 발생: {e}")
         return {"success": False, "message": "이미지 분석 중 오류가 발생했습니다."}
+
+# --- 사용자 검수 후 식재료 최종 저장 ---
+class ValidatedIngredient(BaseModel):
+    name: str
+    count: int
+
+class SaveIngredientsRequest(BaseModel):
+    ingredients: List[ValidatedIngredient]
+
+@app.post("/save-ingredients/{user_idx}")
+async def save_ingredients(user_idx: int, request: SaveIngredientsRequest):
+    try:
+        # 1. 카운트가 0보다 큰 식재료만 필터링 (0이면 제외)
+        valid_ingredients = [item for item in request.ingredients if item.count > 0]
+        
+        if not valid_ingredients:
+            return {"success": True, "message": "저장할 식재료가 없습니다 (모두 개수가 0개입니다)."}
+
+        # 2. LLM을 사용하여 카테고리 및 보관 방법 자동 분류 (React 지정 리스트 강제 적용)
+        ingredients_dict_list = [{"name": item.name, "count": item.count} for item in valid_ingredients]
+        
+        print(f"[AI 분류 중...] {len(valid_ingredients)}개의 식재료 카테고리 매칭 중...")
+        with get_openai_callback() as cb:
+            ai_result = await ingredient_chain.ainvoke({
+                "ingredients_list": json.dumps(ingredients_dict_list, ensure_ascii=False)
+            })
+            tracker.total_tokens += cb.total_tokens
+            tracker.total_cost += cb.total_cost
+            print(f"--- [이번 분류 요청] Token Usage ---\n{cb}")
+            
+        # LLM이 지정된 리스트('채소', '냉장' 등) 안에서 분류한 결과 반환
+        db_ingredients = ai_result.get("ingredients", [])
+            
+        # 3. Node.js 서버로 한 번에 벌크 저장 전송 (테스트를 위해 임시 주석 처리)
+        # async with httpx.AsyncClient() as client:
+        #     payload = { "user_idx": user_idx, "ingredients": db_ingredients }
+        #     post_res = await client.post(f"{NODE_SERVER_URL}/ingredient/bulk", json=payload)
+        #     post_res.raise_for_status()
+        #     print(f"[검수 후 저장 완료] User {user_idx}의 식재료 {len(db_ingredients)}개 저장: {post_res.json()}")
+        print(f"[검수 후 저장 시뮬레이션] User {user_idx}의 식재료 저장 요청됨: {db_ingredients}")
+            
+        return {"success": True, "message": f"{len(db_ingredients)}개의 식재료가 성공적으로 냉장고에 저장되었습니다."}
+
+    except Exception as e:
+        print(f"식재료 저장 중 에러 발생: {e}")
+        return {"success": False, "message": "식재료 저장 중 오류가 발생했습니다."}
+    
