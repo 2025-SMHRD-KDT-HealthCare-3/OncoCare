@@ -230,37 +230,7 @@ monthly_prompt = PromptTemplate(
 monthly_chain = monthly_prompt | llm | monthly_parser
 
 # -------------------------------------------------------------------------
-# [2-5] 식재료 카테고리 자동 분류 (Ingredient Classification)
-# -------------------------------------------------------------------------
-class ClassifiedIngredient(BaseModel):
-    ingre_name: str = Field(description="식재료 이름")
-    ingre_type: str = Field(description="'채소', '과일', '육류', '해산물', '유제품', '곡류', '양념/소스', '기타' 중 하나로 분류")
-    ingre_storage: str = Field(description="'냉장', '냉동', '실온' 중 하나로 분류")
-    cnt: float = Field(description="식재료 수량")
-
-class ClassifiedIngredientList(BaseModel):
-    ingredients: List[ClassifiedIngredient]
-
-ingredient_parser = JsonOutputParser(pydantic_object=ClassifiedIngredientList)
-ingredient_prompt = PromptTemplate(
-    template="""사용자가 냉장고에 추가할 식재료 목록을 제공합니다.
-각 식재료의 이름(name)과 수량(count)을 확인하고, 알맞은 카테고리와 보관 방법을 분류해주세요.
-
-[분류 기준]
-- 카테고리(ingre_type): '채소', '과일', '육류', '해산물', '유제품', '곡류', '양념/소스', '기타' 중에서만 선택.
-- 보관 방법(ingre_storage): '냉장', '냉동', '실온' 중에서만 선택. (예: 육류/해산물은 주로 '냉동', 채소/과일/유제품은 '냉장', 곡류/양념은 '실온' 등 상식적으로 매칭)
-
-[식재료 목록]
-{ingredients_list}
-
-{format_instructions}""",
-    input_variables=["ingredients_list"],
-    partial_variables={"format_instructions": ingredient_parser.get_format_instructions()},
-)
-ingredient_chain = ingredient_prompt | llm | ingredient_parser
-
-# -------------------------------------------------------------------------
-# [2-6] 식재료 이미지 분석 (YOLO Vision)
+# [2-5] 식재료 이미지 분석 (YOLO Vision)
 # -------------------------------------------------------------------------
 # YOLO 모델 로드 (서버 시작 시 메모리에 1번만 로드)
 # 💡 직접 학습시킨 식재료 탐지 모델이 있다면 'yolov8n.pt' 대신 'best.pt' 등으로 경로를 수정하세요.
@@ -628,27 +598,31 @@ async def save_ingredients(user_idx: int, request: SaveIngredientsRequest):
         if not valid_ingredients:
             return {"success": True, "message": "저장할 식재료가 없습니다 (모두 개수가 0개입니다)."}
 
-        # 2. LLM을 사용하여 카테고리 및 보관 방법 자동 분류 (React 지정 리스트 강제 적용)
-        ingredients_dict_list = [{"name": item.name, "count": item.count} for item in valid_ingredients]
-        
-        print(f"[AI 분류 중...] {len(valid_ingredients)}개의 식재료 카테고리 매칭 중...")
-        with get_openai_callback() as cb:
-            ai_result = await ingredient_chain.ainvoke({
-                "ingredients_list": json.dumps(ingredients_dict_list, ensure_ascii=False)
+        # 2. 이름(name)을 기반으로 type과 storage 역추적 (Node.js DB 스키마 맞춤)
+        db_ingredients = []
+        for item in valid_ingredients:
+            ingre_type = "기타"
+            ingre_storage = "냉장"
+            
+            for key, val in CLASS_MAPPING.items():
+                if val["name"] == item.name:
+                    ingre_type = val["type"]
+                    ingre_storage = val["storage"]
+                    break
+            
+            db_ingredients.append({
+                "ingre_name": item.name,
+                "ingre_type": ingre_type,
+                "ingre_storage": ingre_storage,
+                "cnt": float(item.count)
             })
-            tracker.total_tokens += cb.total_tokens
-            tracker.total_cost += cb.total_cost
-            print(f"--- [이번 분류 요청] Token Usage ---\n{cb}")
             
-        # LLM이 지정된 리스트('채소', '냉장' 등) 안에서 분류한 결과 반환
-        db_ingredients = ai_result.get("ingredients", [])
-            
-        # 3. Node.js 서버로 한 번에 벌크 저장 전송 (테스트를 위해 임시 주석 처리)
-        # async with httpx.AsyncClient() as client:
-        #     payload = { "user_idx": user_idx, "ingredients": db_ingredients }
-        #     post_res = await client.post(f"{NODE_SERVER_URL}/ingredient/bulk", json=payload)
-        #     post_res.raise_for_status()
-        #     print(f"[검수 후 저장 완료] User {user_idx}의 식재료 {len(db_ingredients)}개 저장: {post_res.json()}")
+        # 3. Node.js 서버로 한 번에 벌크 저장 전송
+        async with httpx.AsyncClient() as client:
+            payload = { "user_idx": user_idx, "ingredients": db_ingredients }
+            post_res = await client.post(f"{NODE_SERVER_URL}/ingredient/bulk", json=payload)
+            post_res.raise_for_status()
+            print(f"[검수 후 저장 완료] User {user_idx}의 식재료 {len(db_ingredients)}개 저장: {post_res.json()}")
         print(f"[검수 후 저장 시뮬레이션] User {user_idx}의 식재료 저장 요청됨: {db_ingredients}")
             
         return {"success": True, "message": f"{len(db_ingredients)}개의 식재료가 성공적으로 냉장고에 저장되었습니다."}
