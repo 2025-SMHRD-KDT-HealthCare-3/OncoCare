@@ -5,9 +5,11 @@ import axios from 'axios'
 import '../public/root.css'
 import './IngredientForm.css'
 import Footer from '../public/Footer'
+import deco from '../../assets/ingredient_page_footer_1.jpg'
 
 const CATEGORIES = ['채소', '과일', '육류', '해산물', '유제품', '곡류', '양념/소스', '기타']
 const STORAGE_TYPES = ['냉장', '냉동', '실온']
+const UNITS = ['g', 'ml', '개', 'kg', 'L']
 
 const IngredientForm = () => {
   const { id } = useParams()
@@ -18,7 +20,7 @@ const IngredientForm = () => {
   const [category, setCategory] = useState('')
   const [storageType, setStorageType] = useState('')
   const [quantity, setQuantity] = useState('')
-  const [liked, setLiked] = useState(false)
+  const [unit, setUnit] = useState('')
 
   useEffect(() => {
     if (!isEdit) return
@@ -38,7 +40,7 @@ const IngredientForm = () => {
     if (!name.trim()) { alert('식재료 이름을 입력해주세요.'); return }
     if (!category) { alert('종류를 선택해주세요.'); return }
     if (!storageType) { alert('보관 형태를 선택해주세요.'); return }
-    if (!quantity.trim()) { alert('수량을 입력해주세요.'); return }
+    if (!quantity.toString().trim()) { alert('수량을 입력해주세요.'); return }
 
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) { alert('로그인이 필요합니다.'); return }
@@ -47,21 +49,13 @@ const IngredientForm = () => {
       if (isEdit) {
         const payload = { ingre_idx: id, user_idx, ingre_name: name, ingre_type: category, ingre_storage: storageType, cnt: quantity }
         const res = await axios.post('http://localhost:3000/api/ingredient/update', payload)
-        if (res.data == '1') {
-          alert('식재료가 수정되었습니다!')
-        } else {
-          alert('식재료 수정에 실패했습니다.')
-          return
-        }
+        if (res.data == '1') { alert('식재료가 수정되었습니다!') }
+        else { alert('식재료 수정에 실패했습니다.'); return }
       } else {
         const payload = { user_idx, name, type: category, storage: storageType, cnt: quantity }
         const res = await axios.post('http://localhost:3000/api/ingredient/register', payload)
-        if (res.data == '1') {
-          alert('식재료가 등록되었습니다!')
-        } else {
-          alert('식재료 등록에 실패했습니다.')
-          return
-        }
+        if (res.data == '1') { alert('식재료가 등록되었습니다!') }
+        else { alert('식재료 등록에 실패했습니다.'); return }
       }
       navigate('/Fridge')
     } catch (err) {
@@ -70,99 +64,162 @@ const IngredientForm = () => {
     }
   }
 
+  const handleDelete = async () => {
+    if (!window.confirm('식재료를 삭제하시겠습니까?')) return
+    const user_idx = sessionStorage.getItem('user_idx')
+    try {
+      const res = await axios.post('http://localhost:3000/api/ingredient/delete', { ingre_idx: id, user_idx })
+      if (res.data == '1') { alert('삭제되었습니다.'); navigate('/Fridge') }
+      else { alert('삭제에 실패했습니다.') }
+    } catch (err) {
+      console.error('삭제 실패:', err)
+      alert('삭제에 실패했습니다.')
+    }
+  }
+
   return (
     <div className="page-layout">
       <Sidebar />
-      <div className="page-content-area main-content">
-        <div className="ingredient-form-container">
-          <button className="ingredient-form-back" onClick={() => navigate(-1)}>
-            ← 뒤로가기
-          </button>
-
-          <div className="ingredient-form-layout">
-            <div className="ingredient-form-image-section">
-              <button
-                className={`ingredient-heart-btn ${liked ? 'liked' : ''}`}
-                type="button"
-                onClick={() => setLiked(!liked)}
-              >
-                ♥
-              </button>
-              <div className="ingredient-form-img-placeholder" />
+      <div className="page-content-area">
+        <div className="main-content">
+          <div className="fr-hero-card">
+            <div className="fr-hero-card-body">
+              <h1 className="fr-hero-title">
+                {isEdit ? '식재료 수정' : '식재료 등록'}
+              </h1>
+              <p className="fr-hero-sub">
+                {isEdit
+                  ? '식재료 정보를 수정하고 냉장고를 관리하세요.'
+                  : '새로운 식재료를 등록하고 냉장고를 채워보세요.'}
+              </p>
             </div>
+          </div>
+        </div>
+        <div className="if-page">
 
-            <form className="ingredient-form-info" onSubmit={handleSubmit}>
-              <h1 className="ingredient-form-title">식재료 생성/수정</h1>
+          {/* ── 폼 카드 ── */}
+          <div className="if-form-card">
+            <form onSubmit={handleSubmit}>
 
-              <div className="ingredient-form-group">
-                <label className="ingredient-form-label">식재료 이름</label>
+              {/* 식재료 이름 */}
+              <div className="if-field">
+                <label className="if-label">Ingredient Name</label>
                 <input
+                  className="if-input"
                   type="text"
-                  className="ingredient-form-input"
-                  placeholder="Value"
+                  placeholder="e.g. Organic Chamomile"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
 
-              <div className="ingredient-form-group">
-                <label className="ingredient-form-label">종류(카테고리)</label>
-                <div className="ingredient-select-wrapper">
-                  <select
-                    className="ingredient-form-select"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                  >
-                    <option value="">Value</option>
-                    {CATEGORIES.map(c => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+              {/* 카테고리 + 보관 형태 */}
+              <div className="if-row">
+                <div className="if-field">
+                  <label className="if-label">Category</label>
+                  <div className="if-select-wrap">
+                    <select
+                      className="if-select"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                    >
+                      <option value="">Select Category</option>
+                      {CATEGORIES.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                    <span className="if-select-arrow">⌄</span>
+                  </div>
+                </div>
+                <div className="if-field">
+                  <label className="if-label">Storage Type</label>
+                  <div className="if-select-wrap">
+                    <select
+                      className="if-select"
+                      value={storageType}
+                      onChange={(e) => setStorageType(e.target.value)}
+                    >
+                      <option value="">Select Storage</option>
+                      {STORAGE_TYPES.map(s => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                    <span className="if-select-arrow">⌄</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="ingredient-form-group">
-                <label className="ingredient-form-label">보관 형태</label>
-                <div className="ingredient-select-wrapper">
-                  <select
-                    className="ingredient-form-select"
-                    value={storageType}
-                    onChange={(e) => setStorageType(e.target.value)}
-                  >
-                    <option value="">Value</option>
-                    {STORAGE_TYPES.map(s => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
+              {/* 수량 */}
+              <div className="if-field">
+                <label className="if-label">Quantity</label>
+                <div className="if-qty-row">
+                  <input
+                    className="if-input if-qty-input"
+                    type="number"
+                    placeholder="0.00"
+                    value={quantity}
+                    min="0"
+                    max="10000"
+                    step="0.1"
+                    onChange={(e) => {
+                      const val = e.target.value
+                      if (val === '') { setQuantity(''); return }
+                      if (parseFloat(val) > 10000) return
+                      if (/^\d+(\.\d{2,})$/.test(val)) return
+                      setQuantity(val)
+                    }}
+                  />
+                  <div className="if-select-wrap if-unit-wrap">
+                    <select
+                      className="if-select"
+                      value={unit}
+                      onChange={(e) => setUnit(e.target.value)}
+                    >
+                      {UNITS.map(u => (
+                        <option key={u} value={u}>{u}</option>
+                      ))}
+                    </select>
+                    <span className="if-select-arrow">⌄</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="ingredient-form-group">
-                <label className="ingredient-form-label">수량(g, ml, 개)</label>
-                <input
-                  type="number"
-                  className="ingredient-form-input"
-                  placeholder="Value"
-                  value={quantity}
-                  min="0"
-                  max="10000"
-                  step="0.1"
-                  onChange={(e) => {
-                    const val = e.target.value
-                    if (val === '') { setQuantity(''); return }
-                    if (parseFloat(val) > 10000) return
-                    if (/^\d+(\.\d{2,})$/.test(val)) return
-                    setQuantity(val)
-                  }}
-                />
+              {/* Stock Reminder */}
+              <div className="if-reminder">
+                <div className="if-reminder-icon">ℹ</div>
+                <div className="if-reminder-body">
+                  <span className="if-reminder-title">STOCK REMINDER</span>
+                  <p className="if-reminder-text">
+                    재고가 초기 등록 수량의 20%에 도달하면 자동으로 알림을 보내드립니다.
+                  </p>
+                </div>
               </div>
 
-              <button type="submit" className="ingredient-submit-btn">
-                식재료 생성/수정
-              </button>
+              {/* 버튼 */}
+              <div className="if-btn-row">
+                <button type="submit" className="if-save-btn">
+                  {isEdit ? 'Save Changes' : 'Register Ingredient'}
+                </button>
+                <button type="button" className="if-cancel-btn" onClick={() => navigate(-1)}>
+                  Cancel
+                </button>
+              </div>
+
             </form>
+
+            {isEdit && (
+              <button type="button" className="if-remove-btn" onClick={handleDelete}>
+                🗑 REMOVE INGREDIENT
+              </button>
+            )}
           </div>
-        </div>
+
+          {/* ── 하단 장식 이미지 ── */}
+          <div className="if-deco-row">
+            <img src={deco} alt="Decoration" className="if-deco-img" />
+          </div>
+
+        </div>{/* if-page */}
         <Footer />
       </div>
     </div>

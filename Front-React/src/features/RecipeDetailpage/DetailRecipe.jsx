@@ -1,16 +1,18 @@
 import React from 'react'
-import MainHeader from '../public/MainHeader'
-import RecipeCard from './RecipeCard'
 import Footer from '../public/Footer'
 import RecipeDetail from './RecipeDetail'
+import Sidebar from '../public/Sidebar'
+import '../public/root.css'
 
 const DetailRecipe = () => {
   return (
-  <div className="page-layout">
-    <MainHeader></MainHeader>
-    <RecipeDetail></RecipeDetail>
-    <Footer></Footer>
-  </div>
+    <div className="page-layout">
+      <Sidebar />
+      <div className="page-content-area">
+        <RecipeDetail />
+        <Footer />
+      </div>
+    </div>
   )
 }
 

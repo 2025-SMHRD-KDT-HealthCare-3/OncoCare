@@ -135,11 +135,10 @@ const Auth = () => {
         <main className="auth-main">
           <section className="auth-left">
             <div className="auth-badge">
-              <span className="auth-badge-icon">✦</span>
-              <span>Healing Sanctuary</span>
+              <span className="auth-badge-icon">✦ Healing Sanctuary</span>
             </div>
 
-            <h1 className="auth-brand-title">OncoCare</h1>
+            <h1 className="auth-brand-title">OncoCare</h1> 
             <p className="auth-brand-subtitle">대장암을 이기는 나만의 식단</p>
 
             <div className="auth-feature-row">
@@ -225,11 +224,6 @@ const Auth = () => {
                           {showPassword ? '숨김' : '보기'}
                         </button>
                       </div>
-                    </div>
-
-                    <div className="auth-check-row">
-                      <input type="checkbox" id="remember" />
-                      <label htmlFor="remember">Remember me on this sanctuary device</label>
                     </div>
 
                     {loginError && <p className="auth-error">{loginError}</p>}

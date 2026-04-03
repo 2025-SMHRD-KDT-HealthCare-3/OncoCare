@@ -1,0 +1,7 @@
+.main-bg {
+  background-image: url('../../assets/healing_sanctuary_background_1.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+}

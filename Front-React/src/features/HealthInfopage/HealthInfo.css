@@ -1,150 +1,449 @@
-.healthinfo-wrapper {
+.health-profile-page {
+  min-height: 100vh;
+  background: #f5f4ee;
+  padding: 36px 48px 80px;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  padding: 50px 24px 60px;
-  background-color: #f5f5f5;
 }
 
-.healthinfo-box {
-  background-color: white;
-  padding: 4rem 3rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.health-profile-shell {
   width: 100%;
-  max-width: 700px;
+  max-width: 1100px;
 }
 
-.healthinfo-section {
-  margin-bottom: 40px;
-}
-
-.healthinfo-section-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text-main);
-  margin-bottom: 20px;
-}
-
-.healthinfo-label {
-  display: block;
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 6px;
-}
-
-/* 2열 기본 행 */
-.healthinfo-row {
+/* ════════════════════════════════
+   페이지 헤더  (MyPage 타이틀 스타일 통일)
+   ════════════════════════════════ */
+.fr-hero-card {
+  background: '--bg';
+  border-radius: 20px;
+  padding: 40px 44px;
   display: flex;
-  gap: 24px;
   align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  min-height: 160px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e8e6de;
 }
 
-.healthinfo-row.three-col .healthinfo-field {
-  flex: 1;
+.fr-hero-card::before {
+  display: none;
 }
 
-.healthinfo-row.align-start {
-  align-items: flex-start;
+.fr-hero-card::after {
+  display: none;
 }
 
-.healthinfo-field {
-  flex: 1;
+.fr-hero-card-body { z-index: 1; }
+
+.fr-hero-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1c1c1c;
+  margin: 0 0 8px;
+  line-height: 1.2;
 }
 
-/* 토글 그룹 */
-.healthinfo-toggle-group {
+.fr-hero-sub {
+  font-size: 14px;
+  color: #8a9189;
+  margin: 0;
+  max-width: 420px;
+  line-height: 1.65;
+}
+
+.fr-hero-actions {
+  z-index: 1;
+  flex-shrink: 0;
+}
+.health-profile-header {
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.health-profile-header h1 {
+  margin: 0 0 8px;
+  font-size: 34px;
+  font-weight: 800;
+  color: #1c1c1c;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+.health-profile-header p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #6b7280;
+}
+
+/* ════════════════════════════════
+   섹션 헤딩  (MyPage 섹션 타이틀 통일)
+   ════════════════════════════════ */
+.profile-section {
+  margin-bottom: 28px;
+}
+
+.section-heading {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex: 1;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e8e6de;
 }
 
-.healthinfo-toggle-group .healthinfo-label {
+.section-heading h2 {
   margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #1c1c1c;
+  font-family: inherit;
+}
+
+.section-icon {
+  font-size: 18px;
+  color: #2a5c1e;
+}
+
+/* ════════════════════════════════
+   카드 (Fridge/MyPage 카드 통일)
+   ════════════════════════════════ */
+.metric-card,
+.toggle-card,
+.option-card {
+  background: #ffffff;
+  border: 1px solid #e8e6de;
+  border-radius: 20px;
+  padding: 20px 22px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ════════════════════════════════
+   입력 필드  (f8f7f2 배경 통일)
+   ════════════════════════════════ */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.profile-label {
+  display: block;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: black;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.metric-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8f7f2;
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.profile-input,
+.profile-select,
+.metric-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #1c1c1c;
+  font-family: inherit;
+}
+
+.metric-input {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.profile-input[type="date"] {
+  font-size: 15px;
+}
+
+.metric-unit {
+  font-size: 14px;
+  color: #6b7280;
   white-space: nowrap;
 }
 
-.healthinfo-toggle-desc {
-  font-size: 13px;
-  color: var(--text-sub);
-}
-
-/* 알레르기 검색 */
-.allergy-search-box {
-  position: relative;
-}
-
-.allergy-search-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 14px;
-  color: #aaa;
-  pointer-events: none;
-}
-
-/* 선택된 태그 */
-.allergy-tags {
+/* ════════════════════════════════
+   토글 카드
+   ════════════════════════════════ */
+.toggle-card {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.allergy-tag {
-  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  background: #8EBFA3;
-  color: #fff;
-  border-radius: 20px;
-  padding: 3px 10px;
-  font-size: 13px;
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
-.allergy-tag button {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 15px;
-  line-height: 1;
-  padding: 0;
+.toggle-copy h3 {
+  margin: 0 0 3px;
+  font-size: 16px;
+  color: #1c1c1c;
+  font-weight: 700;
+}
+
+.toggle-copy p {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.custom-switch {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.custom-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.custom-switch .slider {
+  position: absolute;
+  inset: 0;
+  background: #d3d8d3;
+  border-radius: 999px;
+  transition: 0.25s ease;
   cursor: pointer;
 }
 
-/* 체크리스트 */
-.allergy-list {
-  margin-top: 10px;
-  max-height: 200px;
-  overflow-y: auto;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 8px 12px 8px 24px;
+.custom-switch .slider::before {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  left: 3px;
+  top: 3px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: 0.25s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 }
 
-.allergy-item {
-  padding: 4px 0;
-  font-size: 14px;
+.custom-switch input:checked + .slider {
+  background: var(--primary-dark, #2E7D32);
 }
 
-/* 제출 버튼 */
-.healthinfo-submit-row {
-  display: flex;
-  justify-content: flex-end;
+.custom-switch input:checked + .slider::before {
+  transform: translateX(22px);
 }
 
-.healthinfo-submit-btn {
-  background-color: #3d3d3d;
-  color: #fff;
-  padding: 10px 28px;
-  border-radius: 8px;
+.extra-row {
+  margin-top: 14px;
+}
+
+.extra-field {
+  max-width: 240px;
+}
+
+.profile-select {
+  appearance: none;
+  background: #f8f7f2;
+  border-radius: 12px;
+  padding: 10px 14px;
   font-size: 15px;
+  color: #1c1c1c;
+  border: 1px solid #e8e6de;
+  width: 100%;
+  outline: none;
+  font-family: inherit;
 }
 
-.healthinfo-submit-btn:hover {
-  background-color: var(--text-main);
+.stage-select {
+  width: 200px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+/* ════════════════════════════════
+   옵션 카드 (알레르기 등)
+   ════════════════════════════════ */
+.option-card {
+  margin-bottom: 14px;
+}
+
+.pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pill-btn {
+  border: 1px solid #e8e6de;
+  background: #f8f7f2;
+  color: #1c1c1c;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pill-btn.active {
+  background: linear-gradient(135deg, var(--primary, #4CAF50), var(--primary-dark, #2E7D32));
   color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.22);
+}
+
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.selected-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #eaf2e6;
+  color: #2a5c1e;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.selected-tag button {
+  border: none;
+  background: transparent;
+  color: #2a5c1e;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.search-box {
+  margin-bottom: 12px;
+}
+
+.allergy-search-input {
+  width: 100%;
+  background: #f8f7f2;
+  border: 1px solid #e8e6de;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #1c1c1c;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.allergy-list-modern {
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.allergy-check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 2px;
+  font-size: 14px;
+  color: #1c1c1c;
+  cursor: pointer;
+}
+
+.allergy-check-item input {
+  cursor: pointer;
+}
+
+/* ════════════════════════════════
+   저장 버튼  (Sidebar active 버튼 스타일)
+   ════════════════════════════════ */
+.save-row {
+  margin-top: 28px;
+}
+
+.save-btn {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary, #4CAF50), var(--primary-dark, #2E7D32));
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 16px 24px;
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.22);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.save-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(76, 175, 80, 0.28);
+}
+
+.privacy-note {
+  text-align: center;
+  margin-top: 18px;
+  color: #9ca3af;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ════════════════════════════════
+   Responsive
+   ════════════════════════════════ */
+@media (max-width: 768px) {
+  .health-profile-page {
+    padding: 24px 16px 60px;
+  }
+
+  .health-profile-header {
+    margin-bottom: 24px;
+  }
+
+  .health-profile-header h1 {
+    font-size: 28px;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .toggle-card {
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .save-btn {
+    font-size: 15px;
+    padding: 14px 20px;
+  }
+
+  .pill-group {
+    gap: 8px;
+  }
+
+  .pill-btn {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
 }

@@ -4,20 +4,7 @@
 }
 
 .daily-log-header {
-  padding: 32px 40px 20px;
-}
-
-.daily-log-title {
-  font-size: 26px;
-  font-weight: 800;
-  color: #1a1a1a;
-  margin: 0 0 4px;
-}
-
-.daily-log-date {
-  font-size: 14px;
-  color: #8a9189;
-  margin: 0;
+  display: none;
 }
 
 /* ── 2열 컨테이너 ── */
@@ -25,7 +12,10 @@
   display: grid;
   grid-template-columns: 1fr 360px;
   gap: 16px;
-  padding: 0 40px 24px;
+  padding: 0 32px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .daily-log-left {
@@ -627,7 +617,10 @@
   justify-content: flex-end;
   align-items: center;
   gap: 12px;
-  padding: 16px 40px;
+  padding: 16px 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
   background: rgba(245,243,239,0.95);
   backdrop-filter: blur(8px);
   border-top: 1px solid #e8e4df;
@@ -670,7 +663,6 @@
 
 @media (max-width: 640px) {
   .daily-log-container { padding: 0 16px 20px; }
-  .daily-log-header { padding: 20px 16px 12px; }
   .dr-vitality-grid { grid-template-columns: 1fr; }
   .dr-form-row { grid-template-columns: 1fr; }
   .dr-action-bar { padding: 14px 16px; }

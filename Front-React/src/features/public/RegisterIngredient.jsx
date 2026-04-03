@@ -13,7 +13,7 @@ const RegisterIngredient = () => {
   return (
     <section className="ingredient-section">
       <div className="ingredient-header">
-        <h3 className="ingredient-title">Ingredient Input</h3>
+        <h3 className="ingredient-title">식재료 생성</h3>
         <p className="ingredient-subtitle">
           Register your ingredients to receive personalized meal recommendations.
         </p>
@@ -22,7 +22,7 @@ const RegisterIngredient = () => {
       <div className="ingredient-action-list">
         <button className="ingredient-action primary">
           <span className="ingredient-action-icon">📷</span>
-          <span>Scan Receipt</span>
+          <span>식재료 스캔</span>
         </button>
 
         <button
@@ -30,7 +30,7 @@ const RegisterIngredient = () => {
           onClick={() => navigate('/IngredientForm')}
         >
           <span className="ingredient-action-icon">✏️</span>
-          <span>Manual Entry</span>
+          <span>수동 입력</span>
         </button>
       </div>
     </section>

@@ -20,17 +20,21 @@ const DailyReport = () => {
     <div className="page-layout daily-log-page">
       <Sidebar />
       <div className="page-content-area">
-        <div className="daily-log-header">
-          <h1 className="daily-log-title">Daily Health Log</h1>
-          <p className="daily-log-date">{formatDisplayDate(date)}</p>
+        <div className="main-content">
+          <div className="fr-hero-card">
+            <div className="fr-hero-card-body">
+              <h1 className="fr-hero-title">Daily Health Log</h1>
+              <p className="fr-hero-sub">{formatDisplayDate(date)}</p>
+            </div>
+          </div>
         </div>
         <DailyReportBody date={date} />
         <div className="dr-action-bar">
           <button className="dr-btn-discard" onClick={() => navigate(-1)}>
-            Discard Draft
+            모두 지우기
           </button>
           <button className="dr-btn-complete" onClick={() => navigate('/Main')}>
-            Complete Log ✓
+            기록 저장 ✓
           </button>
         </div>
         <Footer />

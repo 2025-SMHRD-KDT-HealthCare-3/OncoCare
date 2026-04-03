@@ -1,96 +1,356 @@
-.register-wrapper {
+/* ════════════════════════════════
+   페이지
+   ════════════════════════════════ */
+.edit-profile-page {
+  min-height: 100vh;
+  background: #f5f4ee;
+  padding: 36px 48px 80px;
+}
+
+.edit-profile-wrapper {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ════════════════════════════════
+   Hero Card (Fridge/HealthInfo 통일)
+   ════════════════════════════════ */
+.fr-hero-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px 44px;
   display: flex;
-  justify-content: center;  /* 가로 중앙 */
-  align-items: center;       /* 세로 중앙 */
-  min-height: 100vh;         /* 화면 전체 높이 */
-  padding-top: 80px;         /* 네비바 가리는 거 방지 */
-  background-color: #f5f5f5;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  min-height: 160px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e8e6de;
 }
 
-.register-box{
-    background-color: white;
-    padding: 6rem 3rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 600px;
+.fr-hero-card-body { z-index: 1; }
+
+.fr-hero-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1c1c1c;
+  margin: 0 0 8px;
+  line-height: 1.2;
 }
 
-.register-title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
+.fr-hero-sub {
+  font-size: 14px;
+  color: #8a9189;
+  margin: 0;
+  max-width: 420px;
+  line-height: 1.65;
 }
 
-.name-gender-wrapper {
+/* ════════════════════════════════
+   폼 카드
+   ════════════════════════════════ */
+.edit-profile-card {
+  background: #ffffff;
+  border: 1px solid #e8e6de;
+  border-radius: 20px;
+  padding: 32px 32px 28px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.profile-avatar-wrap {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto 28px;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #eaf2e6;
+  color: #2a5c1e;
+  font-size: 40px;
   display: flex;
-  gap: 8px;
-  margin-bottom: 1rem;
-  margin-top: 1rem;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #e8e6de;
 }
 
-.name-box {
-  flex: 1;  /* 남은 공간 다 차지 */
+.profile-avatar-edit {
+  position: absolute;
+  right: -4px;
+  bottom: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #2a5c1e;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(42, 92, 30, 0.25);
 }
 
-.gender-btn {
-  height: 100%;
-  border: 1px solid #ced4da;  /* 외곽선 */
-  border-radius: 8px;
-  background-color: white;
-  padding: 0 1rem;
-  white-space: nowrap;
+/* ════════════════════════════════
+   섹션
+   ════════════════════════════════ */
+.profile-form-section {
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid #e8e6de;
 }
 
-.gender-btn:hover {
-  background-color: #f5f5f5;
+.profile-form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
 }
 
-
-.btn{
-    align-content: center;
-    border-radius: 10px;
-    border: none;
-    padding: 8px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 18px;
-    margin: 0 10px;
-    cursor: pointer;
+.profile-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
 }
 
-.custom-btn1{
-    align-content: center;
-    background-color: var(--primary);
-    border-radius: 10px;
-    border: none;
-    color: white;
-    padding: 8px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 14px;
-    margin: 0 10px;
-    cursor: pointer;
-
+.profile-section-title h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1c1c1c;
 }
 
-.custom-btn2{
-    display: block;
-    justify-content: center;
-    align-content: center;
-    background-color: var(--primary);
-    border-radius: 10px;
-    border: none;
-    color: white;
-    padding: 10px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 0 auto;
-    width: 500px;
-    cursor: pointer;
+.profile-section-icon {
+  font-size: 18px;
+}
 
+/* ════════════════════════════════
+   그리드 & 입력 필드
+   ════════════════════════════════ */
+.profile-grid {
+  display: grid;
+  gap: 16px 20px;
+}
+
+.profile-grid.two-col {
+  grid-template-columns: repeat(2, 1fr);
+  margin-bottom: 16px;
+}
+
+.profile-grid.one-col {
+  grid-template-columns: 1fr;
+  margin-bottom: 16px;
+}
+
+.profile-grid.email-check-row {
+  grid-template-columns: 1fr 140px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.profile-field label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.profile-text-input {
+  width: 100%;
+  height: 48px;
+  border: 1px solid #e8e6de;
+  border-radius: 12px;
+  background: #f8f7f2;
+  padding: 0 14px;
+  font-size: 15px;
+  color: #1c1c1c;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+.profile-text-input:focus {
+  border-color: #2a5c1e;
+}
+
+.profile-text-input::placeholder {
+  color: #9ca3af;
+}
+
+.profile-text-input.readonly {
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.profile-select-input {
+  appearance: none;
+  cursor: pointer;
+}
+
+.input-with-end-icon {
+  position: relative;
+}
+
+.input-with-end-icon .profile-text-input {
+  padding-right: 44px;
+}
+
+.end-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: #9ca3af;
+}
+
+/* ════════════════════════════════
+   이메일 중복확인 버튼
+   ════════════════════════════════ */
+.email-check-btn-wrap {
+  display: flex;
+  align-items: flex-end;
+}
+
+.email-check-btn {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary, #4CAF50), var(--primary-dark, #2E7D32));
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.22);
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+
+.email-check-btn:hover {
+  opacity: 0.88;
+}
+
+/* ════════════════════════════════
+   메시지
+   ════════════════════════════════ */
+.profile-message {
+  margin: -8px 0 14px;
+  font-size: 13px;
+}
+
+.success-msg { color: #2a5c1e; }
+.error-msg   { color: #c62828; }
+
+/* ════════════════════════════════
+   액션 버튼 (Sidebar active 스타일 통일)
+   ════════════════════════════════ */
+.profile-action-area {
+  margin-top: 24px;
+}
+
+.profile-save-btn {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary, #4CAF50), var(--primary-dark, #2E7D32));
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.22);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.profile-save-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(76, 175, 80, 0.28);
+}
+
+.profile-cancel-btn {
+  display: block;
+  margin: 16px auto 0;
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+
+.profile-cancel-btn:hover {
+  color: #1c1c1c;
+}
+
+.profile-login-link {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.profile-login-link a {
+  color: #2a5c1e;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.profile-bottom-note {
+  text-align: center;
+  margin-top: 20px;
+  color: #9ca3af;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ════════════════════════════════
+   Responsive
+   ════════════════════════════════ */
+@media (max-width: 900px) {
+  .edit-profile-page {
+    padding: 24px 28px 60px;
+  }
+}
+
+@media (max-width: 640px) {
+  .edit-profile-page {
+    padding: 20px 16px 48px;
+  }
+
+  .fr-hero-card {
+    padding: 28px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    min-height: auto;
+  }
+
+  .fr-hero-title {
+    font-size: 24px;
+  }
+
+  .edit-profile-card {
+    padding: 24px 20px 20px;
+  }
+
+  .profile-grid.two-col,
+  .profile-grid.email-check-row {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-save-btn {
+    height: 48px;
+    font-size: 15px;
+  }
 }

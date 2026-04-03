@@ -1,154 +1,268 @@
-.ingredient-form-container {
-  max-width: 1200px;
+/* ════════════════════════════════
+   페이지
+   ════════════════════════════════ */
+.if-page {
+  padding: 0 32px 60px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 40px 40px 60px;
+  width: 100%;
 }
 
-.ingredient-form-layout {
+/* ════════════════════════════════
+   폼 카드
+   ════════════════════════════════ */
+.if-form-card {
+
+  background: #fff;
+  border: 1px solid #e8e6de;
+  border-radius: 20px;
+  padding: 32px 28px 26px;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+}
+
+/* ── 필드 ── */
+.if-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 22px;
+}
+
+/* 라벨: 스크린샷처럼 초록색 */
+.if-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2a5c1e;
+}
+
+/* ── 입력창: 배경을 페이지 크림색으로 ── */
+.if-input {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid #e8e6de;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #1c1c1c;
+  background: #f8f7f2;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+  box-sizing: border-box;
+}
+
+.if-input:focus {
+  border-color: #2a5c1e;
+  background: #fff;
+}
+
+.if-input::placeholder {
+  color: #b0b7c0;
+}
+
+/* ── 행 레이아웃 ── */
+.if-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  align-items: start;
+  gap: 14px;
 }
 
-/* ── Image Section ── */
-.ingredient-form-image-section {
+/* ── 셀렉트 ── */
+.if-select-wrap {
   position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #e8e8e8;
-  aspect-ratio: 3 / 4;
 }
 
-.ingredient-form-img {
+.if-select {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.ingredient-form-img-placeholder {
-  width: 100%;
-  height: 100%;
-  background: #e8e8e8;
-}
-
-.ingredient-heart-btn {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 10;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: none;
-  background: #3d3d3d;
-  color: #fff;
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s;
-}
-
-.ingredient-heart-btn.liked {
-  background: #e53e3e;
-}
-
-/* ── Form Section ── */
-.ingredient-form-info {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.ingredient-form-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #111;
-  margin: 0 0 8px 0;
-}
-
-.ingredient-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ingredient-form-label {
+  padding: 13px 40px 13px 16px;
+  border: 1.5px solid #e8e6de;
+  border-radius: 12px;
   font-size: 15px;
-  color: #333;
-  font-weight: 500;
-}
-
-.ingredient-form-input,
-.ingredient-form-select {
-  width: 100%;
-  padding: 14px 16px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  font-size: 15px;
-  color: #333;
-  background: white;
+  color: #1c1c1c;
+  background: #f8f7f2;
   outline: none;
   appearance: none;
   -webkit-appearance: none;
-  transition: border-color 0.15s;
-}
-
-.ingredient-form-input:focus,
-.ingredient-form-select:focus {
-  border-color: #8EBFA3;
-}
-
-.ingredient-select-wrapper {
-  position: relative;
-}
-
-.ingredient-select-wrapper::after {
-  content: '∨';
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: #888;
-  font-size: 14px;
-}
-
-/* ── 제출 버튼 ── */
-.ingredient-submit-btn {
-  width: 100%;
-  padding: 16px;
-  background: #3d3d3d;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
-  margin-top: 8px;
+  transition: border-color 0.15s, background 0.15s;
+  box-sizing: border-box;
 }
 
-.ingredient-submit-btn:hover {
-  background: #222;
+.if-select:focus {
+  border-color: #2a5c1e;
+  background: #fff;
 }
 
-/* ── 뒤로가기 ── */
-.ingredient-form-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+.if-select-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-52%);
+  pointer-events: none;
+  color: #9ca3af;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* ── 수량 행 ── */
+.if-qty-row {
+  display: flex;
+  gap: 10px;
+}
+
+.if-qty-input {
+  flex: 1;
+}
+
+.if-unit-wrap {
+  width: 100px;
+  flex-shrink: 0;
+}
+
+/* ════════════════════════════════
+   Stock Reminder  (스크린샷 왼쪽 초록 테두리 박스)
+   ════════════════════════════════ */
+.if-reminder {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #e8e6de;
+  border-left: 4px solid #2a5c1e;
+  border-radius: 12px;
+  padding: 14px 16px;
   margin-bottom: 28px;
+}
+
+.if-reminder-icon {
+  width: 28px;
+  height: 28px;
+  background: #2a5c1e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.if-reminder-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.if-reminder-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #2a5c1e;
+  text-transform: uppercase;
+}
+
+.if-reminder-text {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ════════════════════════════════
+   버튼
+   ════════════════════════════════ */
+.if-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+/* 스크린샷처럼 pill 모양 + 넓은 초록 버튼 */
+.if-save-btn {
+  flex: 1;
+  padding: 15px 24px;
+  background: #2a5c1e;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.if-save-btn:hover {
+  opacity: 0.88;
+}
+
+/* Cancel은 텍스트만 */
+.if-cancel-btn {
   background: none;
   border: none;
-  font-size: 14px;
-  color: #888;
+  color: #6b7280;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
-  padding: 0;
+  padding: 0 8px;
+  transition: color 0.15s;
 }
 
-.ingredient-form-back:hover {
-  color: #333;
+.if-cancel-btn:hover {
+  color: #1c1c1c;
+}
+
+/* ── 삭제 버튼 ── */
+.if-remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #c62828;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  padding: 10px 0 0;
+  width: 100%;
+  transition: color 0.15s;
+}
+
+.if-remove-btn:hover {
+  color: #96281b;
+}
+
+/* ════════════════════════════════
+   하단 장식 이미지  (스크린샷 botanical images)
+   ════════════════════════════════ */
+.if-deco-row {
+  width: 100%;
+}
+
+.if-deco-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+}
+
+.if-deco-herbs     { background: linear-gradient(135deg, #2d5a1b, #4a8a32); }
+.if-deco-jars      { background: linear-gradient(135deg, #5a7a6a, #7a9a88); }
+.if-deco-botanicals { background: linear-gradient(135deg, #3d5c30, #5a8a48); }
+
+/* ════════════════════════════════
+   Responsive
+   ════════════════════════════════ */
+@media (max-width: 768px) {
+  .if-page { padding: 0 20px 48px; }
+  .if-row  { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .if-page { padding: 0 16px 40px; }
+  .if-deco-row { grid-template-columns: 1fr; }
+  .if-deco-img { height: 80px; }
 }

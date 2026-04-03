@@ -14,9 +14,15 @@ const ALL_ALLERGENS = [
   '메밀', '아황산염', '셀러리', '겨자', '참깨'
 ]
 
+const mealOptions = [
+  { label: '2 Meals', value: '2' },
+  { label: '3-4 Meals', value: '3' },
+  { label: '5+ Small Meals', value: '5' },
+]
+
 const HealthInfoBody = () => {
   const navigate = useNavigate()
-  // 기본 건강 정보
+
   const [height, setHeight] = useState('')
   const [weight, setWeight] = useState('')
   const [hasOstomy, setHasOstomy] = useState(false)
@@ -25,7 +31,6 @@ const HealthInfoBody = () => {
   const [surgeryDate, setSurgeryDate] = useState('')
   const [dischargeDate, setDischargeDate] = useState('')
 
-  // 식습관 정보
   const [mealsPerDay, setMealsPerDay] = useState('')
   const [allergySearch, setAllergySearch] = useState('')
   const [selectedAllergens, setSelectedAllergens] = useState([])
@@ -42,24 +47,31 @@ const HealthInfoBody = () => {
     )
   }
 
-  // 기존 건강정보 불러오기
   useEffect(() => {
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) return
 
-    axios.get(`http://localhost:3000/api/user/health?user_idx=${user_idx}`)
+    axios
+      .get(`http://localhost:3000/api/user/health?user_idx=${user_idx}`)
       .then((res) => {
         const d = res.data
         if (!d) return
-        if (d.height)        setHeight(d.height)
-        if (d.weight)        setWeight(d.weight)
-        if (d.cancer_stage)  setDiagnosisStage(String(d.cancer_stage))
-        if (d.surgery_date)  setSurgeryDate(String(d.surgery_date).split('T')[0])
-        if (d.discharge_date) setDischargeDate(String(d.discharge_date).split('T')[0])
+
+        if (d.height) setHeight(d.height)
+        if (d.weight) setWeight(d.weight)
+        if (d.cancer_stage) setDiagnosisStage(String(d.cancer_stage))
+        if (d.surgery_date) setSurgeryDate(String(d.surgery_date).split('T')[0])
+        if (d.discharge_date) {
+          setDischargeDate(String(d.discharge_date).split('T')[0])
+        }
+
         setHasOstomy(d.stoma_status === 'Y' || d.stoma_status === 1)
         setHasChemo(d.chemo_status === 'Y' || d.chemo_status === 1)
+
         if (d.meals_per_day) setMealsPerDay(String(d.meals_per_day))
-        if (d.allergy) setSelectedAllergens(d.allergy.split(',').filter(a => a))
+        if (d.allergy) {
+          setSelectedAllergens(d.allergy.split(',').filter((a) => a))
+        }
       })
       .catch(() => {
         // 데이터 없으면 빈 폼으로 진행
@@ -74,18 +86,21 @@ const HealthInfoBody = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/api/user/health/register', {
-        user_idx,
-        height,
-        weight,
-        cancer_stage: diagnosisStage,
-        surgery_date: surgeryDate,
-        discharge_date: dischargeDate,
-        stoma_status: hasOstomy ? 'Y' : 'N',
-        chemo_status: hasChemo ? 'Y' : 'N',
-        allergy: selectedAllergens.join(','),
-        meals_per_day: mealsPerDay,
-      })
+      const response = await axios.post(
+        'http://localhost:3000/api/user/health/register',
+        {
+          user_idx,
+          height,
+          weight,
+          cancer_stage: diagnosisStage,
+          surgery_date: surgeryDate,
+          discharge_date: dischargeDate,
+          stoma_status: hasOstomy ? 'Y' : 'N',
+          chemo_status: hasChemo ? 'Y' : 'N',
+          allergy: selectedAllergens.join(','),
+          meals_per_day: mealsPerDay,
+        }
+      )
 
       if (response.data == '1') {
         alert('저장되었습니다.')
@@ -99,202 +114,226 @@ const HealthInfoBody = () => {
     }
   }
 
+  const handleNumberChange = (setter) => (e) => {
+    const val = e.target.value
+    if (val === '') {
+      setter('')
+      return
+    }
+    if (parseFloat(val) > 999) return
+    if (/^\d+(\.\d{2,})$/.test(val)) return
+    setter(val)
+  }
+
   return (
-    <div className='main-content'>
-        <div className="healthinfo-wrapper">
-        <div className="healthinfo-box">
+    <div className="main-content">
+      <div className="health-profile-page">
+        <div className="health-profile-shell">
+          
+        <div className="fr-hero-card">
+          <div className="fr-hero-card-body">
+            <h1 className="fr-hero-title">Health Profile</h1>
+            <p className="fr-hero-sub">
+              나의 건강정보를 기록하고 관리합니다.
+            </p>
+          </div>
+        </div>
 
-        {/* ── 기본 건강 정보 ── */}
-        <section className="healthinfo-section">
-            <h2 className="healthinfo-section-title">기본 건강 정보</h2>
-
-            {/* 키 / 체중 */}
-            <div className="healthinfo-row">
-            <div className="healthinfo-field">
-                <label className="healthinfo-label">키 (cm)</label>
-                <input
-                type="number"
-                className="form-control"
-                placeholder="Value"
-                value={height}
-                min="0"
-                max="999"
-                step="0.1"
-                onChange={(e) => {
-                  const val = e.target.value
-                  if (val === '') { setHeight(''); return }
-                  if (parseFloat(val) > 999) return
-                  if (/^\d+(\.\d{2,})$/.test(val)) return
-                  setHeight(val)
-                }}
-                />
-            </div>
-            <div className="healthinfo-field">
-                <label className="healthinfo-label">체중 (kg)</label>
-                <input
-                type="number"
-                className="form-control"
-                placeholder="Value"
-                value={weight}
-                min="0"
-                max="999"
-                step="0.1"
-                onChange={(e) => {
-                  const val = e.target.value
-                  if (val === '') { setWeight(''); return }
-                  if (parseFloat(val) > 999) return
-                  if (/^\d+(\.\d{2,})$/.test(val)) return
-                  setWeight(val)
-                }}
-                />
-            </div>
+          <section className="profile-section">
+            <div className="section-heading">
+              <span className="section-icon">●</span>
+              <h2>Physical Info</h2>
             </div>
 
-            {/* 장루 여부 / 항암 여부 */}
-            <div className="healthinfo-row" style={{ marginTop: '24px' }}>
-            <div className="healthinfo-toggle-group">
-                <span className="healthinfo-label">장루 여부</span>
-                <div className="form-check form-switch">
-                <input
-                    className="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    checked={hasOstomy}
-                    onChange={(e) => setHasOstomy(e.target.checked)}
-                />
+            <div className="metric-grid">
+              <div className="metric-card">
+                <label className="profile-label">신장</label>
+                <div className="metric-input-wrap">
+                  <input
+                    type="number"
+                    className="profile-input metric-input"
+                    placeholder="175"
+                    value={height}
+                    min="0"
+                    max="999"
+                    step="0.1"
+                    onChange={handleNumberChange(setHeight)}
+                  />
+                  <span className="metric-unit">cm</span>
                 </div>
-                <span className="healthinfo-toggle-desc">
-                {hasOstomy ? '있음' : '없음'}
-                </span>
-            </div>
-            <div className="healthinfo-toggle-group">
-                <span className="healthinfo-label">항암 여부</span>
-                <div className="form-check form-switch">
-                <input
-                    className="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    checked={hasChemo}
-                    onChange={(e) => setHasChemo(e.target.checked)}
-                />
+              </div>
+
+              <div className="metric-card">
+                <label className="profile-label">체중</label>
+                <div className="metric-input-wrap">
+                  <input
+                    type="number"
+                    className="profile-input metric-input"
+                    placeholder="72"
+                    value={weight}
+                    min="0"
+                    max="999"
+                    step="0.1"
+                    onChange={handleNumberChange(setWeight)}
+                  />
+                  <span className="metric-unit">kg</span>
                 </div>
-                <span className="healthinfo-toggle-desc">
-                {hasChemo ? '받는 중' : '받지 않음'}
-                </span>
-            </div>
+              </div>
             </div>
 
-            {/* 대장암 진단 기수 / 수술 날짜 / 퇴원 날짜 */}
-            <div className="healthinfo-row three-col" style={{ marginTop: '24px' }}>
-            <div className="healthinfo-field">
-                <label className="healthinfo-label">대장암 진단 기수</label>
-                <select
-                className="form-select"
+            <div className="toggle-card">
+              <div className="toggle-copy">
+                <h3>장루 여부</h3>
+                <p>Do you have an ostomy?</p>
+              </div>
+              <label className="custom-switch">
+                <input
+                  type="checkbox"
+                  checked={hasOstomy}
+                  onChange={(e) => setHasOstomy(e.target.checked)}
+                />
+                <span className="slider" />
+              </label>
+            </div>
+
+            <div className="toggle-card">
+              <div className="toggle-copy">
+                <h3>항암치료 여부</h3>
+                <p>In an active chemo treatment cycle?</p>
+              </div>
+              <label className="custom-switch">
+                <input
+                  type="checkbox"
+                  checked={hasChemo}
+                  onChange={(e) => setHasChemo(e.target.checked)}
+                />
+                <span className="slider" />
+              </label>
+            </div>
+
+            <div className="toggle-card">
+              <div className="toggle-copy">
+                <h3>대장암 기수</h3>
+              </div>
+              <select
+                className="profile-select stage-select"
                 value={diagnosisStage}
                 onChange={(e) => setDiagnosisStage(e.target.value)}
-                >
+              >
                 <option value="">선택</option>
                 <option value="1기">1기</option>
                 <option value="2기">2기</option>
                 <option value="3기">3기</option>
                 <option value="4기">4기</option>
-                </select>
+              </select>
             </div>
-            <div className="healthinfo-field">
-                <label className="healthinfo-label">수술 날짜</label>
-                <input
-                type="date"
-                className="form-control"
-                value={surgeryDate}
-                onChange={(e) => setSurgeryDate(e.target.value)}
-                />
-            </div>
-            <div className="healthinfo-field">
-                <label className="healthinfo-label">퇴원 날짜</label>
-                <input
-                type="date"
-                className="form-control"
-                value={dischargeDate}
-                onChange={(e) => setDischargeDate(e.target.value)}
-                />
-            </div>
-            </div>
-        </section>
+          </section>
 
-        {/* ── 식습관 정보 ── */}
-        <section className="healthinfo-section">
-            <h2 className="healthinfo-section-title">식습관 정보</h2>
+          <section className="profile-section">
+            <div className="section-heading">
+              <span className="section-icon">✦</span>
+              <h2>Journey Timeline</h2>
+            </div>
 
-            <div className="healthinfo-row align-start">
-            {/* 하루 식사 횟수 */}
-            <div className="healthinfo-field">
-                <label className="healthinfo-label">하루 식사 횟수</label>
-                <select
-                className="form-select"
-                value={mealsPerDay}
-                onChange={(e) => setMealsPerDay(e.target.value)}
-                >
-                <option value="">선택</option>
-                {[1, 2, 3, 4, 5, 6].map((n) => (
-                    <option key={n} value={n}>{n}회</option>
+            <div className="metric-grid">
+              <div className="metric-card">
+                <label className="profile-label">수술날짜</label>
+                <input
+                  type="date"
+                  className="profile-input"
+                  value={surgeryDate}
+                  onChange={(e) => setSurgeryDate(e.target.value)}
+                />
+              </div>
+
+              <div className="metric-card">
+                <label className="profile-label">퇴원날짜</label>
+                <input
+                  type="date"
+                  className="profile-input"
+                  value={dischargeDate}
+                  onChange={(e) => setDischargeDate(e.target.value)}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className="profile-section">
+            <div className="section-heading">
+              <span className="section-icon">◧</span>
+              <h2>Nourishment</h2>
+            </div>
+
+            <div className="option-card">
+              <label className="profile-label">식사 빈도</label>
+              <div className="pill-group">
+                {mealOptions.map((item) => (
+                  <button
+                    key={item.label}
+                    type="button"
+                    className={`pill-btn ${
+                      mealsPerDay === item.value ? 'active' : ''
+                    }`}
+                    onClick={() => setMealsPerDay(item.value)}
+                  >
+                    {item.label}
+                  </button>
                 ))}
-                </select>
+              </div>
             </div>
 
-            {/* 알레르기 검색 + 체크리스트 */}
-            <div className="healthinfo-field">
-                <label className="healthinfo-label">알레르기</label>
-                <div className="allergy-search-box">
-                <input
-                    type="text"
-                    className="form-control"
-                    placeholder="검색"
-                    value={allergySearch}
-                    onChange={(e) => setAllergySearch(e.target.value)}
-                />
-                <span className="allergy-search-icon">🔍</span>
-                </div>
+            <div className="option-card">
+              <label className="profile-label">알러지 식품 & 기피 식품</label>
 
-                {selectedAllergens.length > 0 && (
-                <div className="allergy-tags">
-                    {selectedAllergens.map((a) => (
-                    <span key={a} className="allergy-tag">
-                        {a}
-                        <button onClick={() => toggleAllergen(a)}>×</button>
+              {selectedAllergens.length > 0 && (
+                <div className="selected-tags">
+                  {selectedAllergens.map((a) => (
+                    <span key={a} className="selected-tag">
+                      {a}
+                      <button type="button" onClick={() => toggleAllergen(a)}>
+                        ×
+                      </button>
                     </span>
-                    ))}
+                  ))}
                 </div>
-                )}
+              )}
 
-                <div className="allergy-list">
+              <div className="search-box">
+                <input
+                  type="text"
+                  className="profile-input allergy-search-input"
+                  placeholder="Search sensitivities (e.g. Dairy, Nuts)"
+                  value={allergySearch}
+                  onChange={(e) => setAllergySearch(e.target.value)}
+                />
+              </div>
+
+              <div className="allergy-list-modern">
                 {filteredAllergens.map((allergen) => (
-                    <div key={allergen} className="form-check allergy-item">
+                  <label key={allergen} className="allergy-check-item">
                     <input
-                        className="form-check-input"
-                        type="checkbox"
-                        id={`allergy-${allergen}`}
-                        checked={selectedAllergens.includes(allergen)}
-                        onChange={() => toggleAllergen(allergen)}
+                      type="checkbox"
+                      checked={selectedAllergens.includes(allergen)}
+                      onChange={() => toggleAllergen(allergen)}
                     />
-                    <label className="form-check-label" htmlFor={`allergy-${allergen}`}>
-                        {allergen}
-                    </label>
-                    </div>
+                    <span>{allergen}</span>
+                  </label>
                 ))}
-                </div>
+              </div>
             </div>
-            </div>
-        </section>
+          </section>
 
-        {/* ── 제출 버튼 ── */}
-        <div className="healthinfo-submit-row">
-            <button className="btn healthinfo-submit-btn" onClick={handleSubmit}>
-            제출
+          <div className="save-row">
+            <button className="save-btn" onClick={handleSubmit}>
+              저장
             </button>
-        </div>
+          </div>
 
+          <p className="privacy-note">
+            당신의 건강 정보는 안전하게 저장되며, 절대 외부에 공유되지 않습니다. 이 정보는 개인 맞춤형 식단과 영양 가이드를 제공하는 데에만 사용됩니다. 
+          </p>
         </div>
-        </div>
+      </div>
     </div>
   )
 }

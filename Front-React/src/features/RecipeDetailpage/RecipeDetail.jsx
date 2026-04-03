@@ -1,31 +1,38 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import Sidebar from '../public/Sidebar'
 import axios from 'axios'
 import '../public/root.css'
 import './RecipeDetail.css'
-import Footer from '../public/Footer'
+import { getCategoryImage } from '../../utils/categoryImageMap'
 
 const RecipeDetail = () => {
   const { id } = useParams()
   const navigate = useNavigate()
+
   const [recipe, setRecipe] = useState(null)
   const [liked, setLiked] = useState(false)
-  const [openSection, setOpenSection] = useState('cooking')
   const [mealsPerDay, setMealsPerDay] = useState(3)
   const [mealType, setMealType] = useState('')
 
+  const recipeImage = useMemo(
+    () => getCategoryImage(recipe?.recipe_category, recipe?.recipe_name),
+    [recipe?.recipe_category, recipe?.recipe_name]
+  )
+
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/recipe/detail?recipe_idx=${id}`)
-      .then(res => setRecipe(res.data))
-      .catch(err => console.error('레시피 조회 실패:', err))
+    axios
+      .get(`http://localhost:3000/api/recipe/detail?recipe_idx=${id}`)
+      .then((res) => setRecipe(res.data))
+      .catch((err) => console.error('레시피 조회 실패:', err))
   }, [id])
 
   useEffect(() => {
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) return
-    axios.get(`http://localhost:3000/api/user/health?user_idx=${user_idx}`)
-      .then(res => {
+
+    axios
+      .get(`http://localhost:3000/api/user/health?user_idx=${user_idx}`)
+      .then((res) => {
         if (res.data?.meals_per_day) {
           setMealsPerDay(Number(res.data.meals_per_day))
         }
@@ -33,22 +40,33 @@ const RecipeDetail = () => {
       .catch(() => {})
   }, [])
 
-  const toggleSection = (section) => {
-    setOpenSection(prev => (prev === section ? null : section))
-  }
-
-  const mealLabels = ['첫번째끼', '두번째끼', '세번째끼', '네번째끼', '다섯번째끼', '여섯번째끼']
+  const mealLabels = [
+    '첫번째끼',
+    '두번째끼',
+    '세번째끼',
+    '네번째끼',
+    '다섯번째끼',
+    '여섯번째끼',
+  ]
 
   const handleSelectDiet = async () => {
     const user_idx = sessionStorage.getItem('user_idx')
-    if (!user_idx) { alert('로그인이 필요합니다.'); return }
-    if (!mealType) { alert('몇 번째 끼니인지 선택해주세요.'); return }
+    if (!user_idx) {
+      alert('로그인이 필요합니다.')
+      return
+    }
+    if (!mealType) {
+      alert('몇 번째 끼니인지 선택해주세요.')
+      return
+    }
+
     try {
       const res = await axios.post('http://localhost:3000/api/diet/clickRecipe', {
         user_idx,
         recipe_idx: id,
-        meal_type: mealType
+        meal_type: mealType,
       })
+
       if (res.data == 1 || res.data === '1') {
         alert('식단이 선택되었습니다!')
         navigate('/Main')
@@ -61,110 +79,197 @@ const RecipeDetail = () => {
     }
   }
 
-  return (
-    <div className="page-layout">
-      <Sidebar />
-      <div className="page-content-area main-content">
-        <div className="recipe-detail-container">
-          <button className="recipe-detail-back" onClick={() => navigate(-1)}>
-            ← 뒤로가기
-          </button>
+  const nutritionList = useMemo(() => {
+    if (!recipe?.nutrition_info) {
+      return [
+        { label: 'Calories', value: '-' },
+        { label: 'Protein', value: '-' },
+        { label: 'Fiber', value: '-' },
+        { label: 'Sodium', value: '-' },
+      ]
+    }
 
-          <div className="recipe-detail-layout">
-            <div className="recipe-detail-image-section">
-              <button
-                className={`recipe-heart-btn ${liked ? 'liked' : ''}`}
-                onClick={() => setLiked(!liked)}
-              >
-                ♥
-              </button>
-              <div className="recipe-detail-img-placeholder" />
+    if (typeof recipe.nutrition_info === 'string') {
+      const lines = recipe.nutrition_info
+        .split(/\n|,/)
+        .map((v) => v.trim())
+        .filter(Boolean)
+
+      const mapped = lines.map((line) => {
+        const parts = line.split(':')
+        if (parts.length >= 2) {
+          return {
+            label: parts[0].trim(),
+            value: parts.slice(1).join(':').trim(),
+          }
+        }
+        return { label: line, value: '' }
+      })
+
+      return mapped.length
+        ? mapped
+        : [
+            { label: 'Calories', value: recipe.nutrition_info },
+          ]
+    }
+
+    return [
+      { label: 'Calories', value: '-' },
+      { label: 'Protein', value: '-' },
+      { label: 'Fiber', value: '-' },
+      { label: 'Sodium', value: '-' },
+    ]
+  }, [recipe])
+
+  const ingredientsList = useMemo(() => {
+    if (!recipe?.main_ingredients) return []
+    return String(recipe.main_ingredients)
+      .split(/\n|,/)
+      .map((item) => item.trim())
+      .filter(Boolean)
+  }, [recipe])
+
+  const cookingSteps = useMemo(() => {
+    if (!recipe?.cooking_method) return []
+
+    const lines = String(recipe.cooking_method)
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+
+    if (lines.length > 1) return lines
+
+    return String(recipe.cooking_method)
+      .split(/[.]\s+/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+  }, [recipe])
+
+  return (
+    <div className="main-content recipe-modern-page">
+      <div className="recipe-modern-container">
+        <button className="recipe-modern-back" onClick={() => navigate(-1)}>
+          ← Go Back
+        </button>
+
+        <div className="recipe-modern-top">
+          <div className="recipe-hero-card">
+            <div className="recipe-badge">Phase 1: Soft Food</div>
+
+            <button
+              type="button"
+              className={`recipe-favorite-btn ${liked ? 'liked' : ''}`}
+              onClick={() => setLiked(!liked)}
+              aria-label="favorite"
+            >
+              ♥
+            </button>
+
+            <img
+              src={recipeImage}
+              alt={recipe?.recipe_name || 'recipe'}
+              className="recipe-hero-image"
+            />
+          </div>
+
+          <aside className="recipe-nutrition-panel">
+            <h3>Nutritional Value</h3>
+
+            <div className="nutrition-modern-list">
+              {nutritionList.map((item, index) => (
+                <div className="nutrition-modern-item" key={`${item.label}-${index}`}>
+                  <span>{item.label}</span>
+                  <strong>{item.value || '-'}</strong>
+                </div>
+              ))}
             </div>
 
-            <div className="recipe-detail-info">
-              <h1 className="recipe-detail-title">{recipe?.recipe_name || 'Recipe Name'}</h1>
-              <p className="recipe-detail-desc">{recipe?.recipe_category || ''}</p>
+            <div className="nutrition-note-box">
+              Digestive-supportive ingredients are chosen to help recovery and
+              maintain a gentle meal balance.
+            </div>
+          </aside>
+        </div>
 
-              <div className="recipe-accordion">
+        <div className="recipe-title-area">
+          <h1>{recipe?.recipe_name || '레시피 이름'}</h1>
+          <p>
+            {recipe?.recipe_category ||
+              '대장암 회복기에 적합한 부드럽고 소화가 쉬운 식단입니다.'}
+          </p>
+        </div>
 
-                <div className="recipe-accordion-item">
-                  <button
-                    className="recipe-accordion-header"
-                    onClick={() => toggleSection('ingredients')}
-                  >
-                    <span>사용 재료</span>
-                    <span>{openSection === 'ingredients' ? '∧' : '∨'}</span>
-                  </button>
-                  {openSection === 'ingredients' && (
-                    <div className="recipe-accordion-body">
-                      {recipe?.main_ingredients
-                        ? <p>{recipe.main_ingredients}</p>
-                        : <p>재료 정보가 없습니다.</p>
-                      }
+        <div className="recipe-modern-bottom">
+          <section className="ingredients-panel">
+            <h2>Ingredients</h2>
+
+            <div className="ingredients-list-modern">
+              {ingredientsList.length > 0 ? (
+                ingredientsList.map((item, index) => (
+                  <div className="ingredient-row" key={`${item}-${index}`}>
+                    <span className="ingredient-bullet">•</span>
+                    <span className="ingredient-text">{item}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="empty-copy">재료 정보가 없습니다.</p>
+              )}
+            </div>
+          </section>
+
+          <section className="cooking-panel">
+            <h2>Cooking Instructions</h2>
+
+            <div className="cooking-steps">
+              {cookingSteps.length > 0 ? (
+                cookingSteps.map((step, index) => (
+                  <div className="cooking-step" key={`${step}-${index}`}>
+                    <div className="step-number">{index + 1}</div>
+                    <div className="step-copy">
+                      <h4>{`Step ${index + 1}`}</h4>
+                      <p>{step}</p>
                     </div>
-                  )}
-                </div>
+                  </div>
+                ))
+              ) : (
+                <p className="empty-copy">조리방법 정보가 없습니다.</p>
+              )}
+            </div>
+          </section>
+        </div>
 
-                <div className="recipe-accordion-item">
-                  <button
-                    className="recipe-accordion-header"
-                    onClick={() => toggleSection('cooking')}
-                  >
-                    <span>조리방법</span>
-                    <span>{openSection === 'cooking' ? '∧' : '∨'}</span>
-                  </button>
-                  {openSection === 'cooking' && (
-                    <div className="recipe-accordion-body">
-                      {recipe?.cooking_method
-                        ? <p>{recipe.cooking_method}</p>
-                        : <p>조리방법 정보가 없습니다.</p>
-                      }
-                    </div>
-                  )}
-                </div>
-
-                <div className="recipe-accordion-item">
-                  <button
-                    className="recipe-accordion-header"
-                    onClick={() => toggleSection('nutrition')}
-                  >
-                    <span>영양정보</span>
-                    <span>{openSection === 'nutrition' ? '∧' : '∨'}</span>
-                  </button>
-                  {openSection === 'nutrition' && (
-                    <div className="recipe-accordion-body">
-                      {recipe?.nutrition_info
-                        ? <p>{recipe.nutrition_info}</p>
-                        : <p>영양 정보가 없습니다.</p>
-                      }
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="recipe-meal-select">
-                <label className="recipe-meal-label">몇 번째 끼니?</label>
-                <div className="recipe-meal-options">
-                  {mealLabels.slice(0, mealsPerDay).map((label, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      className={`recipe-meal-btn ${mealType === label ? 'selected' : ''}`}
-                      onClick={() => setMealType(label)}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <button className="recipe-select-btn" onClick={handleSelectDiet}>
-                식단선택
-              </button>
+        <div className="recipe-action-box">
+          <div className="recipe-meal-select-modern">
+            <label>몇 번째 끼니에 넣을까요?</label>
+            <div className="recipe-meal-options-modern">
+              {mealLabels.slice(0, mealsPerDay).map((label, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className={`recipe-meal-chip ${
+                    mealType === label ? 'selected' : ''
+                  }`}
+                  onClick={() => setMealType(label)}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
           </div>
+
+          <div className="recipe-action-buttons">
+            <button className="recipe-primary-btn" onClick={handleSelectDiet}>
+              Select for Today’s Meal
+            </button>
+            <button
+              type="button"
+              className="recipe-secondary-btn"
+              onClick={() => setLiked(!liked)}
+            >
+              Save to Favorites
+            </button>
+          </div>
         </div>
-        <Footer />
       </div>
     </div>
   )

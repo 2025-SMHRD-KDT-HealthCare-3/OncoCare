@@ -1,3 +1,38 @@
+@font-face {
+  font-family: '온글잎 류류체';
+  src: url('../../assets/fonts/온글잎\ 류류체.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cafe24Oneprettynight';
+  src: url('../../assets/fonts/Cafe24Oneprettynight-v2.0.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Louis George Cafe Bold';
+  src: url('../../assets/fonts/Louis\ George\ Cafe\ Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Louis George Cafe';
+  src: url('../../assets/fonts/Louis\ George\ Cafe.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Louis George Cafe Light';
+  src: url('../../assets/fonts/Louis\ George\ Cafe\ Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .auth-page {
   min-height: 100vh;
   background-color: #faf9f5;
@@ -78,6 +113,7 @@
 
 .auth-badge-icon {
   font-size: 13px;
+  font-family: 'Louis George Cafe Light', sans-serif;
 }
 
 .auth-brand-title {
@@ -87,6 +123,7 @@
   letter-spacing: -0.03em;
   color: #006e1c;
   margin-bottom: 16px;
+  font-family: 'Louis George Cafe Bold', sans-serif;
 }
 
 .auth-brand-subtitle {
@@ -95,6 +132,7 @@
   font-weight: 500;
   color: #3f4a3c;
   margin-bottom: 28px;
+  font-family: 'cafe24Oneprettynight', sans-serif;
 }
 
 .auth-feature-row {
@@ -128,16 +166,18 @@
 
 .auth-feature-title {
   margin: 0 0 4px;
-  font-size: 13px;
+  font-size: 20px;
   font-weight: 800;
   color: #1b1c1a;
+  font-family: 'cafe24Oneprettynight', sans-serif;
 }
 
 .auth-feature-desc {
   margin: 0;
-  font-size: 12px;
+  font-size: 18px;
   color: #5e675d;
   line-height: 1.5;
+  font-family: 'cafe24Oneprettynight', sans-serif;
 }
 
 .auth-right {
@@ -174,6 +214,7 @@
   font-weight: 800;
   color: #5c655d;
   transition: all 0.2s ease;
+  font-family: 'Louis George Cafe', sans-serif;
 }
 
 .auth-tab-toggle button.active {
@@ -193,12 +234,14 @@
   font-size: 32px;
   font-weight: 800;
   color: #1b1c1a;
+  font-family: 'Louis George Cafe Bold', sans-serif;
 }
 
 .auth-panel-header p {
   margin: 0;
   font-size: 14px;
   color: #667067;
+  font-family: 'Louis George Cafe', sans-serif;
 }
 
 .auth-form {
@@ -216,12 +259,14 @@
   color: #5a655b;
   letter-spacing: 0.09em;
   text-transform: uppercase;
+  font-family: 'Louis George Cafe', sans-serif;
 }
 
 .auth-label-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-family: 'Louis George Cafe', sans-serif;
 }
 
 .auth-text-link {
@@ -231,6 +276,7 @@
   font-size: 12px;
   font-weight: 800;
   padding: 0;
+  font-family: 'Louis George Cafe light', sans-serif;
 }
 
 .auth-input-wrap {
@@ -309,6 +355,7 @@
   font-weight: 800;
   box-shadow: 0 12px 28px rgba(0, 110, 28, 0.18);
   transition: transform 0.15s ease;
+  font-family: 'Louis George Cafe Bold', sans-serif;
 }
 
 .auth-submit-btn:hover {
