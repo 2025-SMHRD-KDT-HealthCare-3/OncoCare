@@ -57,5 +57,27 @@ router.post('/update', asyncWrap(async (req, res) => {
     await conn.query(sql, [ingre_name, ingre_type, ingre_storage, cnt, ingre_idx]);
     res.send('1');
 }));
+/*
+ * [식재료 삭제]
+ *
+ */
+router.post('/delete', asyncWrap(async (req, res) => {
+    const { ingre_idx } = req.body;
+
+    if (!ingre_idx) {
+        const err = new Error("삭제할 식재료 번호가 누락되었습니다.");
+        err.status = 400;
+        throw err;
+    }
+
+    const sql = `DELETE FROM t_ingredient WHERE ingre_idx = ?`;
+    const [result] = await conn.query(sql, [ingre_idx]);
+
+    if (result.affectedRows > 0) {
+        res.send('1');
+    } else {
+        res.send('0');
+    }
+}));
 
 module.exports = router;
