@@ -4,6 +4,7 @@ import axios from 'axios'
 import './Fridge.css'
 import '../public/root.css'
 import { getIngredientIcon, categoryIconMap } from '../../utils/iconMap'
+import RegisterIngredient from '../public/RegisterIngredient'
 
 const getCategoryIcon = (type) => categoryIconMap[type] || '📦'
 const FRESH_TYPES = ['채소', '야채', '과일']
@@ -12,12 +13,16 @@ const FridgeBody = () => {
   const navigate = useNavigate()
   const [ingredients, setIngredients] = useState([])
 
-  useEffect(() => {
+  const fetchIngredients = () => {
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) return
     axios.get(`http://localhost:3000/api/ingredient?user_idx=${user_idx}`)
       .then(res => { if (Array.isArray(res.data)) setIngredients(res.data) })
       .catch(err => console.error('식재료 조회 실패:', err))
+  }
+
+  useEffect(() => {
+    fetchIngredients()
   }, [])
 
   const grouped = ingredients.reduce((acc, item) => {
@@ -45,11 +50,6 @@ const FridgeBody = () => {
             <p className="fr-hero-sub">
               신선하고 건강한 식재료로 냉장고를 채워 회복을 도와드립니다.
             </p>
-          </div>
-          <div className="fr-hero-actions">
-            <button className="fr-hero-btn" onClick={() => navigate('/IngredientForm')}>
-              ＋ 식재료 추가
-            </button>
           </div>
         </div>
 
@@ -169,6 +169,7 @@ const FridgeBody = () => {
           </div>
         )}
       </div>
+      <RegisterIngredient onSaveSuccess={fetchIngredients} />
     </div>
   )
 }
