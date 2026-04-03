@@ -189,7 +189,9 @@ router.post('/ingredient/bulk', asyncWrap(async (req, res) => {
         return res.json({ success: true, message: "저장할 식재료가 없습니다.", inserted_ids: [] });
     }
 
-    const sql = `
+    const checkSql = `SELECT ingre_idx FROM t_ingredient WHERE user_idx = ? AND ingre_name = ?`;
+    const updateSql = `UPDATE t_ingredient SET cnt = cnt + ? WHERE ingre_idx = ?`;
+    const insertSql = `
         INSERT INTO t_ingredient 
         (user_idx, ingre_name, ingre_type, ingre_storage, cnt)
         VALUES (?, ?, ?, ?, ?)
@@ -197,13 +199,24 @@ router.post('/ingredient/bulk', asyncWrap(async (req, res) => {
 
     const insertedIds = [];
     for (const item of ingredients) {
-        const [result] = await conn.query(sql, [
-            user_idx, item.ingre_name, item.ingre_type, item.ingre_storage, item.cnt
-        ]);
-        insertedIds.push(result.insertId);
+        // 1. 이미 냉장고에 해당 이름의 식재료가 있는지 검사
+        const [rows] = await conn.query(checkSql, [user_idx, item.ingre_name]);
+
+        if (rows.length > 0) {
+            // 2. 존재한다면 개수(cnt)를 기존 값에 누적(+) 업데이트
+            const existingIdx = rows[0].ingre_idx;
+            await conn.query(updateSql, [item.cnt, existingIdx]);
+            insertedIds.push(existingIdx);
+        } else {
+            // 3. 존재하지 않는다면 새 행(row)으로 삽입
+            const [result] = await conn.query(insertSql, [
+                user_idx, item.ingre_name, item.ingre_type, item.ingre_storage, item.cnt
+            ]);
+            insertedIds.push(result.insertId);
+        }
     }
 
-    res.json({ success: true, message: `${ingredients.length}개의 식재료가 성공적으로 저장되었습니다.`, inserted_ids: insertedIds });
+    res.json({ success: true, message: `${ingredients.length}개의 식재료가 성공적으로 저장(또는 누적)되었습니다.`, inserted_ids: insertedIds });
 }));
 
 /*
