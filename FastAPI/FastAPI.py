@@ -235,7 +235,7 @@ monthly_chain = monthly_prompt | llm | monthly_parser
 # YOLO 모델 로드 (서버 시작 시 메모리에 1번만 로드)
 # 💡 직접 학습시킨 식재료 탐지 모델이 있다면 'yolov8n.pt' 대신 'best.pt' 등으로 경로를 수정하세요.
 try:
-    yolo_model = YOLO("yolov8n.pt")
+    yolo_model = YOLO("yolo11n.pt")
 except Exception as e:
     print(f"YOLO 모델 로드 실패: {e}")
     yolo_model = None
@@ -569,11 +569,13 @@ async def analyze_fridge_image(user_idx: int, file: UploadFile = File(...)):
         
         if len(ingredients) > 0:
             # Node.js로 한 번에 저장하도록 벌크 전송
-            async with httpx.AsyncClient() as client:
-                payload = { "user_idx": user_idx, "ingredients": ingredients }
-                post_res = await client.post(f"{NODE_SERVER_URL}/ingredient/bulk", json=payload)
-                post_res.raise_for_status()
-                print(f"저장 결과: {post_res.json()}")
+            # 💡 [테스트용] 서버 전송을 막기 위해 잠시 주석 처리합니다.
+            # async with httpx.AsyncClient() as client:
+            #     payload = { "user_idx": user_idx, "ingredients": ingredients }
+            #     post_res = await client.post(f"{NODE_SERVER_URL}/ingredient/bulk", json=payload)
+            #     post_res.raise_for_status()
+            #     print(f"저장 결과: {post_res.json()}")
+            pass
                 
         return {"success": True, "message": f"{len(ingredients)}종류의 식재료가 감지되어 저장되었습니다.", "ingredients": ingredients}
         
