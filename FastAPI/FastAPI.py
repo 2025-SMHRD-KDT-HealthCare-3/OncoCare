@@ -10,6 +10,9 @@ from fastapi import FastAPI, BackgroundTasks, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List
+from contextlib import asynccontextmanager
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 # LangChain 및 AI 모델 관련
 from dotenv import load_dotenv
@@ -25,7 +28,44 @@ from vector_search import get_relevant_medical_guides # 외부 파일에서 검�
 # ⚙️ 1. 환경 설정 및 앱 초기화
 # =========================================================================
 load_dotenv()
-app = FastAPI()
+
+# --- ⏰ 자동화 스케줄러 작업 정의 ---
+async def scheduled_daily_report():
+    print("\n⏰ [자동 실행] 일일 레포트 스케줄러 작동!")
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    # TODO: 실제 환경에서는 Node.js에서 전체 유저 목록을 받아와 반복 실행해야 합니다.
+    users = [1] # 임시로 1번 유저에게만 실행
+    for uid in users:
+        await process_daily(uid, today_str)
+
+async def scheduled_weekly_report():
+    print("\n⏰ [자동 실행] 주간 레포트 스케줄러 작동!")
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    users = [1]
+    for uid in users:
+        await process_weekly(uid, today_str)
+
+async def scheduled_monthly_report():
+    print("\n⏰ [자동 실행] 월간 레포트 스케줄러 작동!")
+    current_month = datetime.now().month
+    users = [1]
+    for uid in users:
+        await process_monthly(uid, current_month)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(scheduled_daily_report, CronTrigger(hour=23, minute=50)) # 매일 밤 11시 50분
+    scheduler.add_job(scheduled_weekly_report, CronTrigger(day_of_week="sun", hour=23, minute=55)) # 매주 일요일 밤 11시 55분
+    scheduler.add_job(scheduled_monthly_report, CronTrigger(day=1, hour=0, minute=0)) # 매월 1일 자정 00:00
+    
+    scheduler.start()
+    print("⏰ [Scheduler] 레포트 자동 생성 스케줄러가 시작되었습니다.")
+    yield
+    scheduler.shutdown()
+    print("⏰ [Scheduler] 스케줄러가 종료되었습니다.")
+
+app = FastAPI(lifespan=lifespan)
 
 # 💡 CORS 미들웨어 설정 추가 (프론트엔드에서 API 호출 시 발생하는 차단 에러 방지)
 app.add_middleware(
@@ -378,151 +418,151 @@ async def generate_diet(user_idx: int, background_tasks: BackgroundTasks):
     return {"success": True, "message": f"User {user_idx}의 RAG 기반 식단 추천 파이프라인이 시작되었습니다."}
 
 # --- 일일 레포트 ---
+async def process_daily(uid: int, date: str):
+    async with httpx.AsyncClient() as client:
+        try:
+            print(f"\n[일일 레포트] User {uid} 데이터 로드 중 ({date})")
+            # 1. 레포트용 데이터 로드
+            res = await client.get(f"{NODE_SERVER_URL}/data/for-report?user_idx={uid}&target_date={date}")
+            res.raise_for_status() # 💡 200 OK가 아니면 에러 발생
+            data = res.json()
+
+            if not data.get("success"):
+                return print(f"일일 데이터 조회 실패: {data}")
+
+            condition = data.get("condition")
+            bowel_logs = data.get("bowel_logs")
+            diets = data.get("diets")
+            
+            # 💡 [비용 절감 최적화] 당일 기록이 아예 없다면 LLM 호출 및 DB 저장을 생략하고 즉시 종료
+            if not condition and (not bowel_logs or len(bowel_logs) == 0) and (not diets or len(diets) == 0):
+                print(f"[{date}] User {uid}의 기록이 전혀 없어 레포트 생성을 취소합니다. (API 비용 및 DB 낭비 방지)")
+                return
+            
+            # 2. 💡 건강 프로필 로드 (추가됨)
+            profile_res = await client.get(f"{NODE_SERVER_URL}/data/for-diet?user_idx={uid}")
+            profile_res.raise_for_status()
+            health_profile = profile_res.json().get("health_profile", {})
+                
+            print(f"[AI 분석 중...] User {uid} 일일 레포트 작성 중")
+            with get_openai_callback() as cb:
+                ai_result = await daily_chain.ainvoke({
+                    "health_profile": json.dumps(health_profile, ensure_ascii=False),
+                    "condition": json.dumps(data.get("condition"), ensure_ascii=False),
+                    "bowel_logs": json.dumps(data.get("bowel_logs"), ensure_ascii=False),
+                    "diets": json.dumps(data.get("diets"), ensure_ascii=False)
+                })
+                
+                tracker.total_tokens += cb.total_tokens
+                tracker.total_cost += cb.total_cost
+                print(f"--- [이번 요청] Token Usage ---\n{cb}")
+                print(f"=== [서버 누적 총합] Total Tokens: {tracker.total_tokens} | Total Cost: ${tracker.total_cost:.4f} ===")
+
+            payload = { "user_idx": uid, "report_date": date, **ai_result }
+            post_res = await client.post(f"{NODE_SERVER_URL}/report/daily", json=payload)
+            print(f"[저장 완료] 일일 레포트: {post_res.json()}")
+
+        except httpx.HTTPStatusError as e:
+            print(f"Node.js 데이터 조회 실패 (상태 코드: {e.response.status_code}): {e.response.text}")
+        except Exception as e:
+            print(f"일일 레포트 생성 에러: {e}")
+
 @app.post("/generate-daily-report/{user_idx}")
 async def generate_daily_report(user_idx: int, target_date: str, background_tasks: BackgroundTasks):
-    async def process_daily(uid: int, date: str):
-        async with httpx.AsyncClient() as client:
-            try:
-                print(f"\n[일일 레포트] User {uid} 데이터 로드 중 ({date})")
-                # 1. 레포트용 데이터 로드
-                res = await client.get(f"{NODE_SERVER_URL}/data/for-report?user_idx={uid}&target_date={date}")
-                res.raise_for_status() # 💡 200 OK가 아니면 에러 발생
-                data = res.json()
-
-                if not data.get("success"):
-                    return print(f"일일 데이터 조회 실패: {data}")
-
-                condition = data.get("condition")
-                bowel_logs = data.get("bowel_logs")
-                diets = data.get("diets")
-                
-                # 💡 [비용 절감 최적화] 당일 기록이 아예 없다면 LLM 호출 및 DB 저장을 생략하고 즉시 종료
-                if not condition and (not bowel_logs or len(bowel_logs) == 0) and (not diets or len(diets) == 0):
-                    print(f"[{date}] User {uid}의 기록이 전혀 없어 레포트 생성을 취소합니다. (API 비용 및 DB 낭비 방지)")
-                    return
-                
-                # 2. 💡 건강 프로필 로드 (추가됨)
-                profile_res = await client.get(f"{NODE_SERVER_URL}/data/for-diet?user_idx={uid}")
-                profile_res.raise_for_status()
-                health_profile = profile_res.json().get("health_profile", {})
-                    
-                print(f"[AI 분석 중...] User {uid} 일일 레포트 작성 중")
-                with get_openai_callback() as cb:
-                    ai_result = await daily_chain.ainvoke({
-                        "health_profile": json.dumps(health_profile, ensure_ascii=False),
-                        "condition": json.dumps(data.get("condition"), ensure_ascii=False),
-                        "bowel_logs": json.dumps(data.get("bowel_logs"), ensure_ascii=False),
-                        "diets": json.dumps(data.get("diets"), ensure_ascii=False)
-                    })
-                    
-                    tracker.total_tokens += cb.total_tokens
-                    tracker.total_cost += cb.total_cost
-                    print(f"--- [이번 요청] Token Usage ---\n{cb}")
-                    print(f"=== [서버 누적 총합] Total Tokens: {tracker.total_tokens} | Total Cost: ${tracker.total_cost:.4f} ===")
-
-                payload = { "user_idx": uid, "report_date": date, **ai_result }
-                post_res = await client.post(f"{NODE_SERVER_URL}/report/daily", json=payload)
-                print(f"[저장 완료] 일일 레포트: {post_res.json()}")
-
-            except httpx.HTTPStatusError as e:
-                print(f"Node.js 데이터 조회 실패 (상태 코드: {e.response.status_code}): {e.response.text}")
-            except Exception as e:
-                print(f"일일 레포트 생성 에러: {e}")
-
     background_tasks.add_task(process_daily, user_idx, target_date)
     return {"success": True, "message": f"User {user_idx}의 {target_date} 일일 레포트 생성이 시작되었습니다."}
 
 # --- 주간 레포트 ---
+async def process_weekly(uid: int, date: str):
+    async with httpx.AsyncClient() as client:
+        try:
+            print(f"\n[주간 레포트] User {uid} 데이터 로드 중 (기준일: {date})")
+            # 1. 주간 데이터 로드
+            res = await client.get(f"{NODE_SERVER_URL}/data/for-weekly-report?user_idx={uid}&target_date={date}")
+            res.raise_for_status()
+            data = res.json()
+            if not data.get("success") or not data.get("daily_reports"):
+                return print(f"주간 데이터가 부족하거나 조회에 실패했습니다.")
+            
+            # 2. 💡 건강 프로필 로드 (추가됨)
+            profile_res = await client.get(f"{NODE_SERVER_URL}/data/for-diet?user_idx={uid}")
+            profile_res.raise_for_status()
+            health_profile = profile_res.json().get("health_profile", {})
+                
+            period_str = data.get("period") 
+            start_date, end_date = period_str.split(" ~ ")
+
+            print(f"[AI 분석 중...] User {uid} 주간 레포트 작성 중")
+            with get_openai_callback() as cb:
+                ai_result = await weekly_chain.ainvoke({
+                    "health_profile": json.dumps(health_profile, ensure_ascii=False),
+                    "daily_reports": json.dumps(data.get("daily_reports"), ensure_ascii=False),
+                    "period": period_str
+                })
+                
+                tracker.total_tokens += cb.total_tokens
+                tracker.total_cost += cb.total_cost
+                print(f"--- [이번 요청] Token Usage ---\n{cb}")
+                print(f"=== [서버 누적 총합] Total Tokens: {tracker.total_tokens} | Total Cost: ${tracker.total_cost:.4f} ===")
+
+            payload = { "user_idx": uid, "start_date": start_date, "end_date": end_date, **ai_result }
+            post_res = await client.post(f"{NODE_SERVER_URL}/report/weekly", json=payload)
+            print(f"[저장 완료] 주간 레포트: {post_res.json()}")
+
+        except httpx.HTTPStatusError as e:
+            print(f"Node.js 데이터 조회 실패 (상태 코드: {e.response.status_code}): {e.response.text}")
+        except Exception as e:
+            print(f"주간 레포트 생성 에러: {e}")
+
 @app.post("/generate-weekly-report/{user_idx}")
 async def generate_weekly_report(user_idx: int, target_date: str, background_tasks: BackgroundTasks):
-    async def process_weekly(uid: int, date: str):
-        async with httpx.AsyncClient() as client:
-            try:
-                print(f"\n[주간 레포트] User {uid} 데이터 로드 중 (기준일: {date})")
-                # 1. 주간 데이터 로드
-                res = await client.get(f"{NODE_SERVER_URL}/data/for-weekly-report?user_idx={uid}&target_date={date}")
-                res.raise_for_status()
-                data = res.json()
-                if not data.get("success") or not data.get("daily_reports"):
-                    return print(f"주간 데이터가 부족하거나 조회에 실패했습니다.")
-                
-                # 2. 💡 건강 프로필 로드 (추가됨)
-                profile_res = await client.get(f"{NODE_SERVER_URL}/data/for-diet?user_idx={uid}")
-                profile_res.raise_for_status()
-                health_profile = profile_res.json().get("health_profile", {})
-                    
-                period_str = data.get("period") 
-                start_date, end_date = period_str.split(" ~ ")
-
-                print(f"[AI 분석 중...] User {uid} 주간 레포트 작성 중")
-                with get_openai_callback() as cb:
-                    ai_result = await weekly_chain.ainvoke({
-                        "health_profile": json.dumps(health_profile, ensure_ascii=False),
-                        "daily_reports": json.dumps(data.get("daily_reports"), ensure_ascii=False),
-                        "period": period_str
-                    })
-                    
-                    tracker.total_tokens += cb.total_tokens
-                    tracker.total_cost += cb.total_cost
-                    print(f"--- [이번 요청] Token Usage ---\n{cb}")
-                    print(f"=== [서버 누적 총합] Total Tokens: {tracker.total_tokens} | Total Cost: ${tracker.total_cost:.4f} ===")
-
-                payload = { "user_idx": uid, "start_date": start_date, "end_date": end_date, **ai_result }
-                post_res = await client.post(f"{NODE_SERVER_URL}/report/weekly", json=payload)
-                print(f"[저장 완료] 주간 레포트: {post_res.json()}")
-
-            except httpx.HTTPStatusError as e:
-                print(f"Node.js 데이터 조회 실패 (상태 코드: {e.response.status_code}): {e.response.text}")
-            except Exception as e:
-                print(f"주간 레포트 생성 에러: {e}")
-
     background_tasks.add_task(process_weekly, user_idx, target_date)
     return {"success": True, "message": f"User {user_idx}의 주간 레포트 생성이 시작되었습니다."}
 
 # --- 월간 레포트 ---
+async def process_monthly(uid: int, target_month: int):
+    async with httpx.AsyncClient() as client:
+        try:
+            print(f"\n[월간 레포트] User {uid} 데이터 로드 중 ({target_month}월)")
+            # 1. 월간 데이터 로드
+            res = await client.get(f"{NODE_SERVER_URL}/data/for-monthly-report?user_idx={uid}&month={target_month}")
+            res.raise_for_status()
+            data = res.json()
+            if not data.get("success") or not data.get("weekly_reports"):
+                return print(f"월간 데이터가 부족하거나 조회에 실패했습니다.")
+            
+            # 2. 💡 건강 프로필 로드 (추가됨)
+            profile_res = await client.get(f"{NODE_SERVER_URL}/data/for-diet?user_idx={uid}")
+            profile_res.raise_for_status()
+            health_profile = profile_res.json().get("health_profile", {})
+
+            current_year = datetime.now().year
+            report_month_str = f"{current_year}-{str(target_month).zfill(2)}"
+
+            print(f"[AI 분석 중...] User {uid} 월간 레포트 작성 중")
+            with get_openai_callback() as cb:
+                ai_result = await monthly_chain.ainvoke({
+                    "health_profile": json.dumps(health_profile, ensure_ascii=False),
+                    "weekly_reports": json.dumps(data.get("weekly_reports"), ensure_ascii=False),
+                    "target_month": data.get("target_year_month", f"{target_month}월")
+                })
+                
+                tracker.total_tokens += cb.total_tokens
+                tracker.total_cost += cb.total_cost
+                print(f"--- [이번 요청] Token Usage ---\n{cb}")
+                print(f"=== [서버 누적 총합] Total Tokens: {tracker.total_tokens} | Total Cost: ${tracker.total_cost:.4f} ===")
+
+            payload = { "user_idx": uid, "report_month": report_month_str, **ai_result }
+            post_res = await client.post(f"{NODE_SERVER_URL}/report/monthly", json=payload)
+            print(f"[저장 완료] 월간 레포트: {post_res.json()}")
+
+        except httpx.HTTPStatusError as e:
+            print(f"Node.js 데이터 조회 실패 (상태 코드: {e.response.status_code}): {e.response.text}")
+        except Exception as e:
+            print(f"월간 레포트 생성 에러: {e}")
+
 @app.post("/generate-monthly-report/{user_idx}")
 async def generate_monthly_report(user_idx: int, month: int, background_tasks: BackgroundTasks):
-    async def process_monthly(uid: int, target_month: int):
-        async with httpx.AsyncClient() as client:
-            try:
-                print(f"\n[월간 레포트] User {uid} 데이터 로드 중 ({target_month}월)")
-                # 1. 월간 데이터 로드
-                res = await client.get(f"{NODE_SERVER_URL}/data/for-monthly-report?user_idx={uid}&month={target_month}")
-                res.raise_for_status()
-                data = res.json()
-                if not data.get("success") or not data.get("weekly_reports"):
-                    return print(f"월간 데이터가 부족하거나 조회에 실패했습니다.")
-                
-                # 2. 💡 건강 프로필 로드 (추가됨)
-                profile_res = await client.get(f"{NODE_SERVER_URL}/data/for-diet?user_idx={uid}")
-                profile_res.raise_for_status()
-                health_profile = profile_res.json().get("health_profile", {})
-
-                current_year = datetime.now().year
-                report_month_str = f"{current_year}-{str(target_month).zfill(2)}"
-
-                print(f"[AI 분석 중...] User {uid} 월간 레포트 작성 중")
-                with get_openai_callback() as cb:
-                    ai_result = await monthly_chain.ainvoke({
-                        "health_profile": json.dumps(health_profile, ensure_ascii=False),
-                        "weekly_reports": json.dumps(data.get("weekly_reports"), ensure_ascii=False),
-                        "target_month": data.get("target_year_month", f"{target_month}월")
-                    })
-                    
-                    tracker.total_tokens += cb.total_tokens
-                    tracker.total_cost += cb.total_cost
-                    print(f"--- [이번 요청] Token Usage ---\n{cb}")
-                    print(f"=== [서버 누적 총합] Total Tokens: {tracker.total_tokens} | Total Cost: ${tracker.total_cost:.4f} ===")
-
-                payload = { "user_idx": uid, "report_month": report_month_str, **ai_result }
-                post_res = await client.post(f"{NODE_SERVER_URL}/report/monthly", json=payload)
-                print(f"[저장 완료] 월간 레포트: {post_res.json()}")
-
-            except httpx.HTTPStatusError as e:
-                print(f"Node.js 데이터 조회 실패 (상태 코드: {e.response.status_code}): {e.response.text}")
-            except Exception as e:
-                print(f"월간 레포트 생성 에러: {e}")
-
     background_tasks.add_task(process_monthly, user_idx, month)
     return {"success": True, "message": f"User {user_idx}의 {month}월 월간 레포트 생성이 시작되었습니다."}
 
@@ -623,7 +663,6 @@ async def save_ingredients(user_idx: int, request: SaveIngredientsRequest):
             post_res = await client.post(f"{NODE_SERVER_URL}/ingredient/bulk", json=payload)
             post_res.raise_for_status()
             print(f"[검수 후 저장 완료] User {user_idx}의 식재료 {len(db_ingredients)}개 저장: {post_res.json()}")
-        print(f"[검수 후 저장 시뮬레이션] User {user_idx}의 식재료 저장 요청됨: {db_ingredients}")
             
         return {"success": True, "message": f"{len(db_ingredients)}개의 식재료가 성공적으로 냉장고에 저장되었습니다."}
 
