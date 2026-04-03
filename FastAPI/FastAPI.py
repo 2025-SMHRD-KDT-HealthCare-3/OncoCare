@@ -37,7 +37,7 @@ app.add_middleware(
 )
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-NODE_SERVER_URL = os.getenv("NODE_SERVER_URL", "http://localhost:3000/ai")
+NODE_SERVER_URL = os.getenv("NODE_SERVER_URL", "http://localhost:3000/api/ai")
 
 # 모델 초기화
 llm = ChatOpenAI(
@@ -235,7 +235,7 @@ monthly_chain = monthly_prompt | llm | monthly_parser
 # YOLO 모델 로드 (서버 시작 시 메모리에 1번만 로드)
 # 💡 직접 학습시킨 식재료 탐지 모델이 있다면 'yolov8n.pt' 대신 'best.pt' 등으로 경로를 수정하세요.
 try:
-    yolo_model = YOLO("best11.pt")
+    yolo_model = YOLO("best.pt")
 except Exception as e:
     print(f"YOLO 모델 로드 실패: {e}")
     yolo_model = None
