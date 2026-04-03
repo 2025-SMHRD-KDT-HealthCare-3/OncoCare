@@ -73,7 +73,8 @@ body {
 
 @font-face {
   font-family: 'Cafe24Oneprettynight';
-  src: url('../../assets/fonts/Cafe24Oneprettynight.ttf') format('truetype');
+  src: url('../../assets/fonts/Cafe24Oneprettynight-v2.0.otf') format('opentype'),
+       url('../../assets/fonts/Cafe24Oneprettynight-v2.0.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }

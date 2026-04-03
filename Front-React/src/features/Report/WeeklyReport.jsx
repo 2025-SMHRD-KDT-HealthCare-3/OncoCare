@@ -23,35 +23,17 @@ const WeeklyReport = ({ data }) => {
       ? `${formatDate(data.start_date)} - ${formatDate(data.end_date)}`
       : data?.report_week_label || '이번 주 회복 데이터 요약'
 
-  const sections = [
-    {
-      title: 'Nutrition Summary',
-      summary: diet?.summary || '이번 주 식단 기록이 아직 충분하지 않습니다.',
-      insight:
-        diet?.insight || '식단을 꾸준히 기록하면 회복 패턴을 더 정확히 볼 수 있어요.',
-      tone: 'green',
-    },
-    {
-      title: 'Bowel & Condition Trends',
-      summary: bowel?.summary || '배변 기록이 충분하지 않습니다.',
-      insight:
-        condition?.insight || '컨디션과 함께 기록하면 회복 흐름을 더 잘 파악할 수 있어요.',
-      extra: condition?.summary || '컨디션 기록 없음',
-      tone: 'neutral',
-    },
-  ]
-
   return (
     <div className="report-view">
       <div className="report-header-block">
-        <span className="report-view-badge weekly">WEEKLY INSIGHT</span>
-        <h2>Weekly Wellness Report</h2>
+        <span className="report-view-badge weekly">주간 인사이트</span>
+        <h2>주간 건강 리포트</h2>
         <p>{periodText}</p>
       </div>
 
       <div className="weekly-dashboard-grid">
         <section className="glass-card score-ring-card">
-          <p className="mini-title">Overall Wellness Score</p>
+          <p className="mini-title">종합 건강 점수</p>
 
           <div className="score-ring-wrap">
             <div
@@ -62,7 +44,7 @@ const WeeklyReport = ({ data }) => {
             >
               <div className="score-ring-inner">
                 <strong>{score || '—'}%</strong>
-                <span>EXCELLENT</span>
+                <span>우수</span>
               </div>
             </div>
           </div>
@@ -76,24 +58,16 @@ const WeeklyReport = ({ data }) => {
         </section>
 
         <section className="glass-card weekly-highlight-card">
-          <span className="mini-title">NEW MILESTONE REACHED</span>
-          <h3>Consistent Logging for 7 Days</h3>
+          <span className="mini-title">이번 주 분석</span>
+          <h3>7일간 꾸준한 기록 달성</h3>
           <p>
-            You’ve tracked your daily recovery data and built a meaningful weekly pattern.
+            매일 회복 데이터를 기록하여 의미 있는 주간 패턴을 만들어가고 있습니다.
           </p>
 
           <div className="metric-chip-grid">
             <div className="metric-chip">
-              <span>AVG SLEEP</span>
-              <strong>7h 45m</strong>
-            </div>
-            <div className="metric-chip">
-              <span>HEART RATE</span>
-              <strong>68 bpm</strong>
-            </div>
-            <div className="metric-chip">
-              <span>DAILY STEPS</span>
-              <strong>4,200</strong>
+              <span>평균 수면</span>
+              <strong>7시간 45분</strong>
             </div>
           </div>
         </section>
@@ -102,11 +76,11 @@ const WeeklyReport = ({ data }) => {
       <div className="weekly-lower-grid">
         <section className="glass-card report-feature-card">
           <div className="feature-image fake-food-image" />
-          <h3>{sections[0].title}</h3>
+          <h3>영양 섭취 요약</h3>
 
           <div className="progress-row">
             <div className="progress-label-line">
-              <span>Meal Adherence</span>
+              <span>식단 준수율</span>
               <strong>{diet?.score ?? 92}%</strong>
             </div>
             <div className="progress-track">
@@ -119,34 +93,34 @@ const WeeklyReport = ({ data }) => {
 
           <div className="mini-stat-grid">
             <div className="mini-stat-card">
-              <span>PROTEIN INTAKE</span>
-              <strong>{diet?.value || '65g / target met'}</strong>
+              <span>단백질 섭취</span>
+              <strong>{diet?.value || '65g / 목표 달성'}</strong>
             </div>
             <div className="mini-stat-card">
-              <span>FIBER INTAKE</span>
-              <strong>{bowel?.value || '28g / gentle level'}</strong>
+              <span>식이섬유 섭취</span>
+              <strong>{bowel?.value || '28g / 적정 수준'}</strong>
             </div>
           </div>
 
           <div className="insight-pill-row">
             <span className="insight-pill green">
-              {diet?.insight || 'Digestive comfort improved this week'}
+              {diet?.insight || '이번 주 소화 편의성이 개선되었습니다'}
             </span>
           </div>
         </section>
 
         <section className="glass-card report-feature-card">
-          <h3>{sections[1].title}</h3>
+          <h3>배변 및 컨디션 추이</h3>
 
           <div className="trend-box">
             <div className="trend-header">
-              <span>BRISTOL STOOL SCALE (AVG)</span>
-              <strong>Type 4</strong>
+              <span>브리스톨 척도 (평균)</span>
+              <strong>4형</strong>
             </div>
 
             <div className="trend-badge-line">
               <span className="trend-badge active">
-                {bowel?.score ?? 'IDEAL'}
+                {bowel?.score ?? '정상'}
               </span>
             </div>
 
@@ -157,11 +131,11 @@ const WeeklyReport = ({ data }) => {
 
           <div className="trend-mini-grid">
             <div>
-              <span>FATIGUE</span>
+              <span>피로도</span>
               <strong>2.4 / 10</strong>
             </div>
             <div>
-              <span>PAIN</span>
+              <span>통증</span>
               <strong>1.2 / 10</strong>
             </div>
           </div>
@@ -180,15 +154,6 @@ const WeeklyReport = ({ data }) => {
               '지난주보다 피로감이 감소하고 전반적인 컨디션이 안정적으로 유지되고 있습니다.'}
           </div>
         </section>
-      </div>
-
-      <div className="report-bottom-actions">
-        <button type="button" className="ghost-action-btn">
-          Previous Week
-        </button>
-        <button type="button" className="primary-action-btn">
-          Schedule Review
-        </button>
       </div>
     </div>
   )

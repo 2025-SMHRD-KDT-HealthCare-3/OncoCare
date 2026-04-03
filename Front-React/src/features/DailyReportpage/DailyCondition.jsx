@@ -20,10 +20,10 @@ const getConditionBadge = (val) => {
 }
 
 const getConditionBadgeLabel = (val) => {
-  if (val <= 2) return 'Severe'
-  if (val <= 3) return 'Moderate'
-  if (val <= 4) return 'Mild'
-  return 'Good'
+  if (val <= 2) return '심함'
+  if (val <= 3) return '보통'
+  if (val <= 4) return '양호'
+  return '좋음'
 }
 
 const getPainBadge = (val) => {
@@ -33,10 +33,10 @@ const getPainBadge = (val) => {
 }
 
 const getPainBadgeLabel = (val) => {
-  if (val >= 4) return 'Severe'
-  if (val >= 3) return 'Moderate'
-  if (val >= 2) return 'Mild'
-  return 'Minimal'
+  if (val >= 4) return '심한 통증'
+  if (val >= 3) return '보통'
+  if (val >= 2) return '약한 통증'
+  return '미미함'
 }
 
 const DailyCondition = ({
@@ -90,7 +90,7 @@ const DailyCondition = ({
       <div className="dr-vitality-grid">
         {/* 기분/피로도 */}
         <div className="dr-vitality-sub">
-          <div className="dr-vitality-sub-title">Fatigue Level</div>
+          <div className="dr-vitality-sub-title">피로도</div>
           <span className={`dr-vitality-badge ${getConditionBadge(condition)}`}>
             {getConditionBadgeLabel(condition)}
           </span>
@@ -102,16 +102,16 @@ const DailyCondition = ({
             onChange={(e) => setCondition(Number(e.target.value))}
           />
           <div className="dr-slider-labels">
-            <span>Energetic</span>
-            <span>Exhausted</span>
+            <span>매우 피곤</span>
+            <span>활력 있음</span>
           </div>
         </div>
 
         {/* 복통 */}
         <div className="dr-vitality-sub">
-          <div className="dr-vitality-sub-title">Pain / Discomfort</div>
+          <div className="dr-vitality-sub-title">복통 / 불편감</div>
           <span className={`dr-vitality-badge ${stomachPain ? getPainBadge(painLevel) : 'minimal'}`}>
-            {stomachPain ? getPainBadgeLabel(painLevel) : 'Minimal'}
+            {stomachPain ? getPainBadgeLabel(painLevel) : '없음'}
           </span>
           <input
             type="range"
@@ -124,8 +124,8 @@ const DailyCondition = ({
             }}
           />
           <div className="dr-slider-labels">
-            <span>No Pain</span>
-            <span>Severe</span>
+            <span>통증 없음</span>
+            <span>심한 통증</span>
           </div>
         </div>
       </div>

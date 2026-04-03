@@ -43,7 +43,7 @@ router.post('/diet', asyncWrap(async (req, res) => {
         const alertSql = `
             INSERT INTO t_alert
             (user_idx, alert_type, alert_msg, sent_at, received_at)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, NULL)
         `;
         const now = new Date();
         await conn.query(alertSql, [
@@ -51,7 +51,7 @@ router.post('/diet', asyncWrap(async (req, res) => {
             '부족한 식재료',       // 알림 유형
             missing_ingredients, // 알림 메시지
             now,                 // 발신 시간
-            now                  // 수신 시간 (즉시 수신으로 가정)
+                                 // received_at은 NULL — 사용자가 확인할 때 설정됨
         ]);
         console.log(`[알림 저장 완료] User ${user_idx}에게 부족한 식재료 알림을 저장했습니다.`);
     }

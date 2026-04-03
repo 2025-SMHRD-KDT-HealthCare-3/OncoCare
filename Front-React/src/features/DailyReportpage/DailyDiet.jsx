@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import './DailyReport.css'
+import { useToast } from '../../context/ToastContext'
 
 const EMOJIS = ['😞', '😟', '😐', '😊', '😄']
 
@@ -9,6 +10,7 @@ const DailyDiet = ({
   savedDietFeedbacks,
   onSave
 }) => {
+  const { showToast, showConfirm } = useToast()
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [hovered, setHovered] = useState(0)
   const [dietData, setDietData] = useState({})
@@ -30,7 +32,8 @@ const DailyDiet = ({
     setDietData(prev => ({ ...prev, [diet_idx]: { ...getCurrentData(diet_idx), rating: value } }))
 
   const handleDelete = async (diet) => {
-    if (!window.confirm(`"${diet.recipe_name}" 식단을 삭제할까요?`)) return
+    const ok = await showConfirm('삭제 확인', `"${diet.recipe_name}" 식단을 삭제할까요?`)
+    if (!ok) return
     try {
       const res = await axios.post('http://localhost:3000/api/diet/unClickRecipe', { diet_idx: diet.diet_idx })
       if (res.data == 1 || res.data === '1') {
@@ -38,11 +41,11 @@ const DailyDiet = ({
         setSelectedDiets(updated)
         setSelectedIdx(0)
       } else {
-        alert('삭제에 실패했습니다.')
+        showToast('오류', '삭제에 실패했습니다.', 'danger')
       }
     } catch (err) {
       console.error('삭제 실패:', err)
-      alert('삭제에 실패했습니다.')
+      showToast('오류', '삭제에 실패했습니다.', 'danger')
     }
   }
 
@@ -64,7 +67,7 @@ const DailyDiet = ({
 
   return (
     <div className="dr-card">
-      <h2 className="dr-card-title">🍽 Nutrition Feedback</h2>
+      <h2 className="dr-card-title">🍽 영양 피드백</h2>
       <span className="dr-section-label">오늘의 식단을 평가해주세요</span>
 
       {!selectedDiets || selectedDiets.length === 0 ? (
@@ -87,7 +90,7 @@ const DailyDiet = ({
           <div className="dr-recipe-row">
             <div className="dr-recipe-img-box" />
             <div className="dr-recipe-meta">
-              <p className="dr-recipe-type-label">{selectedDiet?.meal_type} Recommendation</p>
+              <p className="dr-recipe-type-label">{selectedDiet?.meal_type} 추천</p>
               <p className="dr-recipe-name">{selectedDiet?.recipe_name || '오늘의 식단'}</p>
               <p className="dr-recipe-date">{formatDate(selectedDiet?.select_date)}</p>
             </div>
@@ -98,7 +101,7 @@ const DailyDiet = ({
             return (
               <>
                 <div className="dr-rating-header">
-                  <span className="dr-rating-q">How did it feel?</span>
+                  <span className="dr-rating-q">식사 후 어떠셨나요?</span>
                 </div>
                 <div className="dr-emoji-row">
                   {EMOJIS.map((emoji, i) => {
@@ -117,11 +120,11 @@ const DailyDiet = ({
                   })}
                 </div>
 
-                <div className="dr-field-label">✏ Digestive Comfort Notes</div>
+                <div className="dr-field-label">✏ 소화 메모</div>
                 <textarea
                   className="dr-textarea"
                   rows={3}
-                  placeholder="Add any notes about how you felt after this meal..."
+                  placeholder="식사 후 느낌을 자유롭게 적어주세요..."
                   value={feedback}
                   onChange={(e) => setFeedback(selectedDiet.diet_idx, e.target.value)}
                 />

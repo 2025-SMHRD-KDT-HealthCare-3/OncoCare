@@ -1,7 +1,20 @@
 .main-bg {
-  background-image: url('../../assets/healing_sanctuary_background_1.jpg');
+  /* background-image: url('../../assets/healing_sanctuary_background_2.jpg'); */
+  background-color: var(--bg-color);
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  min-height: 100vh;
+  position: relative;
+}
+
+.overlay {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  /* 1. 밝기 조절 */
+  background: rgba(255, 255, 255, 0.4);
+
+  /* 2. blur 효과 */
+  backdrop-filter: blur(6px);
 }

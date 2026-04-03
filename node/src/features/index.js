@@ -10,6 +10,7 @@ const ingredientRouter = require('./ingredient/ingredient');
 const bowelRouter = require('./bowel/bowel');
 const conditionRouter = require('./condition/condition');
 const llmRouter = require('./llm/llm');
+const alertRouter = require('./alert/alert');
 
 router.use('/user', userRouter);
 router.use('/auth', authRouter);
@@ -20,5 +21,6 @@ router.use('/ingredient', ingredientRouter);
 router.use('/bowel', bowelRouter);
 router.use('/condition', conditionRouter);
 router.use('/ai', llmRouter);
+router.use('/alert', alertRouter);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 import React from 'react'
+import { ToastProvider } from './context/ToastContext.jsx'
 // import Register from './features/Registerpage/Register.jsx'
 // import Login from './features/Loginpage/Login.jsx'
 import Auth from './features/Auth/Auth.jsx'
@@ -21,6 +22,7 @@ axios.defaults.withCredentials = true;
 function App() {
 
   return (
+    <ToastProvider>
     <BrowserRouter>
       <Routes>
         {/* <Route path="/" element={<Login />} /> */}
@@ -39,6 +41,7 @@ function App() {
         <Route path='/PersonalInfo' element={<PersonalInfo />} />
       </Routes>
     </BrowserRouter>
+    </ToastProvider>
   )
 }
 

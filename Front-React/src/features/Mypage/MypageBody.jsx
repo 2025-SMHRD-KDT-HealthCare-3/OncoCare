@@ -65,7 +65,7 @@ const MypageBody = () => {
         {/* ── 페이지 헤더 ── */}
         <div className="fr-hero-card">
           <div className="fr-hero-card-body">
-            <h1 className="fr-hero-title">Health Profile</h1>
+            <h1 className="fr-hero-title">마이 페이지</h1>
             <p className="fr-hero-sub">
               나의 건강정보를 기록하고 관리합니다.
             </p>
@@ -84,7 +84,7 @@ const MypageBody = () => {
                 <span className="mp-profile-since">OncoCare 회원</span>
               </div>
               <button className="mp-edit-pill" onClick={() => navigate('/PersonalInfo')}>
-                ✏ Edit
+                ✏ 수정
               </button>
             </div>
             <div className="mp-profile-divider" />
@@ -102,7 +102,7 @@ const MypageBody = () => {
               <div className="mp-health-icon-box">📋</div>
               <h2 className="mp-health-card-title">건강 정보</h2>
               <button className="mp-edit-pill" onClick={() => navigate('/HealthInfo')}>
-                ✏ Edit
+                ✏ 수정
               </button>
             </div>
             <div className="mp-stats-grid">
@@ -144,7 +144,7 @@ const MypageBody = () => {
         {/* ── 건강 리포트 섹션 ── */}
         <div className="mp-section">
           <div className="mp-section-top">
-            <h2 className="mp-section-title">Health Data Reports</h2>
+            <h2 className="mp-section-title">건강 데이터 리포트</h2>
           </div>
 
           {/* 주간 리포트 */}
@@ -162,11 +162,11 @@ const MypageBody = () => {
               {weekScore !== null && (
                 <div className="mp-score-mini">
                   <span className="mp-score-val">{weekScore}</span>
-                  <span className="mp-score-lbl">SCORE</span>
+                  <span className="mp-score-lbl">점수</span>
                 </div>
               )}
               <button className="mp-view-btn" onClick={() => navigate('/Report')}>
-                View Report
+                리포트 보기
               </button>
             </div>
           </div>
@@ -186,11 +186,11 @@ const MypageBody = () => {
               {monthScore !== null && (
                 <div className="mp-score-mini">
                   <span className="mp-score-val">{monthScore}</span>
-                  <span className="mp-score-lbl">SCORE</span>
+                  <span className="mp-score-lbl">점수</span>
                 </div>
               )}
               <button className="mp-view-btn" onClick={() => navigate('/Report#monthly')}>
-                View Report
+                리포트 보기
               </button>
             </div>
           </div>

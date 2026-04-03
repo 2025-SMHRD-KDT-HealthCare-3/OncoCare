@@ -3,6 +3,70 @@
   background: #f6f4ef;
 }
 
+.report-generate-bar {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0 8px;
+  flex-wrap: wrap;
+}
+
+.report-generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1.5px solid #d4e8d4;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #2a5c1e;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.report-generate-btn:hover:not(:disabled) {
+  background: #eaf2e6;
+  box-shadow: 0 4px 12px rgba(42, 92, 30, 0.1);
+}
+
+.report-generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.report-gen-msg {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #eaf6ed;
+  border: 1px solid #c3e6cb;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 17px;
+  color: #2a5c1e;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.report-refresh-btn {
+  margin-left: auto;
+  background: #2a5c1e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.report-refresh-btn:hover {
+  opacity: 0.85;
+}
+
 .report-modern-shell {
   max-width: 1100px;
   margin: 0 auto;
@@ -14,7 +78,7 @@
   align-items: center;
   padding: 6px 12px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.08em;
 }
@@ -41,7 +105,7 @@
   border: none;
   background: transparent;
   color: #5e5e5e;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 800;
   padding: 12px 18px;
   border-radius: 999px;
@@ -67,7 +131,7 @@
 
 .report-header-block h2 {
   margin: 10px 0 6px;
-  font-size: 40px;
+  font-size: 44px;
   line-height: 1.05;
   color: #232323;
   font-weight: 900;
@@ -75,7 +139,7 @@
 
 .report-header-block p {
   margin: 0;
-  font-size: 15px;
+  font-size: 19px;
   color: #6f6f6f;
 }
 
@@ -90,7 +154,7 @@
 .mini-title {
   display: inline-block;
   margin-bottom: 14px;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 800;
   color: #85907e;
   letter-spacing: 0.08em;
@@ -138,7 +202,7 @@
 }
 
 .score-ring-inner strong {
-  font-size: 44px;
+  font-size: 48px;
   line-height: 1;
   color: #0b8a34;
   font-weight: 900;
@@ -146,7 +210,7 @@
 
 .score-ring-inner span {
   margin-top: 8px;
-  font-size: 12px;
+  font-size: 16px;
   color: #5d6d61;
   font-weight: 800;
 }
@@ -156,7 +220,7 @@
   color: #58705c;
   border-radius: 18px;
   padding: 16px;
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.7;
   text-align: center;
 }
@@ -167,7 +231,7 @@
 
 .weekly-highlight-card h3 {
   margin: 0 0 8px;
-  font-size: 34px;
+  font-size: 38px;
   line-height: 1.08;
   color: #2b2b2b;
   font-weight: 900;
@@ -194,14 +258,14 @@
 
 .metric-chip span {
   display: block;
-  font-size: 11px;
+  font-size: 15px;
   color: #7b7b7b;
   font-weight: 800;
   margin-bottom: 8px;
 }
 
 .metric-chip strong {
-  font-size: 24px;
+  font-size: 28px;
   line-height: 1.1;
   color: #212121;
   font-weight: 900;
@@ -218,25 +282,20 @@
 .mobility-card h3,
 .final-summary-card h3 {
   margin: 0 0 14px;
-  font-size: 28px;
+  font-size: 32px;
   line-height: 1.1;
   color: #2c2c2c;
   font-weight: 900;
 }
 
 .fake-food-image {
-  height: 150px;
-  border-radius: 24px;
-  margin-bottom: 18px;
-  background:
-    radial-gradient(circle at 25% 35%, #d9b5e6 0 10%, transparent 11%),
-    radial-gradient(circle at 55% 38%, #dfd7a8 0 14%, transparent 15%),
-    radial-gradient(circle at 72% 28%, #a8d88f 0 10%, transparent 11%),
-    radial-gradient(circle at 60% 65%, #e8b07d 0 12%, transparent 13%),
-    radial-gradient(circle at 35% 60%, #87c8a1 0 10%, transparent 11%),
-    radial-gradient(circle at 48% 50%, #c8a26c 0 18%, transparent 19%),
-    linear-gradient(135deg, #f3dfbb, #e8efe2);
-  box-shadow: inset 0 8px 16px rgba(255,255,255,0.35);
+  background-image: url(../../assets/nutrition_summary_illustration_1.jpg);
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 160px;
+  border-radius: 12px;
+  margin-bottom: 16px;
 }
 
 .progress-row {
@@ -288,7 +347,7 @@
 
 .mini-stat-card span {
   display: block;
-  font-size: 11px;
+  font-size: 15px;
   color: #858585;
   font-weight: 800;
   margin-bottom: 6px;
@@ -296,7 +355,7 @@
 
 .mini-stat-card strong {
   color: #2a2a2a;
-  font-size: 18px;
+  font-size: 22px;
   line-height: 1.4;
 }
 
@@ -311,7 +370,7 @@
   align-items: center;
   padding: 10px 14px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 700;
 }
 
@@ -336,14 +395,14 @@
 }
 
 .trend-header span {
-  font-size: 11px;
+  font-size: 15px;
   color: #7f7f7f;
   font-weight: 800;
 }
 
 .trend-header strong {
   color: #4d9c68;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 900;
 }
 
@@ -355,7 +414,7 @@
   display: inline-flex;
   padding: 7px 12px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 800;
   background: #e3f2e7;
   color: #388653;
@@ -365,7 +424,7 @@
   margin: 0;
   color: #696969;
   line-height: 1.7;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .trend-mini-grid {
@@ -383,7 +442,7 @@
 
 .trend-mini-grid span {
   display: block;
-  font-size: 11px;
+  font-size: 15px;
   color: #888;
   font-weight: 800;
   margin-bottom: 6px;
@@ -391,7 +450,7 @@
 
 .trend-mini-grid strong {
   color: #2b2b2b;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 900;
 }
 
@@ -419,7 +478,7 @@
 
 .report-note-inline {
   color: #5f745f;
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.7;
   padding-left: 18px;
   position: relative;
@@ -431,7 +490,7 @@
   left: 0;
   top: 0;
   color: #0b8a34;
-  font-size: 10px;
+  font-size: 14px;
 }
 
 .report-bottom-actions {
@@ -516,20 +575,20 @@
 }
 
 .monthly-score-value strong {
-  font-size: 64px;
+  font-size: 68px;
   line-height: 1;
   font-weight: 900;
 }
 
 .monthly-score-value span {
-  font-size: 22px;
+  font-size: 26px;
   padding-bottom: 6px;
 }
 
 .score-diff-text {
   margin: 0 0 18px;
   color: #d6f2dc;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
 }
 
@@ -537,7 +596,7 @@
   margin: 0;
   line-height: 1.8;
   color: rgba(255,255,255,0.9);
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .trend-card-head {
@@ -551,7 +610,7 @@
 .trend-card-head p {
   margin: 6px 0 0;
   color: #888;
-  font-size: 13px;
+  font-size: 17px;
 }
 
 .three-dots {
@@ -605,14 +664,14 @@
 
 .status-chip-card span {
   display: block;
-  font-size: 11px;
+  font-size: 15px;
   color: #878787;
   font-weight: 800;
   margin-bottom: 6px;
 }
 
 .status-chip-card strong {
-  font-size: 18px;
+  font-size: 22px;
   color: #2b2b2b;
   font-weight: 900;
 }
@@ -638,14 +697,14 @@
 
 .mobility-stat span {
   display: block;
-  font-size: 12px;
+  font-size: 16px;
   color: #8a8a8a;
   font-weight: 800;
   margin-bottom: 8px;
 }
 
 .mobility-stat strong {
-  font-size: 26px;
+  font-size: 30px;
   color: #252525;
   font-weight: 900;
 }
@@ -659,7 +718,7 @@
 
 .mini-improve-box span {
   display: block;
-  font-size: 11px;
+  font-size: 15px;
   color: #888;
   font-weight: 800;
   margin-bottom: 6px;
@@ -667,7 +726,7 @@
 
 .mini-improve-box strong {
   display: block;
-  font-size: 34px;
+  font-size: 38px;
   color: #33884d;
   margin-bottom: 10px;
 }
@@ -676,7 +735,7 @@
   margin: 0;
   color: #666;
   line-height: 1.7;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .tiny-duration-badge {
@@ -686,7 +745,7 @@
   border-radius: 999px;
   background: #e2f2e3;
   color: #4b8d5e;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 800;
 }
 
@@ -711,25 +770,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 30px;
 }
 
 .doctor-row strong {
   display: block;
   color: #2b2b2b;
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .doctor-row span {
   display: block;
   color: #8a8a8a;
-  font-size: 13px;
+  font-size: 17px;
   margin-top: 2px;
 }
 
 .doctor-quote {
   margin: 0 0 12px;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1.7;
   color: #2c2c2c;
   font-weight: 700;
@@ -739,7 +798,7 @@
   margin: 0;
   color: #666;
   line-height: 1.7;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .milestone-card {
@@ -749,7 +808,7 @@
 
 .milestone-card h3 {
   margin: 0 0 12px;
-  font-size: 34px;
+  font-size: 38px;
   line-height: 1.05;
   font-weight: 900;
 }
@@ -764,7 +823,7 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 800;
 }
 
@@ -792,7 +851,7 @@
   margin: 0;
   color: #666;
   line-height: 1.8;
-  font-size: 15px;
+  font-size: 19px;
 }
 
 .dark-action-btn {
@@ -837,7 +896,7 @@
 
   .report-top-copy h1,
   .report-header-block h2 {
-    font-size: 32px;
+    font-size: 36px;
   }
 
   .report-tab-switch {
@@ -848,7 +907,7 @@
   .report-tab-btn {
     flex: 1;
     padding: 12px 10px;
-    font-size: 13px;
+    font-size: 17px;
   }
 
   .metric-chip-grid,
@@ -876,11 +935,11 @@
   .monthly-trend-card h3,
   .mobility-card h3,
   .milestone-card h3 {
-    font-size: 24px;
+    font-size: 28px;
   }
 
   .monthly-score-value strong {
-    font-size: 50px;
+    font-size: 54px;
   }
 
   .score-ring {
@@ -894,7 +953,7 @@
   }
 
   .score-ring-inner strong {
-    font-size: 36px;
+    font-size: 40px;
   }
 }
 
@@ -905,7 +964,7 @@
 
   .report-top-copy h1,
   .report-header-block h2 {
-    font-size: 28px;
+    font-size: 32px;
   }
 
   .glass-card,

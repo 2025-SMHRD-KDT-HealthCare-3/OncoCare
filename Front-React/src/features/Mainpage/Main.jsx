@@ -11,8 +11,11 @@ const Main = () => {
     <div className="page-layout">
       <Sidebar />
       <div className="page-content-area main-bg">
-        <MainBody />
-        <Footer />
+        <div className='overlay'>
+            <MainBody />
+            <Footer />
+        </div>
+        
       </div>
     </div>
   )

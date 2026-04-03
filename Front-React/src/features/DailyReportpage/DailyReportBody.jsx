@@ -3,6 +3,7 @@ import axios from 'axios'
 import DailyDiet from './DailyDiet'
 import DailyBowel from './DailyBowel'
 import DailyCondition from './DailyCondition'
+import { useToast } from '../../context/ToastContext'
 
 const bristolLabels = {
   1: '1형 - 분리된 딱딱한 덩어리 (심한 변비)',
@@ -20,6 +21,7 @@ const today = () => {
 }
 
 const DailyReportBody = ({ date }) => {
+  const { showToast, showConfirm } = useToast()
   const user_idx = sessionStorage.getItem('user_idx')
   const targetDate = date || today()
 
@@ -89,7 +91,7 @@ const DailyReportBody = ({ date }) => {
   }, [targetDate])
 
   const handleDietSave = async (diet_idx, feedback, rating) => {
-    if (!user_idx) { alert('로그인이 필요합니다.'); return }
+    if (!user_idx) { showToast('알림', '로그인이 필요합니다.', 'warning'); return }
     try {
       const res = await axios.post('http://localhost:3000/api/diet/updateDiet', {
         diet_idx,
@@ -97,34 +99,35 @@ const DailyReportBody = ({ date }) => {
         diet_rating: rating || 0,
       })
       if (res.data == 1 || res.data === '1') {
-        alert('저장되었습니다.')
+        showToast('저장 완료', '저장되었습니다.', 'success')
       } else {
-        alert('저장에 실패했습니다.')
+        showToast('오류', '저장에 실패했습니다.', 'danger')
       }
     } catch (err) {
       console.error('식단 저장 실패:', err)
-      alert('저장에 실패했습니다.')
+      showToast('오류', '저장에 실패했습니다.', 'danger')
     }
   }
 
   const handleBowelDelete = async (bowel_idx) => {
-    if (!window.confirm('배변 기록을 삭제할까요?')) return
+    const ok = await showConfirm('삭제 확인', '배변 기록을 삭제할까요?')
+    if (!ok) return
     try {
       const res = await axios.post('http://localhost:3000/api/bowel/delete', { bowel_idx })
       if (res.data == 1 || res.data === '1') {
         fetchBowelList()
       } else {
-        alert('삭제에 실패했습니다.')
+        showToast('오류', '삭제에 실패했습니다.', 'danger')
       }
     } catch (err) {
       console.error('배변 삭제 실패:', err)
-      alert('삭제에 실패했습니다.')
+      showToast('오류', '삭제에 실패했습니다.', 'danger')
     }
   }
 
   const handleBowelSave = async () => {
-    if (!user_idx) { alert('로그인이 필요합니다.'); return }
-    if (!defecationTime) { alert('배변 시간을 입력해주세요.'); return }
+    if (!user_idx) { showToast('알림', '로그인이 필요합니다.', 'warning'); return }
+    if (!defecationTime) { showToast('알림', '배변 시간을 입력해주세요.', 'warning'); return }
     try {
       const res = await axios.post('http://localhost:3000/api/bowel/save', {
         user_idx,
@@ -136,18 +139,18 @@ const DailyReportBody = ({ date }) => {
         setDefecationTime('')
         setDefecationType(4)
         fetchBowelList()
-        alert('저장되었습니다.')
+        showToast('저장 완료', '저장되었습니다.', 'success')
       } else {
-        alert('저장에 실패했습니다.')
+        showToast('오류', '저장에 실패했습니다.', 'danger')
       }
     } catch (err) {
       console.error('배변 저장 실패:', err)
-      alert('저장에 실패했습니다.')
+      showToast('오류', '저장에 실패했습니다.', 'danger')
     }
   }
 
   const handleConditionSave = async () => {
-    if (!user_idx) { alert('로그인이 필요합니다.'); return }
+    if (!user_idx) { showToast('알림', '로그인이 필요합니다.', 'warning'); return }
     try {
       const res = await axios.post('http://localhost:3000/api/condition/save', {
         user_idx,
@@ -160,13 +163,13 @@ const DailyReportBody = ({ date }) => {
       })
       if (res.data == 1 || res.data === '1') {
         fetchCondition()
-        alert('저장되었습니다.')
+        showToast('저장 완료', '저장되었습니다.', 'success')
       } else {
-        alert('저장에 실패했습니다.')
+        showToast('오류', '저장에 실패했습니다.', 'danger')
       }
     } catch (err) {
       console.error('컨디션 저장 실패:', err)
-      alert('저장에 실패했습니다.')
+      showToast('오류', '저장에 실패했습니다.', 'danger')
     }
   }
 

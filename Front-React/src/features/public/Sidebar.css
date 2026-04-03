@@ -90,6 +90,158 @@
 .sidebar-bottom {
   border-top: 1px solid #e6e8e6;
   padding-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── 알림 카드 ── */
+.sidebar-notif-card {
+  background: linear-gradient(135deg, #d4b97a 0%, #c9a84c 100%);
+  border-radius: 16px;
+  padding: 14px;
+  color: #3b2a00;
+  box-shadow: 0 4px 16px rgba(180, 130, 30, 0.2);
+}
+
+.sidebar-notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.sidebar-notif-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sidebar-notif-icon {
+  font-size: 20px;
+}
+
+.sidebar-notif-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #2a1a00;
+}
+
+.sidebar-notif-close {
+  background: none;
+  border: none;
+  font-size: 17px;
+  color: #5a3e00;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.sidebar-notif-close:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+.sidebar-notif-summary {
+  font-size: 16px;
+  color: #3b2a00;
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+.sidebar-notif-summary strong {
+  font-weight: 800;
+}
+
+.sidebar-notif-list {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-notif-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2a1a00;
+  background: rgba(255,255,255,0.25);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+.notif-badge-low {
+  font-size: 14px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.4);
+  border-radius: 6px;
+  padding: 2px 7px;
+  color: #5a3a00;
+}
+
+.notif-badge-empty {
+  font-size: 14px;
+  font-weight: 700;
+  background: rgba(200, 50, 50, 0.2);
+  border-radius: 6px;
+  padding: 2px 7px;
+  color: #8b0000;
+}
+
+.sidebar-notif-detail-btn {
+  background: rgba(255,255,255,0.3);
+  border: none;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #3b2a00;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: background 0.15s;
+}
+
+.sidebar-notif-detail-btn:hover {
+  background: rgba(255,255,255,0.5);
+}
+
+/* ── DB 알림 카드 (초록 계열) ── */
+.sidebar-alert-card {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  box-shadow: 0 4px 16px rgba(42, 92, 30, 0.15);
+  color: #1a4a2e;
+}
+
+.sidebar-alert-card .sidebar-notif-title {
+  color: #1a4a2e;
+}
+
+/* ── 데일리 로그 버튼 ── */
+.sidebar-daily-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.22);
+  transition: all 0.2s ease;
+}
+
+.sidebar-daily-btn:hover {
+  opacity: 0.88;
+  color: #fff;
+  transform: translateX(2px);
 }
 
 .sidebar-user-card {
@@ -101,7 +253,6 @@
   border: 1px solid #e7ebe7;
   border-radius: 16px;
   padding: 12px;
-  margin-bottom: 12px;
 }
 
 .sidebar-avatar {

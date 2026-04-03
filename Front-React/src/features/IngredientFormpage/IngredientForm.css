@@ -31,7 +31,7 @@
 
 /* 라벨: 스크린샷처럼 초록색 */
 .if-label {
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 700;
   color: #2a5c1e;
 }
@@ -42,7 +42,7 @@
   padding: 13px 16px;
   border: 1.5px solid #e8e6de;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 19px;
   color: #1c1c1c;
   background: #f8f7f2;
   outline: none;
@@ -76,7 +76,7 @@
   padding: 13px 40px 13px 16px;
   border: 1.5px solid #e8e6de;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 19px;
   color: #1c1c1c;
   background: #f8f7f2;
   outline: none;
@@ -99,7 +99,7 @@
   transform: translateY(-52%);
   pointer-events: none;
   color: #9ca3af;
-  font-size: 17px;
+  font-size: 21px;
   font-weight: 600;
 }
 
@@ -142,7 +142,7 @@
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 800;
   flex-shrink: 0;
 }
@@ -154,7 +154,7 @@
 }
 
 .if-reminder-title {
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.1em;
   color: #2a5c1e;
@@ -162,7 +162,7 @@
 }
 
 .if-reminder-text {
-  font-size: 13px;
+  font-size: 17px;
   color: #6b7280;
   line-height: 1.6;
   margin: 0;
@@ -186,7 +186,7 @@
   color: #fff;
   border: none;
   border-radius: 999px;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s;
@@ -201,7 +201,7 @@
   background: none;
   border: none;
   color: #6b7280;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 600;
   cursor: pointer;
   padding: 0 8px;
@@ -221,7 +221,7 @@
   background: none;
   border: none;
   color: #c62828;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 800;
   letter-spacing: 0.08em;
   cursor: pointer;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import Sidebar from '../public/Sidebar'
 import WeeklyReport from './WeeklyReport'
@@ -8,6 +8,9 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import './Report.css'
 import Footer from '../public/Footer'
 
+const toToday  = () => new Date().toISOString().split('T')[0]
+const toMonth  = () => new Date().getMonth() + 1
+
 const Report = () => {
   const user_idx = sessionStorage.getItem('user_idx')
 
@@ -15,48 +18,37 @@ const Report = () => {
   const [weeklyData, setWeeklyData] = useState(null)
   const [monthlyData, setMonthlyData] = useState(null)
   const [prevMonthlyData, setPrevMonthlyData] = useState(null)
+  const [generating, setGenerating] = useState({ weekly: false, monthly: false })
+  const [genMsg, setGenMsg] = useState({ weekly: '', monthly: '' })
+  const timers = useRef({})
 
-  useEffect(() => {
+  const fetchReports = () => {
     if (!user_idx) return
 
     axios
       .get(`http://localhost:3000/api/report/weekly?user_idx=${user_idx}`)
       .then((res) => {
-        if (res.data && res.data !== '0') {
-          setWeeklyData(res.data)
-        } else {
-          const lastWeek = new Date()
-          lastWeek.setDate(lastWeek.getDate() - 7)
-          const lastWeekStr = lastWeek.toISOString().split('T')[0]
-          return axios.get(
-            `http://localhost:3000/api/report/weekly?user_idx=${user_idx}&day=${lastWeekStr}`
-          )
-        }
-      })
-      .then((res) => {
-        if (res && res.data && res.data !== '0') setWeeklyData(res.data)
+        if (res.data && res.data !== '0') return setWeeklyData(res.data)
+        const lastWeek = new Date()
+        lastWeek.setDate(lastWeek.getDate() - 7)
+        return axios
+          .get(`http://localhost:3000/api/report/weekly?user_idx=${user_idx}&day=${lastWeek.toISOString().split('T')[0]}`)
+          .then((r) => { if (r.data && r.data !== '0') setWeeklyData(r.data) })
       })
       .catch((err) => console.error('주간 리포트 조회 실패:', err))
 
     const now = new Date()
-    const prevYear =
-      now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear()
+    const prevYear  = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear()
     const prevMonth = now.getMonth() === 0 ? 12 : now.getMonth()
     const prevMonthStr = `${prevYear}-${String(prevMonth).padStart(2, '0')}`
 
     axios
       .get(`http://localhost:3000/api/report/monthly?user_idx=${user_idx}`)
       .then((res) => {
-        if (res.data && res.data !== '0') {
-          setMonthlyData(res.data)
-        } else {
-          return axios.get(
-            `http://localhost:3000/api/report/monthly?user_idx=${user_idx}&month=${prevMonthStr}`
-          )
-        }
-      })
-      .then((res) => {
-        if (res && res.data && res.data !== '0') setMonthlyData(res.data)
+        if (res.data && res.data !== '0') return setMonthlyData(res.data)
+        return axios
+          .get(`http://localhost:3000/api/report/monthly?user_idx=${user_idx}&month=${prevMonthStr}`)
+          .then((r) => { if (r.data && r.data !== '0') setMonthlyData(r.data) })
       })
       .catch((err) => console.error('월간 리포트 조회 실패:', err))
 
@@ -66,14 +58,42 @@ const Report = () => {
         : `${now.getFullYear()}-${String(now.getMonth() - 1).padStart(2, '0')}`
 
     axios
-      .get(
-        `http://localhost:3000/api/report/monthly?user_idx=${user_idx}&month=${twoMonthsAgo}`
-      )
-      .then((res) => {
-        if (res.data && res.data !== '0') setPrevMonthlyData(res.data)
-      })
+      .get(`http://localhost:3000/api/report/monthly?user_idx=${user_idx}&month=${twoMonthsAgo}`)
+      .then((res) => { if (res.data && res.data !== '0') setPrevMonthlyData(res.data) })
       .catch((err) => console.error('전월 리포트 조회 실패:', err))
-  }, [user_idx])
+  }
+
+  useEffect(() => {
+    fetchReports()
+    return () => { clearTimeout(timers.current.weekly); clearTimeout(timers.current.monthly) }
+  }, [])
+
+  const handleGenerate = async (type) => {
+    if (!user_idx) return
+    setGenerating((prev) => ({ ...prev, [type]: true }))
+    setGenMsg((prev) => ({ ...prev, [type]: '' }))
+
+    try {
+      const url =
+        type === 'weekly'
+          ? `http://localhost:8000/generate-weekly-report/${user_idx}?target_date=${toToday()}`
+          : `http://localhost:8000/generate-monthly-report/${user_idx}?month=${toMonth()}`
+
+      await axios.post(url)
+      setGenMsg((prev) => ({ ...prev, [type]: '생성이 시작되었습니다. 약 20초 후 자동으로 갱신됩니다.' }))
+
+      clearTimeout(timers.current[type])
+      timers.current[type] = setTimeout(() => {
+        fetchReports()
+        setGenMsg((prev) => ({ ...prev, [type]: '' }))
+      }, 20000)
+    } catch (err) {
+      console.error('레포트 생성 실패:', err)
+      setGenMsg((prev) => ({ ...prev, [type]: '생성 요청에 실패했습니다. FastAPI 서버를 확인해주세요.' }))
+    } finally {
+      setGenerating((prev) => ({ ...prev, [type]: false }))
+    }
+  }
 
   return (
     <div className="report-page page-layout">
@@ -82,7 +102,7 @@ const Report = () => {
         <div className="report-modern-shell">
           <div className="fr-hero-card">
             <div className="fr-hero-card-body">
-              <h1 className="fr-hero-title">Recovery Reports</h1>
+              <h1 className="fr-hero-title">회복 리포트</h1>
               <p className="fr-hero-sub">주간과 월간 회복 데이터를 한 화면에서 확인해보세요.</p>
             </div>
             <div className="report-tab-switch">
@@ -91,23 +111,52 @@ const Report = () => {
                 className={`report-tab-btn ${activeTab === 'weekly' ? 'active' : ''}`}
                 onClick={() => setActiveTab('weekly')}
               >
-                Weekly
+                주간
               </button>
               <button
                 type="button"
                 className={`report-tab-btn ${activeTab === 'monthly' ? 'active' : ''}`}
                 onClick={() => setActiveTab('monthly')}
               >
-                Monthly
+                월간
               </button>
             </div>
           </div>
 
           <div className="report-tab-panel">
-            {activeTab === 'weekly' ? (
-              <WeeklyReport data={weeklyData} />
-            ) : (
-              <MonthlyReport data={monthlyData} prevData={prevMonthlyData} />
+            {activeTab === 'weekly' && (
+              <>
+                <div className="report-generate-bar">
+                  <button
+                    type="button"
+                    className="report-generate-btn"
+                    onClick={() => handleGenerate('weekly')}
+                    disabled={generating.weekly}
+                  >
+                    <span>📊</span>
+                    {generating.weekly ? '생성 요청 중...' : '주간 레포트 생성'}
+                  </button>
+                </div>
+                {genMsg.weekly && <div className="report-gen-msg">{genMsg.weekly}</div>}
+                <WeeklyReport data={weeklyData} />
+              </>
+            )}
+            {activeTab === 'monthly' && (
+              <>
+                <div className="report-generate-bar">
+                  <button
+                    type="button"
+                    className="report-generate-btn"
+                    onClick={() => handleGenerate('monthly')}
+                    disabled={generating.monthly}
+                  >
+                    <span>📈</span>
+                    {generating.monthly ? '생성 요청 중...' : '월간 레포트 생성'}
+                  </button>
+                </div>
+                {genMsg.monthly && <div className="report-gen-msg">{genMsg.monthly}</div>}
+                <MonthlyReport data={monthlyData} prevData={prevMonthlyData} />
+              </>
             )}
           </div>
         </div>

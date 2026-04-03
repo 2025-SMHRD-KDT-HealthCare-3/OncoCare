@@ -21,7 +21,7 @@
 }
 
 .mp-page-title {
-  font-size: 34px;
+  font-size: 38px;
   font-weight: 800;
   color: #1c1c1c;
   margin: 0 0 8px;
@@ -29,7 +29,7 @@
 }
 
 .mp-page-sub {
-  font-size: 15px;
+  font-size: 19px;
   color: #6b7280;
   margin: 0;
   line-height: 1.6;
@@ -56,7 +56,7 @@
   border: none;
   border-radius: 999px;
   padding: 7px 16px;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s;
@@ -91,7 +91,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 28px;
   flex-shrink: 0;
 }
 
@@ -101,7 +101,7 @@
 }
 
 .mp-profile-name {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 800;
   color: #1c1c1c;
   margin: 0 0 3px;
@@ -111,7 +111,7 @@
 }
 
 .mp-profile-since {
-  font-size: 12px;
+  font-size: 16px;
   color: #9ca3af;
 }
 
@@ -135,13 +135,13 @@
 }
 
 .mp-row-label {
-  font-size: 14px;
+  font-size: 18px;
   color: #6b7280;
   flex-shrink: 0;
 }
 
 .mp-row-value {
-  font-size: 14px;
+  font-size: 18px;
   color: #1c1c1c;
   text-align: right;
 }
@@ -151,7 +151,7 @@
   color: #2a5c1e;
   border-radius: 999px;
   padding: 3px 12px;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 600;
 }
 
@@ -180,12 +180,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 24px;
   flex-shrink: 0;
 }
 
 .mp-health-card-title {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 800;
   color: #1c1c1c;
   margin: 0;
@@ -209,7 +209,7 @@
 }
 
 .mp-stat-lbl {
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: #9ca3af;
@@ -217,7 +217,7 @@
 }
 
 .mp-stat-val {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 800;
   color: #1c1c1c;
   line-height: 1.2;
@@ -243,7 +243,7 @@
 }
 
 .mp-section-title {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 800;
   color: #1c1c1c;
   margin: 0;
@@ -253,7 +253,7 @@
   background: none;
   border: none;
   color: #2a5c1e;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   padding: 0;
@@ -285,7 +285,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 26px;
   flex-shrink: 0;
 }
 
@@ -301,14 +301,14 @@
 }
 
 .mp-report-title {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 800;
   color: #1c1c1c;
   margin: 0;
 }
 
 .mp-report-desc {
-  font-size: 13px;
+  font-size: 17px;
   color: #6b7280;
   margin: 0;
   white-space: nowrap;
@@ -334,7 +334,7 @@
   color: #6b7280;
   border-radius: 6px;
   padding: 3px 8px;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.04em;
 }
@@ -353,14 +353,14 @@
 }
 
 .mp-score-val {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 800;
   color: #2a5c1e;
   line-height: 1;
 }
 
 .mp-score-lbl {
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: #9ca3af;
@@ -374,7 +374,7 @@
   border: none;
   border-radius: 999px;
   padding: 10px 20px;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s;
@@ -398,7 +398,7 @@
 }
 
 .mp-quote-text {
-  font-size: 16px;
+  font-size: 20px;
   font-style: italic;
   color: #3a3a3a;
   line-height: 1.7;
@@ -407,7 +407,7 @@
 }
 
 .mp-quote-author {
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.14em;
   color: #9ca3af;

@@ -18,14 +18,14 @@
 
 .ingredient-title {
   margin: 0 0 10px;
-  font-size: 34px;
+  font-size: 38px;
   font-weight: 800;
   color: #1b1c1a;
 }
 
 .ingredient-subtitle {
   margin: 0;
-  font-size: 15px;
+  font-size: 19px;
   color: #677067;
   font-weight: 500;
 }
@@ -47,7 +47,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
@@ -70,7 +70,7 @@
 }
 
 .ingredient-action-icon {
-  font-size: 18px;
+  font-size: 22px;
   line-height: 1;
 }
 
@@ -81,7 +81,7 @@
   }
 
   .ingredient-title {
-    font-size: 26px;
+    font-size: 30px;
   }
 
   .ingredient-action-list {
@@ -90,11 +90,11 @@
 
   .ingredient-action {
     min-height: 56px;
-    font-size: 14px;
+    font-size: 18px;
     padding: 0 14px;
   }
 
   .ingredient-action-icon {
-    font-size: 16px;
+    font-size: 20px;
   }
 }

@@ -21,9 +21,9 @@ const DailyBowel = ({
 
   return (
     <div className="dr-card">
-      <h2 className="dr-card-title">🟢 Bowel Movement</h2>
+      <h2 className="dr-card-title">🟢 배변 기록</h2>
 
-      <span className="dr-bristol-section-label">Bristol Stool Scale</span>
+      <span className="dr-bristol-section-label">브리스톨 대변 척도</span>
       <div className="dr-bristol-row">
         {[1, 2, 3, 4, 5, 6, 7].map((n) => (
           <button
@@ -43,7 +43,7 @@ const DailyBowel = ({
       )}
 
       <div className="dr-time-section">
-        <span className="dr-form-label">Time of Movement</span>
+        <span className="dr-form-label">배변 시간</span>
         <div className="dr-time-input-wrap">
           <span className="dr-time-icon">🕐</span>
           <input
@@ -62,7 +62,7 @@ const DailyBowel = ({
 
       {bowelList && bowelList.length > 0 && (
         <div className="dr-bowel-list">
-          <span className="dr-bowel-list-label">Observations</span>
+          <span className="dr-bowel-list-label">오늘 배변 기록</span>
           {bowelList.map((item) => (
             <div key={item.bowel_idx} className="dr-bowel-item">
               <span className="dr-bowel-time">{item.bowel_time}</span>

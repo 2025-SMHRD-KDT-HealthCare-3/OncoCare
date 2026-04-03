@@ -10,7 +10,7 @@
   border: none;
   background: transparent;
   color: #4f9c6b;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   padding: 0;
   margin-bottom: 18px;
@@ -56,7 +56,7 @@
   color: #4b8f61;
   border-radius: 999px;
   padding: 8px 14px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 700;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -72,7 +72,7 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.92);
   color: #2c6d3e;
-  font-size: 18px;
+  font-size: 22px;
   cursor: pointer;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
 }
@@ -92,7 +92,7 @@
 .recipe-nutrition-panel h3 {
   margin: 0 0 18px;
   color: #2f5742;
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 800;
 }
 
@@ -108,7 +108,7 @@
   gap: 14px;
   padding-bottom: 10px;
   border-bottom: 1px solid #d9d7cf;
-  font-size: 15px;
+  font-size: 19px;
   color: #48544c;
 }
 
@@ -123,7 +123,7 @@
   color: #4d6d5a;
   border-radius: 16px;
   padding: 14px;
-  font-size: 13px;
+  font-size: 17px;
   line-height: 1.6;
 }
 
@@ -134,7 +134,7 @@
 
 .recipe-title-area h1 {
   margin: 0 0 10px;
-  font-size: 42px;
+  font-size: 46px;
   line-height: 1.15;
   color: #232323;
   font-weight: 900;
@@ -144,7 +144,7 @@
   margin: 0;
   max-width: 760px;
   color: #6d6d6d;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1.7;
 }
 
@@ -164,7 +164,7 @@
 .ingredients-panel h2,
 .cooking-panel h2 {
   margin: 0 0 18px;
-  font-size: 26px;
+  font-size: 30px;
   color: #2c5f40;
   font-weight: 800;
 }
@@ -180,7 +180,7 @@
   align-items: flex-start;
   gap: 10px;
   color: #525252;
-  font-size: 15px;
+  font-size: 19px;
   line-height: 1.6;
 }
 
@@ -216,14 +216,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 17px;
+  font-size: 21px;
   font-weight: 800;
   box-shadow: 0 6px 12px rgba(11, 138, 52, 0.18);
 }
 
 .step-copy h4 {
   margin: 3px 0 8px;
-  font-size: 18px;
+  font-size: 22px;
   color: #2c5f40;
   font-weight: 800;
 }
@@ -232,7 +232,7 @@
   margin: 0;
   color: #595959;
   line-height: 1.75;
-  font-size: 15px;
+  font-size: 19px;
   white-space: pre-wrap;
   word-break: keep-all;
 }
@@ -240,7 +240,7 @@
 .empty-copy {
   margin: 0;
   color: #7b7b7b;
-  font-size: 15px;
+  font-size: 19px;
   line-height: 1.6;
 }
 
@@ -255,7 +255,7 @@
   display: block;
   margin-bottom: 10px;
   color: #2b2b2b;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 700;
 }
 
@@ -271,7 +271,7 @@
   color: #4a5f50;
   border-radius: 999px;
   padding: 10px 16px;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
   transition: 0.18s ease;
@@ -294,7 +294,7 @@
   height: 56px;
   border-radius: 999px;
   padding: 0 24px;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 800;
   cursor: pointer;
   transition: 0.18s ease;
@@ -361,17 +361,17 @@
   }
 
   .recipe-title-area h1 {
-    font-size: 30px;
+    font-size: 34px;
   }
 
   .recipe-title-area p {
-    font-size: 14px;
+    font-size: 18px;
   }
 
   .recipe-nutrition-panel h3,
   .ingredients-panel h2,
   .cooking-panel h2 {
-    font-size: 22px;
+    font-size: 26px;
   }
 
   .cooking-step {
@@ -382,16 +382,16 @@
     width: 34px;
     height: 34px;
     min-width: 34px;
-    font-size: 15px;
+    font-size: 19px;
   }
 
   .step-copy h4 {
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .step-copy p,
   .ingredient-row {
-    font-size: 14px;
+    font-size: 18px;
   }
 
   .recipe-primary-btn,
@@ -402,18 +402,18 @@
 
 @media (max-width: 480px) {
   .recipe-badge {
-    font-size: 11px;
+    font-size: 15px;
     padding: 7px 11px;
   }
 
   .recipe-favorite-btn {
     width: 38px;
     height: 38px;
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .recipe-title-area h1 {
-    font-size: 26px;
+    font-size: 30px;
   }
 
   .recipe-nutrition-panel,
