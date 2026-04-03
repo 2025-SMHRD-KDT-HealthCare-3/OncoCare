@@ -5,8 +5,10 @@ import './Auth.css';
 import '../public/Header.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import icon from '../../assets/oncocare_icon.png';
+import { useToast } from '../../context/ToastContext';
 
 const Auth = () => {
+  const { showToast } = useToast();
   const nav = useNavigate();
   const [mode, setMode] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +41,7 @@ const Auth = () => {
       });
 
       if (response.data.result === '1') {
-        alert(`${response.data.user_name}님 환영합니다!`);
+        showToast('환영합니다', `${response.data.user_name}님 환영합니다!`, 'success');
         sessionStorage.setItem('user_idx', response.data.user_idx);
         sessionStorage.setItem('user_name', response.data.user_name);
         if (response.data.user_email) {
@@ -68,11 +70,11 @@ const Auth = () => {
       if (response.data == '1') {
         setEmailCheck(true);
         setEmailMessage('사용 가능한 이메일입니다.');
-        alert('사용 가능한 이메일입니다.');
+        showToast('확인', '사용 가능한 이메일입니다.', 'success');
       } else {
         setEmailCheck(false);
         setEmailMessage('이미 사용 중인 이메일입니다.');
-        alert('중복된 이메일입니다.');
+        showToast('알림', '중복된 이메일입니다.', 'warning');
       }
     } catch (error) {
       setEmailCheck(false);
@@ -110,7 +112,7 @@ const Auth = () => {
       });
 
       if (response.data == '1') {
-        alert('회원가입 성공!');
+        showToast('완료', '회원가입 성공!', 'success');
         setMode('login');
       } else {
         setRegisterError('회원가입 실패');
@@ -135,7 +137,7 @@ const Auth = () => {
         <main className="auth-main">
           <section className="auth-left">
             <div className="auth-badge">
-              <span className="auth-badge-icon">✦ Healing Sanctuary</span>
+              <span className="auth-badge-icon">✦ 치유의 성소</span>
             </div>
 
             <h1 className="auth-brand-title">OncoCare</h1> 
@@ -168,43 +170,43 @@ const Auth = () => {
                   className={mode === 'login' ? 'active' : ''}
                   onClick={() => setMode('login')}
                 >
-                  Login
+                  로그인
                 </button>
                 <button
                   type="button"
                   className={mode === 'signup' ? 'active' : ''}
                   onClick={() => setMode('signup')}
                 >
-                  Sign Up
+                  회원가입
                 </button>
               </div>
 
               {mode === 'login' ? (
                 <div className="auth-panel">
                   <div className="auth-panel-header">
-                    <h2>Welcome Back</h2>
-                    <p>Enter your credentials to enter your sanctuary.</p>
+                    <h2>다시 오셨습니다</h2>
+                    <p>이메일과 비밀번호를 입력해 주세요.</p>
                   </div>
 
                   <form onSubmit={handleLogin} className="auth-form">
                     <div className="auth-field">
-                      <label>Email Address</label>
+                      <label>이메일 주소</label>
                       <div className="auth-input-wrap">
                         <span className="auth-input-icon">✉</span>
                         <input
                           type="email"
                           value={loginEmail}
                           onChange={(e) => setLoginEmail(e.target.value)}
-                          placeholder="name@example.com"
+                          placeholder="이름@example.com"
                         />
                       </div>
                     </div>
 
                     <div className="auth-field">
                       <div className="auth-label-row">
-                        <label>Password</label>
+                        <label>비밀번호</label>
                         <button type="button" className="auth-text-link">
-                          Forgot?
+                          잊으셨나요?
                         </button>
                       </div>
 
@@ -229,7 +231,7 @@ const Auth = () => {
                     {loginError && <p className="auth-error">{loginError}</p>}
 
                     <button type="submit" className="auth-submit-btn">
-                      Access Sanctuary
+                      로그인
                     </button>
                   </form>
 
@@ -237,38 +239,38 @@ const Auth = () => {
               ) : (
                 <div className="auth-panel">
                   <div className="auth-panel-header">
-                    <h2>Create Account</h2>
-                    <p>Start your recovery journey with us.</p>
+                    <h2>회원가입</h2>
+                    <p>함께 회복 여정을 시작해보세요.</p>
                   </div>
 
                   <form onSubmit={handleRegister} className="auth-form">
                     <div className="auth-grid-2">
                       <div className="auth-field">
-                        <label>Name</label>
+                        <label>이름</label>
                         <div className="auth-input-wrap no-icon">
                           <input
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder="Your name"
+                            placeholder="이름을 입력하세요"
                           />
                         </div>
                       </div>
 
                       <div className="auth-field">
-                        <label>Sex</label>
+                        <label>성별</label>
                         <div className="auth-input-wrap no-icon">
                           <select value={sex} onChange={(e) => setSex(e.target.value)}>
-                            <option value="">Select</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
+                            <option value="">선택</option>
+                            <option value="Male">남성</option>
+                            <option value="Female">여성</option>
                           </select>
                         </div>
                       </div>
                     </div>
 
                     <div className="auth-field">
-                      <label>Birth</label>
+                      <label>생년월일</label>
                       <div className="auth-input-wrap no-icon">
                         <input
                           type="date"
@@ -279,7 +281,7 @@ const Auth = () => {
                     </div>
 
                     <div className="auth-field">
-                      <label>Email</label>
+                      <label>이메일</label>
                       <div className="auth-inline-row">
                         <div className="auth-input-wrap auth-inline-input no-icon">
                           <input
@@ -290,48 +292,48 @@ const Auth = () => {
                               setEmailCheck(false);
                               setEmailMessage('');
                             }}
-                            placeholder="name@example.com"
+                            placeholder="이름@example.com"
                           />
                         </div>
                         <button type="button" className="auth-check-btn" onClick={checkEmail}>
-                          Check
+                          중복확인
                         </button>
                       </div>
                       {emailMessage && <p className="auth-message">{emailMessage}</p>}
                     </div>
 
                     <div className="auth-field">
-                      <label>Password</label>
+                      <label>비밀번호</label>
                       <div className="auth-input-wrap no-icon">
                         <input
                           type="password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          placeholder="Create password"
+                          placeholder="비밀번호를 입력하세요"
                         />
                       </div>
                     </div>
 
                     <div className="auth-field">
-                      <label>Confirm Password</label>
+                      <label>비밀번호 확인</label>
                       <div className="auth-input-wrap no-icon">
                         <input
                           type="password"
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          placeholder="Confirm password"
+                          placeholder="비밀번호를 다시 입력하세요"
                         />
                       </div>
                     </div>
 
                     <div className="auth-field">
-                      <label>Phone Number</label>
+                      <label>전화번호</label>
                       <div className="auth-input-wrap no-icon">
                         <input
                           type="text"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          placeholder="Enter phone number"
+                          placeholder="전화번호를 입력하세요"
                         />
                       </div>
                     </div>
@@ -339,7 +341,7 @@ const Auth = () => {
                     {registerError && <p className="auth-error">{registerError}</p>}
 
                     <button type="submit" className="auth-submit-btn">
-                      Register
+                      가입하기
                     </button>
                   </form>
                 </div>

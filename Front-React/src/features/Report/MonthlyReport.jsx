@@ -10,48 +10,30 @@ const parseField = (field) => {
   }
 }
 
-const formatDate = (dateStr) => dateStr?.split('T')[0]
+const MonthlyReport = ({ data, prevData }) => {
+  const score     = data?.report_score ?? 0
+  const prevScore = prevData?.report_score ?? 0
+  const diff      = score - prevScore
 
-const WeeklyReport = ({ data }) => {
-  const score = data?.report_score ?? 0
-  const diet = parseField(data?.report_diet)
-  const bowel = parseField(data?.report_bowel)
+  const diet      = parseField(data?.report_diet)
+  const bowel     = parseField(data?.report_bowel)
   const condition = parseField(data?.report_condition)
 
-  const periodText =
-    data?.start_date && data?.end_date
-      ? `${formatDate(data.start_date)} - ${formatDate(data.end_date)}`
-      : data?.report_week_label || '이번 주 회복 데이터 요약'
-
-  const sections = [
-    {
-      title: 'Nutrition Summary',
-      summary: diet?.summary || '이번 주 식단 기록이 아직 충분하지 않습니다.',
-      insight:
-        diet?.insight || '식단을 꾸준히 기록하면 회복 패턴을 더 정확히 볼 수 있어요.',
-      tone: 'green',
-    },
-    {
-      title: 'Bowel & Condition Trends',
-      summary: bowel?.summary || '배변 기록이 충분하지 않습니다.',
-      insight:
-        condition?.insight || '컨디션과 함께 기록하면 회복 흐름을 더 잘 파악할 수 있어요.',
-      extra: condition?.summary || '컨디션 기록 없음',
-      tone: 'neutral',
-    },
-  ]
+  const monthLabel = data?.report_month
+    ? `${data.report_month}월 회복 리포트`
+    : data?.report_week_label || '이번 달 회복 데이터 요약'
 
   return (
     <div className="report-view">
       <div className="report-header-block">
-        <span className="report-view-badge weekly">WEEKLY INSIGHT</span>
-        <h2>Weekly Wellness Report</h2>
-        <p>{periodText}</p>
+        <span className="report-view-badge monthly">월간 인사이트</span>
+        <h2>월간 건강 리포트</h2>
+        <p>{monthLabel}</p>
       </div>
 
       <div className="weekly-dashboard-grid">
         <section className="glass-card score-ring-card">
-          <p className="mini-title">Overall Wellness Score</p>
+          <p className="mini-title">종합 건강 점수</p>
 
           <div className="score-ring-wrap">
             <div
@@ -62,7 +44,7 @@ const WeeklyReport = ({ data }) => {
             >
               <div className="score-ring-inner">
                 <strong>{score || '—'}%</strong>
-                <span>EXCELLENT</span>
+                <span>우수</span>
               </div>
             </div>
           </div>
@@ -70,30 +52,38 @@ const WeeklyReport = ({ data }) => {
           <div className="soft-message-box">
             <p>
               {data?.report_comment ||
-                '기록이 꾸준히 쌓일수록 회복 흐름을 더 정확히 파악할 수 있어요.'}
+                '꾸준한 기록과 관리로 회복이 진행되고 있습니다.'}
             </p>
           </div>
         </section>
 
         <section className="glass-card weekly-highlight-card">
-          <span className="mini-title">NEW MILESTONE REACHED</span>
-          <h3>Consistent Logging for 7 Days</h3>
+          <span className="mini-title">전월 대비</span>
+          <h3>
+            {diff > 0
+              ? `지난달보다 ${diff}점 향상되었습니다`
+              : diff < 0
+              ? `지난달보다 ${Math.abs(diff)}점 하락했습니다`
+              : '지난달과 동일한 수준을 유지했습니다'}
+          </h3>
           <p>
-            You’ve tracked your daily recovery data and built a meaningful weekly pattern.
+            이번 달의 식단, 배변, 컨디션 데이터를 종합 분석한 결과입니다.
           </p>
 
           <div className="metric-chip-grid">
             <div className="metric-chip">
-              <span>AVG SLEEP</span>
-              <strong>7h 45m</strong>
+              <span>이번달 점수</span>
+              <strong>{score || '—'}점</strong>
             </div>
             <div className="metric-chip">
-              <span>HEART RATE</span>
-              <strong>68 bpm</strong>
+              <span>지난달 점수</span>
+              <strong>{prevScore || '—'}점</strong>
             </div>
             <div className="metric-chip">
-              <span>DAILY STEPS</span>
-              <strong>4,200</strong>
+              <span>변화</span>
+              <strong style={{ color: diff >= 0 ? '#0a8a34' : '#c0392b' }}>
+                {diff > 0 ? `+${diff}` : diff}점
+              </strong>
             </div>
           </div>
         </section>
@@ -102,96 +92,72 @@ const WeeklyReport = ({ data }) => {
       <div className="weekly-lower-grid">
         <section className="glass-card report-feature-card">
           <div className="feature-image fake-food-image" />
-          <h3>{sections[0].title}</h3>
+          <h3>이번 달 영양 섭취</h3>
 
           <div className="progress-row">
             <div className="progress-label-line">
-              <span>Meal Adherence</span>
-              <strong>{diet?.score ?? 92}%</strong>
+              <span>식단 준수율</span>
+              <strong>{diet?.score ?? 0}%</strong>
             </div>
             <div className="progress-track">
               <div
                 className="progress-fill"
-                style={{ width: `${diet?.score ?? 92}%` }}
+                style={{ width: `${diet?.score ?? 0}%` }}
               />
             </div>
           </div>
 
           <div className="mini-stat-grid">
             <div className="mini-stat-card">
-              <span>PROTEIN INTAKE</span>
-              <strong>{diet?.value || '65g / target met'}</strong>
+              <span>식단 요약</span>
+              <strong>{diet?.summary || '기록 없음'}</strong>
             </div>
             <div className="mini-stat-card">
-              <span>FIBER INTAKE</span>
-              <strong>{bowel?.value || '28g / gentle level'}</strong>
+              <span>식단 인사이트</span>
+              <strong>{diet?.insight || '기록 없음'}</strong>
             </div>
-          </div>
-
-          <div className="insight-pill-row">
-            <span className="insight-pill green">
-              {diet?.insight || 'Digestive comfort improved this week'}
-            </span>
           </div>
         </section>
 
         <section className="glass-card report-feature-card">
-          <h3>{sections[1].title}</h3>
+          <h3>배변 및 컨디션 추이</h3>
 
           <div className="trend-box">
             <div className="trend-header">
-              <span>BRISTOL STOOL SCALE (AVG)</span>
-              <strong>Type 4</strong>
+              <span>브리스톨 척도 (평균)</span>
+              <strong>{bowel?.score ? `${bowel.score}형` : '4형'}</strong>
             </div>
 
             <div className="trend-badge-line">
               <span className="trend-badge active">
-                {bowel?.score ?? 'IDEAL'}
+                {bowel?.status ?? '정상'}
               </span>
             </div>
 
             <p className="trend-copy">
-              {bowel?.summary || '현재 배변 패턴은 비교적 안정적으로 유지되고 있어요.'}
+              {bowel?.summary || '이번 달 배변 패턴을 분석한 데이터가 없습니다.'}
             </p>
           </div>
 
           <div className="trend-mini-grid">
             <div>
-              <span>FATIGUE</span>
-              <strong>2.4 / 10</strong>
+              <span>컨디션</span>
+              <strong>{condition?.score ?? '—'} / 5</strong>
             </div>
             <div>
-              <span>PAIN</span>
-              <strong>1.2 / 10</strong>
+              <span>통증 여부</span>
+              <strong>{condition?.pain ?? '정보 없음'}</strong>
             </div>
-          </div>
-
-          <div className="bar-sparkline">
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
           </div>
 
           <div className="report-note-inline">
             {condition?.summary ||
-              '지난주보다 피로감이 감소하고 전반적인 컨디션이 안정적으로 유지되고 있습니다.'}
+              '이번 달 전반적인 컨디션 데이터를 확인할 수 없습니다.'}
           </div>
         </section>
-      </div>
-
-      <div className="report-bottom-actions">
-        <button type="button" className="ghost-action-btn">
-          Previous Week
-        </button>
-        <button type="button" className="primary-action-btn">
-          Schedule Review
-        </button>
       </div>
     </div>
   )
 }
 
-export default WeeklyReport
+export default MonthlyReport

@@ -6,8 +6,10 @@ import '../public/Header.css'
 import '../public/root.css'
 import './LoginBody.css'
 import { useState, useEffect } from 'react'
+import { useToast } from '../../context/ToastContext'
 
 const LoginBody = () => {
+  const { showToast } = useToast()
   const [id, setId] = useState('')
   const [pw, setPw] = useState('')
   const [error, setError] = useState('')
@@ -29,7 +31,7 @@ const LoginBody = () => {
       })
 
       if (response.data.result === '1') {
-      alert(`${response.data.user_name}님 환영합니다!`);
+      showToast('환영합니다', `${response.data.user_name}님 환영합니다!`, 'success');
       sessionStorage.setItem('user_idx', response.data.user_idx);
       sessionStorage.setItem('user_name', response.data.user_name);
       if (response.data.user_email) sessionStorage.setItem('user_email', response.data.user_email);
@@ -39,7 +41,7 @@ const LoginBody = () => {
     }
     } catch (error) {
       // 서버에서 '0'을 보냈을 때 (아이디/비번 불일치)
-      alert('이메일 또는 비밀번호가 틀렸습니다.');
+      showToast('오류', '이메일 또는 비밀번호가 틀렸습니다.', 'danger');
       setError('이메일 또는 비밀번호가 틀렸습니다.');
     }
     }
@@ -66,14 +68,14 @@ const LoginBody = () => {
           </div>
 
           <div className="d-flex justify-content-between gap-2">
-            <Link to='/Register' className="btn btn-outline-secondary w-50">Register</Link>
-            <button onClick = {login} type="submit" className="btn w-50" style={{backgroundColor : '#4CAF50' }}>Log in</button>
+            <Link to='/Register' className="btn btn-outline-secondary w-50">회원가입</Link>
+            <button onClick = {login} type="submit" className="btn w-50" style={{backgroundColor : '#4CAF50' }}>로그인</button>
           </div>
 
           {/* 비밀번호 분실 -> 기능x */}
 
           <div className="mt-3 text-center">
-            <a>Forgot password?</a>
+            <a>비밀번호를 잊으셨나요?</a>
           </div>
         </form>
 

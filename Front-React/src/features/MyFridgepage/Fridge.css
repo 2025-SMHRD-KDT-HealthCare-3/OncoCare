@@ -44,7 +44,7 @@
 .fr-hero-card-body { z-index: 1; }
 
 .fr-hero-title {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 800;
   color: #1c1c1c;
   margin: 0 0 8px;
@@ -52,7 +52,7 @@
 }
 
 .fr-hero-sub {
-  font-size: 14px;
+  font-size: 18px;
   color: #8a9189;
   margin: 0;
   max-width: 420px;
@@ -72,7 +72,7 @@
   border: none;
   border-radius: 999px;
   padding: 12px 26px;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
@@ -124,13 +124,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 17px;
+  font-size: 21px;
   flex-shrink: 0;
 }
 
 .fr-cat-name {
   flex: 1;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 800;
   color: #1c1c1c;
 }
@@ -140,7 +140,7 @@
   border: none;
   border-radius: 8px;
   padding: 5px 12px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 700;
   color: #2a5c1e;
   cursor: pointer;
@@ -176,18 +176,18 @@
 }
 
 .fr-cat-item-name {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   color: #1c1c1c;
 }
 
 .fr-cat-item-meta {
-  font-size: 12px;
+  font-size: 16px;
   color: #8a9189;
 }
 
 .fr-status-badge {
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.04em;
   border-radius: 6px;
@@ -223,21 +223,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 26px;
   flex-shrink: 0;
 }
 
 .fr-harvest-info { flex: 1; }
 
 .fr-harvest-title {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 800;
   color: #1c1c1c;
   margin: 0 0 2px;
 }
 
 .fr-harvest-sub {
-  font-size: 12px;
+  font-size: 16px;
   color: #8a9189;
   margin: 0;
 }
@@ -247,7 +247,7 @@
   border: none;
   border-radius: 999px;
   padding: 9px 18px;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
@@ -287,7 +287,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 28px;
   flex-shrink: 0;
 }
 
@@ -299,7 +299,7 @@
 }
 
 .fr-harvest-item-name {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   color: #1c1c1c;
   white-space: nowrap;
@@ -308,7 +308,7 @@
 }
 
 .fr-harvest-status {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
 }
 
@@ -319,7 +319,7 @@
   grid-column: 1 / -1;
   text-align: center;
   color: #9ca3af;
-  font-size: 13px;
+  font-size: 17px;
   padding: 24px 0;
 }
 
@@ -347,7 +347,7 @@
 }
 
 .fr-stat-num {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 800;
   color: #2a5c1e;
   line-height: 1;
@@ -356,7 +356,7 @@
 .fr-stat-num.fr-stat-warn { color: #c62828; }
 
 .fr-stat-label {
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: #9ca3af;
@@ -373,11 +373,11 @@
   gap: 14px;
   padding: 80px 0;
   color: #9ca3af;
-  font-size: 15px;
+  font-size: 19px;
   text-align: center;
 }
 
-.fr-empty-icon { font-size: 48px; }
+.fr-empty-icon { font-size: 52px; }
 
 .fr-empty-btn {
   background: #2a5c1e;
@@ -385,7 +385,7 @@
   border: none;
   border-radius: 12px;
   padding: 12px 26px;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s;

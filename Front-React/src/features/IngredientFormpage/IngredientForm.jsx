@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Sidebar from '../public/Sidebar'
 import axios from 'axios'
+import { useToast } from '../../context/ToastContext'
 import '../public/root.css'
 import './IngredientForm.css'
 import Footer from '../public/Footer'
@@ -12,6 +13,7 @@ const STORAGE_TYPES = ['냉장', '냉동', '실온']
 const UNITS = ['g', 'ml', '개', 'kg', 'L']
 
 const IngredientForm = () => {
+  const { showToast, showConfirm } = useToast()
   const { id } = useParams()
   const navigate = useNavigate()
   const isEdit = !!id
@@ -37,43 +39,44 @@ const IngredientForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!name.trim()) { alert('식재료 이름을 입력해주세요.'); return }
-    if (!category) { alert('종류를 선택해주세요.'); return }
-    if (!storageType) { alert('보관 형태를 선택해주세요.'); return }
-    if (!quantity.toString().trim()) { alert('수량을 입력해주세요.'); return }
+    if (!name.trim()) { showToast('알림', '식재료 이름을 입력해주세요.', 'warning'); return }
+    if (!category) { showToast('알림', '종류를 선택해주세요.', 'warning'); return }
+    if (!storageType) { showToast('알림', '보관 형태를 선택해주세요.', 'warning'); return }
+    if (!quantity.toString().trim()) { showToast('알림', '수량을 입력해주세요.', 'warning'); return }
 
     const user_idx = sessionStorage.getItem('user_idx')
-    if (!user_idx) { alert('로그인이 필요합니다.'); return }
+    if (!user_idx) { showToast('알림', '로그인이 필요합니다.', 'warning'); return }
 
     try {
       if (isEdit) {
         const payload = { ingre_idx: id, user_idx, ingre_name: name, ingre_type: category, ingre_storage: storageType, cnt: quantity }
         const res = await axios.post('http://localhost:3000/api/ingredient/update', payload)
-        if (res.data == '1') { alert('식재료가 수정되었습니다!') }
-        else { alert('식재료 수정에 실패했습니다.'); return }
+        if (res.data == '1') { showToast('수정 완료', '식재료가 수정되었습니다!', 'success') }
+        else { showToast('오류', '식재료 수정에 실패했습니다.', 'danger'); return }
       } else {
         const payload = { user_idx, name, type: category, storage: storageType, cnt: quantity }
         const res = await axios.post('http://localhost:3000/api/ingredient/register', payload)
-        if (res.data == '1') { alert('식재료가 등록되었습니다!') }
-        else { alert('식재료 등록에 실패했습니다.'); return }
+        if (res.data == '1') { showToast('등록 완료', '식재료가 등록되었습니다!', 'success') }
+        else { showToast('오류', '식재료 등록에 실패했습니다.', 'danger'); return }
       }
       navigate('/Fridge')
     } catch (err) {
       console.error('식재료 저장 실패:', err)
-      alert('저장에 실패했습니다.')
+      showToast('오류', '저장에 실패했습니다.', 'danger')
     }
   }
 
   const handleDelete = async () => {
-    if (!window.confirm('식재료를 삭제하시겠습니까?')) return
+    const ok = await showConfirm('삭제 확인', '식재료를 삭제하시겠습니까?')
+    if (!ok) return
     const user_idx = sessionStorage.getItem('user_idx')
     try {
       const res = await axios.post('http://localhost:3000/api/ingredient/delete', { ingre_idx: id, user_idx })
-      if (res.data == '1') { alert('삭제되었습니다.'); navigate('/Fridge') }
-      else { alert('삭제에 실패했습니다.') }
+      if (res.data == '1') { showToast('삭제 완료', '삭제되었습니다.', 'success'); navigate('/Fridge') }
+      else { showToast('오류', '삭제에 실패했습니다.', 'danger') }
     } catch (err) {
       console.error('삭제 실패:', err)
-      alert('삭제에 실패했습니다.')
+      showToast('오류', '삭제에 실패했습니다.', 'danger')
     }
   }
 
@@ -103,11 +106,11 @@ const IngredientForm = () => {
 
               {/* 식재료 이름 */}
               <div className="if-field">
-                <label className="if-label">Ingredient Name</label>
+                <label className="if-label">식재료 이름</label>
                 <input
                   className="if-input"
                   type="text"
-                  placeholder="e.g. Organic Chamomile"
+                  placeholder="예: 유기농 캐모마일"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -116,14 +119,14 @@ const IngredientForm = () => {
               {/* 카테고리 + 보관 형태 */}
               <div className="if-row">
                 <div className="if-field">
-                  <label className="if-label">Category</label>
+                  <label className="if-label">카테고리</label>
                   <div className="if-select-wrap">
                     <select
                       className="if-select"
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
                     >
-                      <option value="">Select Category</option>
+                      <option value="">카테고리 선택</option>
                       {CATEGORIES.map(c => (
                         <option key={c} value={c}>{c}</option>
                       ))}
@@ -132,14 +135,14 @@ const IngredientForm = () => {
                   </div>
                 </div>
                 <div className="if-field">
-                  <label className="if-label">Storage Type</label>
+                  <label className="if-label">보관 형태</label>
                   <div className="if-select-wrap">
                     <select
                       className="if-select"
                       value={storageType}
                       onChange={(e) => setStorageType(e.target.value)}
                     >
-                      <option value="">Select Storage</option>
+                      <option value="">보관 형태 선택</option>
                       {STORAGE_TYPES.map(s => (
                         <option key={s} value={s}>{s}</option>
                       ))}
@@ -151,7 +154,7 @@ const IngredientForm = () => {
 
               {/* 수량 */}
               <div className="if-field">
-                <label className="if-label">Quantity</label>
+                <label className="if-label">수량</label>
                 <div className="if-qty-row">
                   <input
                     className="if-input if-qty-input"
@@ -188,9 +191,9 @@ const IngredientForm = () => {
               <div className="if-reminder">
                 <div className="if-reminder-icon">ℹ</div>
                 <div className="if-reminder-body">
-                  <span className="if-reminder-title">STOCK REMINDER</span>
+                  <span className="if-reminder-title">재고 알림</span>
                   <p className="if-reminder-text">
-                    재고가 초기 등록 수량의 20%에 도달하면 자동으로 알림을 보내드립니다.
+                    재고가 없으면 자동으로 알림을 보내드립니다.
                   </p>
                 </div>
               </div>
@@ -198,10 +201,10 @@ const IngredientForm = () => {
               {/* 버튼 */}
               <div className="if-btn-row">
                 <button type="submit" className="if-save-btn">
-                  {isEdit ? 'Save Changes' : 'Register Ingredient'}
+                  {isEdit ? '변경 저장' : '식재료 등록'}
                 </button>
                 <button type="button" className="if-cancel-btn" onClick={() => navigate(-1)}>
-                  Cancel
+                  취소
                 </button>
               </div>
 
@@ -209,7 +212,7 @@ const IngredientForm = () => {
 
             {isEdit && (
               <button type="button" className="if-remove-btn" onClick={handleDelete}>
-                🗑 REMOVE INGREDIENT
+                🗑 식재료 삭제
               </button>
             )}
           </div>

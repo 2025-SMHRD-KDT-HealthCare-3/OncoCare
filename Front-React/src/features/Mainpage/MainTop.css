@@ -16,6 +16,8 @@
   border-radius: 24px;
   padding: 28px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  max-height: min-content;
 }
 
 .section-card-header {
@@ -25,9 +27,39 @@
   margin-bottom: 20px;
 }
 
+.daily-gen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eaf2e6;
+  border: 1.5px solid #c3dfc3;
+  border-radius: 10px;
+  padding: 7px 14px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2a5c1e;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.daily-gen-btn:hover:not(:disabled) { background: #d6ebd0; }
+.daily-gen-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.daily-gen-msg {
+  background: #eaf6ed;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 16px;
+  color: #2a5c1e;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
 .section-card-header h3 {
   margin: 0;
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 800;
   color: #1b1c1a;
 }
@@ -39,14 +71,14 @@
   border-radius: 999px;
   background: #e7f3eb;
   color: #2d6b46;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.08em;
 }
 
 .loading-text {
   color: #888;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .wellness-score-wrap {
@@ -77,7 +109,7 @@
 }
 
 .wellness-score-inner strong {
-  font-size: 44px;
+  font-size: 48px;
   font-weight: 800;
   color: #1b1c1a;
   line-height: 1;
@@ -85,7 +117,7 @@
 
 .wellness-score-inner span {
   margin-top: 6px;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 700;
   color: #777;
   letter-spacing: 0.08em;
@@ -111,14 +143,14 @@
 
 .summary-label {
   margin: 0 0 8px;
-  font-size: 12px;
+  font-size: 16px;
   color: #7d7d7d;
   font-weight: 700;
 }
 
 .summary-value {
   margin: 0;
-  font-size: 15px;
+  font-size: 19px;
   color: #1f1f1f;
   font-weight: 700;
 }
@@ -130,7 +162,7 @@
   padding: 14px 16px;
   border-radius: 12px;
   color: #3a5c3f;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 /* ── 캘린더 카드 커스텀 헤더 ── */
@@ -143,7 +175,7 @@
 
 .cal-title {
   margin: 0;
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 800;
   color: #1b1c1a;
   display: flex;
@@ -152,7 +184,7 @@
 }
 
 .cal-icon {
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .cal-nav-controls {
@@ -164,7 +196,7 @@
 .cal-nav-btn {
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 22px;
   color: #888;
   cursor: pointer;
   padding: 2px 6px;
@@ -179,7 +211,7 @@
 }
 
 .cal-nav-label {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
   color: #1b1c1a;
   min-width: 130px;
@@ -203,7 +235,7 @@
 }
 
 .dashboard-top .react-calendar__month-view__weekdays__weekday {
-  font-size: 17px !important;
+  font-size: 21px !important;
   font-weight: 700 !important;
   letter-spacing: 0.06em !important;
   text-transform: uppercase !important;
@@ -221,7 +253,7 @@
   border: none !important;
   border-radius: 50% !important;
   padding: 18px 8px !important;
-  font-size: 18px !important;
+  font-size: 22px !important;
   font-weight: 600 !important;
   color: #2a2a2a !important;
   transition: background 0.15s ease !important;

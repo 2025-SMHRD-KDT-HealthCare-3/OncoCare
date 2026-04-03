@@ -36,7 +36,7 @@
   z-index: 1000;
   height: 90px;
   padding: 0;
-  font-size: 14px;
+  font-size: 18px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   overflow: visible;
@@ -89,7 +89,7 @@
 }
 
 .custom-btn{
-    font-size: 30px;
+    font-size: 34px;
     background-color: #A0D9B4;
 
 }

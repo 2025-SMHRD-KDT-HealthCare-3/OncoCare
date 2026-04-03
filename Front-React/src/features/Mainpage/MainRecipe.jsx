@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import axios from 'axios'
 import './MainRecipe.css'
+import { useToast } from '../../context/ToastContext'
 import {
   getCategoryByName,
   getCategoryImage,
@@ -32,15 +33,15 @@ const FeaturedCard = ({ recipe }) => {
         <p className="recipe-featured-desc">{categoryDesc[cat]}</p>
         <div className="recipe-stats-row">
           <div className="recipe-stat">
-            <span className="recipe-stat-label">PROTEIN</span>
+            <span className="recipe-stat-label">단백질</span>
             <strong className="recipe-stat-value">{protein}g</strong>
           </div>
           <div className="recipe-stat">
-            <span className="recipe-stat-label">FIBER</span>
+            <span className="recipe-stat-label">식이섬유</span>
             <strong className="recipe-stat-value">{fiber}g</strong>
           </div>
           <div className="recipe-stat">
-            <span className="recipe-stat-label">KCAL</span>
+            <span className="recipe-stat-label">칼로리</span>
             <strong className="recipe-stat-value">{kcal}</strong>
           </div>
         </div>
@@ -74,13 +75,13 @@ const RecipeGridCard = ({ recipe }) => {
         <p className="recipe-card-desc">{categoryDesc[cat]}</p>
         <div className="recipe-card-footer">
           <span className="recipe-card-stats">
-            <strong>{kcal}</strong> Kcal &nbsp; <strong>{protein}g</strong> Protein
+            <strong>{kcal}</strong> kcal &nbsp; <strong>{protein}g</strong> 단백질
           </span>
           <span
             className="recipe-card-link"
             onClick={() => window.location.href = `/RecipeDetail/${recipe.recipe_idx}`}
           >
-            Recipe ›
+            레시피 ›
           </span>
         </div>
       </div>
@@ -89,6 +90,7 @@ const RecipeGridCard = ({ recipe }) => {
 }
 
 const MainRecipe = ({ user_idx }) => {
+  const { showToast } = useToast()
   const [recipes, setRecipes] = useState([])
   const [search, setSearch] = useState('')
 
@@ -96,7 +98,7 @@ const MainRecipe = ({ user_idx }) => {
     try {
       const response = await axios.get(`http://localhost:3000/api/diet/dietList/${user_idx}`)
       if (response.data === '0') {
-        alert('건강 정보를 먼저 입력해주세요.')
+        showToast('알림', '건강 정보를 먼저 입력해주세요.', 'warning')
         return
       }
       setRecipes(Array.isArray(response.data) ? response.data : [])
@@ -134,7 +136,7 @@ const MainRecipe = ({ user_idx }) => {
             <span className="recipe-search-icon">🔍</span>
           </div>
           <button className="recipe-new-btn" onClick={() => getDietList(user_idx)}>
-            + New
+            + 새로고침
           </button>
         </div>
       </div>

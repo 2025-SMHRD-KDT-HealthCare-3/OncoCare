@@ -11,12 +11,12 @@ const Footer = () => {
           <div className="footer-brand-tagline">대장암 환자를 위한 맞춤 식단 플랫폼</div>
           <div className="footer-badge">
             <span>✦</span>
-            <span>Healing Sanctuary</span>
+            <span>치유의 성소</span>
           </div>
         </div>
 
         <div className="footer-section">
-          <div className="footer-section-title">Contact</div>
+          <div className="footer-section-title">문의</div>
           <p className="footer-text">
             oncocare@support.kr<br />
             평일 09:00 – 18:00
@@ -33,7 +33,7 @@ const Footer = () => {
       </div>
 
       <div className="footer-bottom">
-        <span className="footer-copy">© 2025 OncoCare. All rights reserved.</span>
+        <span className="footer-copy">© 2025 OncoCare. 모든 권리 보유.</span>
         <div className="footer-meta-links">
           <a className="footer-meta-link" href="#">개인정보처리방침</a>
           <a className="footer-meta-link" href="#">이용약관</a>

@@ -23,7 +23,7 @@
 }
 
 .footer-brand {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 800;
   color: var(--primary-dark, #2e7d32);
   letter-spacing: -0.02em;
@@ -31,7 +31,7 @@
 }
 
 .footer-brand-tagline {
-  font-size: 12px;
+  font-size: 16px;
   color: #7b877c;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -45,7 +45,7 @@
   color: var(--primary-dark, #2e7d32);
   border-radius: 999px;
   padding: 5px 12px;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -61,7 +61,7 @@
 }
 
 .footer-section-title {
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 800;
   color: #9ca89c;
   text-transform: uppercase;
@@ -70,13 +70,13 @@
 }
 
 .footer-text {
-  font-size: 13px;
+  font-size: 17px;
   color: #5e6b5e;
   line-height: 1.8;
 }
 
 .footer-link {
-  font-size: 13px;
+  font-size: 17px;
   color: #465a47;
   text-decoration: none;
   font-weight: 600;
@@ -114,7 +114,7 @@
 }
 
 .footer-copy {
-  font-size: 12px;
+  font-size: 16px;
   color: #9ca89c;
   font-weight: 500;
 }
@@ -125,7 +125,7 @@
 }
 
 .footer-meta-link {
-  font-size: 12px;
+  font-size: 16px;
   color: #9ca89c;
   text-decoration: none;
   font-weight: 600;

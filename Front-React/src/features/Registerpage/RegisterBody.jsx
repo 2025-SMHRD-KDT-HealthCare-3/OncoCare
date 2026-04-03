@@ -5,9 +5,11 @@ import './RegisterBody.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import axios from 'axios'
+import { useToast } from '../../context/ToastContext'
 
 // mode: 'register'(기본) | 'edit'(개인정보 수정)
 const RegisterBody = ({ mode = 'register' }) => {
+  const { showToast } = useToast()
   const isEdit = mode === 'edit'
 
   const [name, setName] = useState('')
@@ -55,16 +57,16 @@ const RegisterBody = ({ mode = 'register' }) => {
       if (response.data == '1') {
         setEmailCheck(true)
         setEmailMessage('사용 가능한 이메일입니다.')
-        alert('사용 가능한 이메일입니다.')
+        showToast('확인', '사용 가능한 이메일입니다.', 'success')
       } else {
         setEmailCheck(false)
         setEmailMessage('이미 사용 중인 이메일입니다.')
-        alert('중복된 이메일입니다.')
+        showToast('알림', '중복된 이메일입니다.', 'warning')
       }
     } catch (error) {
       console.error('중복 체크 에러:', error)
       setEmailCheck(false)
-      alert('서버 통신 중 오류가 발생했습니다.')
+      showToast('오류', '서버 통신 중 오류가 발생했습니다.', 'danger')
     }
   }
 
@@ -77,7 +79,7 @@ const RegisterBody = ({ mode = 'register' }) => {
     }
 
     if (!sex) {
-      alert('성별을 선택해주세요.')
+      showToast('알림', '성별을 선택해주세요.', 'warning')
       return
     }
 
@@ -100,10 +102,10 @@ const RegisterBody = ({ mode = 'register' }) => {
       )
 
       if (response.data == '1') {
-        alert('회원가입 성공!')
+        showToast('완료', '회원가입 성공!', 'success')
         nav('/')
       } else {
-        alert('회원가입 실패')
+        showToast('오류', '회원가입 실패', 'danger')
       }
     } catch (error) {
       setError('회원가입에 실패했습니다.')
@@ -121,7 +123,7 @@ const RegisterBody = ({ mode = 'register' }) => {
 
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) {
-      alert('로그인이 필요합니다.')
+      showToast('알림', '로그인이 필요합니다.', 'warning')
       return
     }
 
@@ -139,14 +141,14 @@ const RegisterBody = ({ mode = 'register' }) => {
       )
 
       if (response.data == '1') {
-        alert('수정 완료!')
+        showToast('수정 완료', '수정 완료!', 'success')
         nav('/MyPage')
       } else {
-        alert('수정에 실패했습니다.')
+        showToast('오류', '수정에 실패했습니다.', 'danger')
       }
     } catch (error) {
       console.error(error)
-      alert('서버 통신 중 오류가 발생했습니다.')
+      showToast('오류', '서버 통신 중 오류가 발생했습니다.', 'danger')
     }
   }
 
@@ -176,23 +178,23 @@ const RegisterBody = ({ mode = 'register' }) => {
             <section className="profile-form-section">
               <div className="profile-section-title">
                 <span className="profile-section-icon">👤</span>
-                <h2>Personal Details</h2>
+                <h2>개인 정보</h2>
               </div>
 
               <div className="profile-grid two-col">
                 <div className="profile-field">
-                  <label>Name</label>
+                  <label>이름</label>
                   <input
                     type="text"
                     className="profile-text-input"
-                    placeholder="Enter name"
+                    placeholder="이름 입력"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
                 </div>
 
                 <div className="profile-field">
-                  <label>Birth Date</label>
+                  <label>생년월일</label>
                   <input
                     type="date"
                     className="profile-text-input"
@@ -205,7 +207,7 @@ const RegisterBody = ({ mode = 'register' }) => {
               {isEdit ? (
                 <div className="profile-grid one-col">
                   <div className="profile-field">
-                    <label>Email (Registered)</label>
+                    <label>이메일 (등록됨)</label>
                     <div className="input-with-end-icon">
                       <input
                         type="text"
@@ -220,11 +222,11 @@ const RegisterBody = ({ mode = 'register' }) => {
               ) : (
                 <div className="profile-grid email-check-row">
                   <div className="profile-field">
-                    <label>Email</label>
+                    <label>이메일</label>
                     <input
                       type="text"
                       className="profile-text-input"
-                      placeholder="Enter email"
+                      placeholder="이메일 입력"
                       value={id}
                       onChange={(e) => {
                         setId(e.target.value)
@@ -240,7 +242,7 @@ const RegisterBody = ({ mode = 'register' }) => {
                       className="email-check-btn"
                       onClick={checkEmail}
                     >
-                      Check Email
+                      이메일 중복확인
                     </button>
                   </div>
                 </div>
@@ -248,26 +250,26 @@ const RegisterBody = ({ mode = 'register' }) => {
 
               <div className="profile-grid two-col">
                 <div className="profile-field">
-                  <label>Phone Number</label>
+                  <label>전화번호</label>
                   <input
                     type="text"
                     className="profile-text-input"
-                    placeholder="Enter phone"
+                    placeholder="전화번호 입력"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                   />
                 </div>
 
                 <div className="profile-field">
-                  <label>Gender</label>
+                  <label>성별</label>
                   <select
                     className="profile-text-input profile-select-input"
                     value={sex}
                     onChange={(e) => setSex(e.target.value)}
                   >
-                    <option value="">Select gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
+                    <option value="">성별 선택</option>
+                    <option value="Male">남성</option>
+                    <option value="Female">여성</option>
                   </select>
                 </div>
               </div>
@@ -276,17 +278,17 @@ const RegisterBody = ({ mode = 'register' }) => {
             <section className="profile-form-section">
               <div className="profile-section-title">
                 <span className="profile-section-icon">🛡️</span>
-                <h2>Security & Access</h2>
+                <h2>보안</h2>
               </div>
 
               <div className="profile-grid two-col">
                 <div className="profile-field">
-                  <label>{isEdit ? 'New Password' : 'Password'}</label>
+                  <label>{isEdit ? '새 비밀번호' : '비밀번호'}</label>
                   <input
                     type="password"
                     className="profile-text-input"
                     placeholder={
-                      isEdit ? '새 비밀번호 (변경 시에만 입력)' : 'Enter password'
+                      isEdit ? '새 비밀번호 (변경 시에만 입력)' : '비밀번호 입력'
                     }
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -294,11 +296,11 @@ const RegisterBody = ({ mode = 'register' }) => {
                 </div>
 
                 <div className="profile-field">
-                  <label>Confirm Password</label>
+                  <label>비밀번호 확인</label>
                   <input
                     type="password"
                     className="profile-text-input"
-                    placeholder="Confirm password"
+                    placeholder="비밀번호를 다시 입력하세요"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />
@@ -314,7 +316,7 @@ const RegisterBody = ({ mode = 'register' }) => {
 
             <div className="profile-action-area">
               <button type="submit" className="profile-save-btn">
-                {isEdit ? 'Save Changes' : 'Register'}
+                {isEdit ? '변경 저장' : '가입하기'}
               </button>
 
               {isEdit ? (
@@ -323,11 +325,11 @@ const RegisterBody = ({ mode = 'register' }) => {
                   className="profile-cancel-btn"
                   onClick={() => nav('/MyPage')}
                 >
-                  Cancel Changes
+                  취소
                 </button>
               ) : (
                 <p className="profile-login-link">
-                  Already have an account? <Link to="/">Login</Link>
+                  이미 계정이 있으신가요? <Link to="/">로그인</Link>
                 </p>
               )}
             </div>
@@ -335,7 +337,7 @@ const RegisterBody = ({ mode = 'register' }) => {
         </div>
 
         <p className="profile-bottom-note">
-          Your data is encrypted and managed with clinical-grade security.
+          개인정보는 암호화되어 안전하게 보관됩니다.
         </p>
       </div>
     </div>

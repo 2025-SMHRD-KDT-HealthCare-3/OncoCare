@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useToast } from '../../context/ToastContext'
 import '../public/root.css'
 import './RecipeDetail.css'
 import { getCategoryImage } from '../../utils/categoryImageMap'
@@ -10,6 +11,7 @@ const RecipeDetail = () => {
   const navigate = useNavigate()
 
   const [recipe, setRecipe] = useState(null)
+  const { showToast } = useToast()
   const [liked, setLiked] = useState(false)
   const [mealsPerDay, setMealsPerDay] = useState(3)
   const [mealType, setMealType] = useState('')
@@ -52,11 +54,11 @@ const RecipeDetail = () => {
   const handleSelectDiet = async () => {
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) {
-      alert('로그인이 필요합니다.')
+      showToast('알림', '로그인이 필요합니다.', 'warning')
       return
     }
     if (!mealType) {
-      alert('몇 번째 끼니인지 선택해주세요.')
+      showToast('알림', '몇 번째 끼니인지 선택해주세요.', 'warning')
       return
     }
 
@@ -68,24 +70,24 @@ const RecipeDetail = () => {
       })
 
       if (res.data == 1 || res.data === '1') {
-        alert('식단이 선택되었습니다!')
+        showToast('선택 완료', '식단이 선택되었습니다!', 'success')
         navigate('/Main')
       } else {
-        alert('식단 선택에 실패했습니다.')
+        showToast('오류', '식단 선택에 실패했습니다.', 'danger')
       }
     } catch (err) {
       console.error('식단 선택 실패:', err)
-      alert('식단 선택에 실패했습니다.')
+      showToast('오류', '식단 선택에 실패했습니다.', 'danger')
     }
   }
 
   const nutritionList = useMemo(() => {
     if (!recipe?.nutrition_info) {
       return [
-        { label: 'Calories', value: '-' },
-        { label: 'Protein', value: '-' },
-        { label: 'Fiber', value: '-' },
-        { label: 'Sodium', value: '-' },
+        { label: '칼로리', value: '-' },
+        { label: '단백질', value: '-' },
+        { label: '식이섬유', value: '-' },
+        { label: '나트륨', value: '-' },
       ]
     }
 
@@ -114,10 +116,10 @@ const RecipeDetail = () => {
     }
 
     return [
-      { label: 'Calories', value: '-' },
-      { label: 'Protein', value: '-' },
-      { label: 'Fiber', value: '-' },
-      { label: 'Sodium', value: '-' },
+      { label: '칼로리', value: '-' },
+      { label: '단백질', value: '-' },
+      { label: '식이섬유', value: '-' },
+      { label: '나트륨', value: '-' },
     ]
   }, [recipe])
 
@@ -149,12 +151,12 @@ const RecipeDetail = () => {
     <div className="main-content recipe-modern-page">
       <div className="recipe-modern-container">
         <button className="recipe-modern-back" onClick={() => navigate(-1)}>
-          ← Go Back
+          ← 뒤로 가기
         </button>
 
         <div className="recipe-modern-top">
           <div className="recipe-hero-card">
-            <div className="recipe-badge">Phase 1: Soft Food</div>
+            <div className="recipe-badge">1단계: 부드러운 음식</div>
 
             <button
               type="button"
@@ -173,7 +175,7 @@ const RecipeDetail = () => {
           </div>
 
           <aside className="recipe-nutrition-panel">
-            <h3>Nutritional Value</h3>
+            <h3>영양 정보</h3>
 
             <div className="nutrition-modern-list">
               {nutritionList.map((item, index) => (
@@ -185,8 +187,7 @@ const RecipeDetail = () => {
             </div>
 
             <div className="nutrition-note-box">
-              Digestive-supportive ingredients are chosen to help recovery and
-              maintain a gentle meal balance.
+              소화를 돕는 재료로 구성되어 회복과 균형 잡힌 식단을 유지합니다.
             </div>
           </aside>
         </div>
@@ -201,7 +202,7 @@ const RecipeDetail = () => {
 
         <div className="recipe-modern-bottom">
           <section className="ingredients-panel">
-            <h2>Ingredients</h2>
+            <h2>재료</h2>
 
             <div className="ingredients-list-modern">
               {ingredientsList.length > 0 ? (
@@ -218,7 +219,7 @@ const RecipeDetail = () => {
           </section>
 
           <section className="cooking-panel">
-            <h2>Cooking Instructions</h2>
+            <h2>조리 방법</h2>
 
             <div className="cooking-steps">
               {cookingSteps.length > 0 ? (
@@ -226,7 +227,7 @@ const RecipeDetail = () => {
                   <div className="cooking-step" key={`${step}-${index}`}>
                     <div className="step-number">{index + 1}</div>
                     <div className="step-copy">
-                      <h4>{`Step ${index + 1}`}</h4>
+                      <h4>{`${index + 1}단계`}</h4>
                       <p>{step}</p>
                     </div>
                   </div>
@@ -259,14 +260,14 @@ const RecipeDetail = () => {
 
           <div className="recipe-action-buttons">
             <button className="recipe-primary-btn" onClick={handleSelectDiet}>
-              Select for Today’s Meal
+              오늘의 식단으로 선택
             </button>
             <button
               type="button"
               className="recipe-secondary-btn"
               onClick={() => setLiked(!liked)}
             >
-              Save to Favorites
+              즐겨찾기에 저장
             </button>
           </div>
         </div>

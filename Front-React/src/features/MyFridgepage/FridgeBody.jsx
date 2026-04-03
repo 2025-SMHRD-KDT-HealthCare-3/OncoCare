@@ -46,7 +46,7 @@ const FridgeBody = () => {
         {/* ── Hero Card ── */}
         <div className="fr-hero-card">
           <div className="fr-hero-card-body">
-            <h1 className="fr-hero-title">My Fridge</h1>
+            <h1 className="fr-hero-title">나의 냉장고</h1>
             <p className="fr-hero-sub">
               신선하고 건강한 식재료로 냉장고를 채워 회복을 도와드립니다.
             </p>
@@ -77,7 +77,7 @@ const FridgeBody = () => {
                     className="fr-harvest-add-btn"
                     onClick={() => navigate('/IngredientForm')}
                   >
-                    + Add Produce
+                    + 신선 식재료 추가
                   </button>
                 </div>
 
@@ -94,7 +94,7 @@ const FridgeBody = () => {
                       <div className="fr-harvest-item-info">
                         <span className="fr-harvest-item-name">{item.ingre_name}</span>
                         <span className={`fr-harvest-status ${Number(item.cnt) <= 1 ? 'fr-harvest-warn' : 'fr-harvest-ok'}`}>
-                          {Number(item.cnt) <= 1 ? 'Expires soon' : `${item.cnt}개 남음`}
+                          {Number(item.cnt) <= 1 ? '재고 부족' : `${item.cnt}개 남음`}
                         </span>
                       </div>
                     </div>
@@ -108,19 +108,19 @@ const FridgeBody = () => {
                 <div className="fr-stats-bar">
                   <div className="fr-stat">
                     <span className="fr-stat-num">{ingredients.length}</span>
-                    <span className="fr-stat-label">FRESH ITEMS</span>
+                    <span className="fr-stat-label">전체 식재료</span>
                   </div>
                   <div className="fr-stat-divider" />
                   <div className="fr-stat">
                     <span className={`fr-stat-num${lowStock.length > 0 ? ' fr-stat-warn' : ''}`}>
                       {lowStock.length}
                     </span>
-                    <span className="fr-stat-label">RESTOCK NEEDED</span>
+                    <span className="fr-stat-label">재고 부족</span>
                   </div>
                   <div className="fr-stat-divider" />
                   <div className="fr-stat">
                     <span className="fr-stat-num">{categories.length}</span>
-                    <span className="fr-stat-label">GROUPS</span>
+                    <span className="fr-stat-label">분류</span>
                   </div>
                 </div>
             </div>
@@ -138,7 +138,7 @@ const FridgeBody = () => {
                       className="fr-cat-add-btn"
                       onClick={() => navigate('/IngredientForm')}
                     >
-                      + Add
+                      + 추가
                     </button>
                   </div>
                   <div className="fr-cat-items">
@@ -157,7 +157,7 @@ const FridgeBody = () => {
                           </span>
                         </div>
                         <span className={`fr-status-badge ${Number(item.cnt) <= 1 ? 'fr-badge-low' : 'fr-badge-ok'}`}>
-                          {Number(item.cnt) <= 1 ? 'LOW' : 'FRESH'}
+                          {Number(item.cnt) <= 1 ? '부족' : '신선'}
                         </span>
                       </div>
                     ))}

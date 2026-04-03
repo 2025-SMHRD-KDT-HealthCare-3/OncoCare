@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './HealthInfo.css'
+import { useToast } from '../../context/ToastContext'
 
 const ALL_ALLERGENS = [
   '우유', '달걀', '밀', '글루텐', '유당',
@@ -15,12 +16,13 @@ const ALL_ALLERGENS = [
 ]
 
 const mealOptions = [
-  { label: '2 Meals', value: '2' },
-  { label: '3-4 Meals', value: '3' },
-  { label: '5+ Small Meals', value: '5' },
+  { label: '2끼', value: '2' },
+  { label: '3~4끼', value: '3' },
+  { label: '5끼 이상 소량 식사', value: '5' },
 ]
 
 const HealthInfoBody = () => {
+  const { showToast } = useToast()
   const navigate = useNavigate()
 
   const [height, setHeight] = useState('')
@@ -81,7 +83,7 @@ const HealthInfoBody = () => {
   const handleSubmit = async () => {
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) {
-      alert('로그인이 필요합니다.')
+      showToast('알림', '로그인이 필요합니다.', 'warning')
       return
     }
 
@@ -103,14 +105,14 @@ const HealthInfoBody = () => {
       )
 
       if (response.data == '1') {
-        alert('저장되었습니다.')
+        showToast('저장 완료', '저장되었습니다.', 'success')
         navigate('/MyPage')
       } else {
-        alert('저장에 실패했습니다.')
+        showToast('오류', '저장에 실패했습니다.', 'danger')
       }
     } catch (error) {
       console.error(error)
-      alert('서버 통신 중 오류가 발생했습니다.')
+      showToast('오류', '서버 통신 중 오류가 발생했습니다.', 'danger')
     }
   }
 
@@ -142,7 +144,7 @@ const HealthInfoBody = () => {
           <section className="profile-section">
             <div className="section-heading">
               <span className="section-icon">●</span>
-              <h2>Physical Info</h2>
+              <h2>신체 정보</h2>
             </div>
 
             <div className="metric-grid">
@@ -184,7 +186,7 @@ const HealthInfoBody = () => {
             <div className="toggle-card">
               <div className="toggle-copy">
                 <h3>장루 여부</h3>
-                <p>Do you have an ostomy?</p>
+                <p>장루가 있으신가요?</p>
               </div>
               <label className="custom-switch">
                 <input
@@ -199,7 +201,7 @@ const HealthInfoBody = () => {
             <div className="toggle-card">
               <div className="toggle-copy">
                 <h3>항암치료 여부</h3>
-                <p>In an active chemo treatment cycle?</p>
+                <p>현재 항암치료 중이신가요?</p>
               </div>
               <label className="custom-switch">
                 <input
@@ -232,7 +234,7 @@ const HealthInfoBody = () => {
           <section className="profile-section">
             <div className="section-heading">
               <span className="section-icon">✦</span>
-              <h2>Journey Timeline</h2>
+              <h2>치료 일정</h2>
             </div>
 
             <div className="metric-grid">
@@ -261,7 +263,7 @@ const HealthInfoBody = () => {
           <section className="profile-section">
             <div className="section-heading">
               <span className="section-icon">◧</span>
-              <h2>Nourishment</h2>
+              <h2>식사 정보</h2>
             </div>
 
             <div className="option-card">
@@ -302,7 +304,7 @@ const HealthInfoBody = () => {
                 <input
                   type="text"
                   className="profile-input allergy-search-input"
-                  placeholder="Search sensitivities (e.g. Dairy, Nuts)"
+                  placeholder="알레르기 검색 (예: 유제품, 견과류)"
                   value={allergySearch}
                   onChange={(e) => setAllergySearch(e.target.value)}
                 />
