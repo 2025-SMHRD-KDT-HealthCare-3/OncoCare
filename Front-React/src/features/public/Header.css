@@ -1,30 +1,10 @@
-@font-face {
-  font-family: 'KGPartofMe';
-  src: url('../../assets/fonts/KGPartofMe.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
-@font-face {
-  font-family: 'Arenq';
-  src: url('../../assets/fonts/Arenq.otf') format('opentype');  /* otf → opentype */
-  font-weight: normal;
-  font-style: normal;
-}
 
-@font-face {
-  font-family: 'MERKIN__';
-  src: url('../../assets/fonts/MERKIN__.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
-@font-face {
-  font-family: 'LTMuseum-Medium';
-  src: url('../../assets/fonts/LTMuseum-Medium.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
+
+
+
+
 
 
 .custom-navbar{
@@ -59,7 +39,7 @@
 .navbar-text{
     font-size: 2.5rem;
     padding-right: 10px;
-    font-family: 'Arenq', sans-serif;
+    font-family: 'Noto Serif KR', serif;
     font-weight: bold;
     font-size: 4rem;
     filter:
@@ -71,7 +51,7 @@
 
 .nav-item{
     padding-right: 10px;
-    font-family: 'LTMuseum-Medium', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     font-weight: 100 !important;
     color : white !important;
 }
@@ -121,5 +101,5 @@
     font-size: 1rem;
     text-decoration: underline;
     cursor: pointer;
-    color: #555;
+    color: var(--text-sub);
 }

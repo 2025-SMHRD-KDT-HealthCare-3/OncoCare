@@ -1,41 +1,16 @@
-@font-face {
-  font-family: '온글잎 류류체';
-  src: url('../../assets/fonts/온글잎\ 류류체.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
-@font-face {
-  font-family: 'Cafe24Oneprettynight';
-  src: url('../../assets/fonts/Cafe24Oneprettynight-v2.0.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
-@font-face {
-  font-family: 'Louis George Cafe Bold';
-  src: url('../../assets/fonts/Louis\ George\ Cafe\ Bold.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
-@font-face {
-  font-family: 'Louis George Cafe';
-  src: url('../../assets/fonts/Louis\ George\ Cafe.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
-@font-face {
-  font-family: 'Louis George Cafe Light';
-  src: url('../../assets/fonts/Louis\ George\ Cafe\ Light.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
+
+
+
+
+
 
 .auth-page {
   min-height: 100vh;
-  background-color: #faf9f5;
+  background-color: var(--bg);
 }
 
 .auth-navbar {
@@ -51,7 +26,7 @@
 
 .auth-navbar-text {
   font-weight: 700;
-  color: #2f5d3e;
+  color: var(--primary-dark);
 }
 
 .auth-screen {
@@ -102,7 +77,7 @@
   gap: 10px;
   padding: 10px 18px;
   background: rgba(190, 234, 209, 0.6);
-  color: #436b58;
+  color: var(--text-sub);
   border-radius: 999px;
   font-size: 16px;
   font-weight: 800;
@@ -113,7 +88,7 @@
 
 .auth-badge-icon {
   font-size: 17px;
-  font-family: 'Louis George Cafe Light', sans-serif;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .auth-brand-title {
@@ -121,18 +96,18 @@
   line-height: 1.05;
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: #006e1c;
+  color: var(--primary-dark);
   margin-bottom: 16px;
-  font-family: 'Louis George Cafe Bold', sans-serif;
+  font-family: 'Noto Serif KR', serif;
 }
 
 .auth-brand-subtitle {
   font-size: 34px;
   line-height: 1.4;
   font-weight: 500;
-  color: #3f4a3c;
+  color: var(--text-sub);
   margin-bottom: 28px;
-  font-family: 'cafe24Oneprettynight', sans-serif;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .auth-feature-row {
@@ -157,7 +132,7 @@
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: #e8f5e9;
+  background: var(--bg-soft);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -168,16 +143,16 @@
   margin: 0 0 4px;
   font-size: 24px;
   font-weight: 800;
-  color: #1b1c1a;
-  font-family: 'cafe24Oneprettynight', sans-serif;
+  color: var(--text-main);
+  font-family: 'Pretendard', sans-serif;
 }
 
 .auth-feature-desc {
   margin: 0;
   font-size: 22px;
-  color: #5e675d;
+  color: var(--text-sub);
   line-height: 1.5;
-  font-family: 'cafe24Oneprettynight', sans-serif;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .auth-right {
@@ -199,7 +174,7 @@
 .auth-tab-toggle {
   display: flex;
   padding: 6px;
-  background: #e9e8e4;
+  background: var(--border);
   border-radius: 18px;
   margin-bottom: 30px;
 }
@@ -212,14 +187,14 @@
   border-radius: 14px;
   font-size: 18px;
   font-weight: 800;
-  color: #5c655d;
+  color: var(--text-sub);
   transition: all 0.2s ease;
-  font-family: 'Louis George Cafe', sans-serif;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .auth-tab-toggle button.active {
   background: #ffffff;
-  color: #006e1c;
+  color: var(--primary-dark);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
 }
 
@@ -233,15 +208,15 @@
   margin: 0 0 6px;
   font-size: 36px;
   font-weight: 800;
-  color: #1b1c1a;
-  font-family: 'Louis George Cafe Bold', sans-serif;
+  color: var(--text-main);
+  font-family: 'Noto Serif KR', serif;
 }
 
 .auth-panel-header p {
   margin: 0;
   font-size: 18px;
-  color: #667067;
-  font-family: 'Louis George Cafe', sans-serif;
+  color: var(--text-sub);
+  font-family: 'Pretendard', sans-serif;
 }
 
 .auth-form {
@@ -256,34 +231,34 @@
   margin-left: 4px;
   font-size: 15px;
   font-weight: 800;
-  color: #5a655b;
+  color: var(--text-sub);
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  font-family: 'Louis George Cafe', sans-serif;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .auth-label-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: 'Louis George Cafe', sans-serif;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .auth-text-link {
   border: none;
   background: transparent;
-  color: #006e1c;
+  color: var(--primary-dark);
   font-size: 16px;
   font-weight: 800;
   padding: 0;
-  font-family: 'Louis George Cafe light', sans-serif;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .auth-input-wrap {
   position: relative;
   display: flex;
   align-items: center;
-  background: #f4f4f0;
+  background: var(--bg-soft);
   border-radius: 16px;
   min-height: 58px;
   overflow: hidden;
@@ -312,7 +287,7 @@
   min-height: 58px;
   padding: 0 16px 0 46px;
   font-size: 19px;
-  color: #1b1c1a;
+  color: var(--text-main);
 }
 
 .auth-input-wrap.no-icon input,
@@ -327,7 +302,7 @@
   background: transparent;
   font-size: 16px;
   font-weight: 800;
-  color: #5f6960;
+  color: var(--text-sub);
 }
 
 .auth-check-row {
@@ -340,7 +315,7 @@
 .auth-check-row label {
   margin: 0;
   font-size: 18px;
-  color: #5f6960;
+  color: var(--text-sub);
   font-weight: 500;
 }
 
@@ -349,13 +324,13 @@
   min-height: 56px;
   border: none;
   border-radius: 16px;
-  background: linear-gradient(90deg, #006e1c, #4caf50);
+  background: linear-gradient(90deg, var(--primary-dark), var(--primary));
   color: #fff;
   font-size: 20px;
   font-weight: 800;
   box-shadow: 0 12px 28px rgba(0, 110, 28, 0.18);
   transition: transform 0.15s ease;
-  font-family: 'Louis George Cafe Bold', sans-serif;
+  font-family: 'Noto Serif KR', serif;
 }
 
 .auth-submit-btn:hover {
@@ -380,13 +355,13 @@
   position: relative;
   z-index: 1;
   display: inline-block;
-  background: #faf9f5;
+  background: var(--bg);
   padding: 0 14px;
   font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #6b756b;
+  color: var(--text-sub);
   border-radius: 999px;
 }
 
@@ -400,8 +375,8 @@
   min-height: 50px;
   border: none;
   border-radius: 14px;
-  background: #efeeea;
-  color: #1b1c1a;
+  background: var(--bg-soft);
+  color: var(--text-main);
   font-size: 18px;
   font-weight: 800;
 }
@@ -426,7 +401,7 @@
   min-height: 58px;
   border: none;
   border-radius: 16px;
-  background: #4caf50;
+  background: var(--primary);
   color: #fff;
   font-size: 18px;
   font-weight: 800;
@@ -442,7 +417,7 @@
 .auth-message {
   margin: 8px 4px 0;
   font-size: 17px;
-  color: #2e7d32;
+  color: var(--primary-dark);
   font-weight: 600;
 }
 
@@ -459,7 +434,7 @@
   background: transparent;
   font-size: 16px;
   font-weight: 800;
-  color: #6b756b;
+  color: var(--text-sub);
 }
 
 @media (max-width: 1100px) {

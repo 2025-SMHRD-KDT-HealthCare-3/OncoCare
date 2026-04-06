@@ -10,10 +10,17 @@ const parseField = (field) => {
   }
 }
 
+const getScoreLabel = (score) => {
+  if (score >= 80) return '우수'
+  if (score >= 60) return '양호'
+  if (score >= 40) return '보통'
+  return '주의'
+}
+
 const MonthlyReport = ({ data, prevData }) => {
   const score     = data?.report_score ?? 0
-  const prevScore = prevData?.report_score ?? 0
-  const diff      = score - prevScore
+  const prevScore = prevData?.report_score ?? null
+  const diff      = prevScore != null ? score - prevScore : null
 
   const diet      = parseField(data?.report_diet)
   const bowel     = parseField(data?.report_bowel)
@@ -43,46 +50,42 @@ const MonthlyReport = ({ data, prevData }) => {
               }}
             >
               <div className="score-ring-inner">
-                <strong>{score || '—'}%</strong>
-                <span>우수</span>
+                <strong>{data ? `${score}%` : '—'}</strong>
+                <span>{data ? getScoreLabel(score) : '—'}</span>
               </div>
             </div>
           </div>
 
           <div className="soft-message-box">
-            <p>
-              {data?.report_comment ||
-                '꾸준한 기록과 관리로 회복이 진행되고 있습니다.'}
-            </p>
+            <p>{data?.report_comment || '기록이 꾸준히 쌓일수록 회복 흐름을 더 정확히 파악할 수 있어요.'}</p>
           </div>
         </section>
 
         <section className="glass-card weekly-highlight-card">
           <span className="mini-title">전월 대비</span>
           <h3>
-            {diff > 0
+            {diff == null
+              ? '이번 달 회복 데이터를 분석했습니다'
+              : diff > 0
               ? `지난달보다 ${diff}점 향상되었습니다`
               : diff < 0
               ? `지난달보다 ${Math.abs(diff)}점 하락했습니다`
               : '지난달과 동일한 수준을 유지했습니다'}
           </h3>
-          <p>
-            이번 달의 식단, 배변, 컨디션 데이터를 종합 분석한 결과입니다.
-          </p>
 
           <div className="metric-chip-grid">
             <div className="metric-chip">
               <span>이번달 점수</span>
-              <strong>{score || '—'}점</strong>
+              <strong>{data ? `${score}점` : '—'}</strong>
             </div>
             <div className="metric-chip">
               <span>지난달 점수</span>
-              <strong>{prevScore || '—'}점</strong>
+              <strong>{prevScore != null ? `${prevScore}점` : '—'}</strong>
             </div>
             <div className="metric-chip">
               <span>변화</span>
-              <strong style={{ color: diff >= 0 ? '#0a8a34' : '#c0392b' }}>
-                {diff > 0 ? `+${diff}` : diff}점
+              <strong style={{ color: diff == null ? 'inherit' : diff >= 0 ? '#0a8a34' : '#c0392b' }}>
+                {diff == null ? '—' : diff > 0 ? `+${diff}점` : `${diff}점`}
               </strong>
             </div>
           </div>
@@ -97,7 +100,7 @@ const MonthlyReport = ({ data, prevData }) => {
           <div className="progress-row">
             <div className="progress-label-line">
               <span>식단 준수율</span>
-              <strong>{diet?.score ?? 0}%</strong>
+              <strong>{diet?.score != null ? `${diet.score}%` : '—'}</strong>
             </div>
             <div className="progress-track">
               <div
@@ -110,11 +113,11 @@ const MonthlyReport = ({ data, prevData }) => {
           <div className="mini-stat-grid">
             <div className="mini-stat-card">
               <span>식단 요약</span>
-              <strong>{diet?.summary || '기록 없음'}</strong>
+              <strong>{diet?.summary || '—'}</strong>
             </div>
             <div className="mini-stat-card">
               <span>식단 인사이트</span>
-              <strong>{diet?.insight || '기록 없음'}</strong>
+              <strong>{diet?.insight || '—'}</strong>
             </div>
           </div>
         </section>
@@ -125,35 +128,30 @@ const MonthlyReport = ({ data, prevData }) => {
           <div className="trend-box">
             <div className="trend-header">
               <span>브리스톨 척도 (평균)</span>
-              <strong>{bowel?.score ? `${bowel.score}형` : '4형'}</strong>
+              <strong>{bowel?.score != null ? `${bowel.score}형` : '—'}</strong>
             </div>
 
             <div className="trend-badge-line">
-              <span className="trend-badge active">
-                {bowel?.status ?? '정상'}
-              </span>
+              <span className="trend-badge active">{bowel?.status || '—'}</span>
             </div>
 
-            <p className="trend-copy">
-              {bowel?.summary || '이번 달 배변 패턴을 분석한 데이터가 없습니다.'}
-            </p>
+            <p className="trend-copy">{bowel?.summary || '—'}</p>
           </div>
 
           <div className="trend-mini-grid">
             <div>
               <span>컨디션</span>
-              <strong>{condition?.score ?? '—'} / 5</strong>
+              <strong>{condition?.score != null ? `${condition.score} / 5` : '—'}</strong>
             </div>
             <div>
               <span>통증 여부</span>
-              <strong>{condition?.pain ?? '정보 없음'}</strong>
+              <strong>{condition?.pain != null ? condition.pain : '—'}</strong>
             </div>
           </div>
 
-          <div className="report-note-inline">
-            {condition?.summary ||
-              '이번 달 전반적인 컨디션 데이터를 확인할 수 없습니다.'}
-          </div>
+          {condition?.summary && (
+            <div className="report-note-inline">{condition.summary}</div>
+          )}
         </section>
       </div>
     </div>

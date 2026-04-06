@@ -1,6 +1,30 @@
 .report-page {
   min-height: 100vh;
-  background: #f6f4ef;
+  background: var(--bg);
+}
+
+.report-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-soft);
+  border-radius: 20px;
+  padding: 48px 24px;
+  min-height: 200px;
+}
+
+.report-empty-state p {
+  margin: 0;
+  font-size: 19px;
+  color: var(--text-sub);
+  text-align: center;
+  line-height: 1.7;
+}
+
+.report-no-data {
+  margin: 12px 0 0;
+  font-size: 17px;
+  color: var(--text-light);
 }
 
 .report-generate-bar {
@@ -15,18 +39,18 @@
   align-items: center;
   gap: 8px;
   background: #fff;
-  border: 1.5px solid #d4e8d4;
+  border: 1.5px solid var(--bg-soft);
   border-radius: 12px;
   padding: 10px 20px;
   font-size: 18px;
   font-weight: 700;
-  color: #2a5c1e;
+  color: var(--primary-dark);
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
 }
 
 .report-generate-btn:hover:not(:disabled) {
-  background: #eaf2e6;
+  background: var(--bg-soft);
   box-shadow: 0 4px 12px rgba(42, 92, 30, 0.1);
 }
 
@@ -40,18 +64,18 @@
   align-items: center;
   gap: 12px;
   background: #eaf6ed;
-  border: 1px solid #c3e6cb;
+  border: 1px solid var(--bg-soft);
   border-radius: 10px;
   padding: 10px 16px;
   font-size: 17px;
-  color: #2a5c1e;
+  color: var(--primary-dark);
   font-weight: 600;
   margin-bottom: 8px;
 }
 
 .report-refresh-btn {
   margin-left: auto;
-  background: #2a5c1e;
+  background: var(--primary-dark);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -85,7 +109,7 @@
 
 .report-view-badge.weekly {
   background: #eaf6ed;
-  color: #4f9c6b;
+  color: var(--primary);
 }
 
 .report-view-badge.monthly {
@@ -96,7 +120,7 @@
 .report-tab-switch {
   display: flex;
   gap: 10px;
-  background: #ece9e2;
+  background: var(--border);
   border-radius: 999px;
   padding: 6px;
 }
@@ -104,7 +128,7 @@
 .report-tab-btn {
   border: none;
   background: transparent;
-  color: #5e5e5e;
+  color: var(--text-sub);
   font-size: 18px;
   font-weight: 800;
   padding: 12px 18px;
@@ -114,7 +138,7 @@
 }
 
 .report-tab-btn.active {
-  background: #0b8a34;
+  background: var(--primary);
   color: #fff;
   box-shadow: 0 8px 16px rgba(11, 138, 52, 0.18);
 }
@@ -133,7 +157,7 @@
   margin: 10px 0 6px;
   font-size: 44px;
   line-height: 1.05;
-  color: #232323;
+  color: var(--text-main);
   font-weight: 900;
 }
 
@@ -145,7 +169,7 @@
 
 .glass-card,
 .milestone-card {
-  background: #fbfbf8;
+  background: var(--bg);
   border-radius: 28px;
   padding: 24px;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
@@ -156,7 +180,7 @@
   margin-bottom: 14px;
   font-size: 15px;
   font-weight: 800;
-  color: #85907e;
+  color: var(--text-sub);
   letter-spacing: 0.08em;
 }
 
@@ -194,7 +218,7 @@
   width: 138px;
   height: 138px;
   border-radius: 50%;
-  background: #fbfbf8;
+  background: var(--bg);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -204,7 +228,7 @@
 .score-ring-inner strong {
   font-size: 48px;
   line-height: 1;
-  color: #0b8a34;
+  color: var(--primary);
   font-weight: 900;
 }
 
@@ -315,7 +339,7 @@
 }
 
 .progress-label-line strong {
-  color: #0b8a34;
+  color: var(--primary);
   font-weight: 900;
 }
 
@@ -328,7 +352,7 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3f9b57, #0b8a34);
+  background: linear-gradient(90deg, #3f9b57, var(--primary));
   border-radius: 999px;
 }
 
@@ -443,7 +467,7 @@
 .trend-mini-grid span {
   display: block;
   font-size: 15px;
-  color: #888;
+  color: var(--text-light);
   font-weight: 800;
   margin-bottom: 6px;
 }
@@ -489,7 +513,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  color: #0b8a34;
+  color: var(--primary);
   font-size: 14px;
 }
 
@@ -517,14 +541,14 @@
   padding: 0 18px;
   border-radius: 999px;
   background: #efeee9;
-  color: #555;
+  color: var(--text-sub);
 }
 
 .primary-action-btn {
   height: 48px;
   padding: 0 22px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #0a8a2b, #39a844);
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
   color: #fff;
 }
 
@@ -547,7 +571,7 @@
   height: 48px;
   padding: 0 20px;
   border-radius: 16px;
-  background: #0b8a34;
+  background: var(--primary);
   color: #fff;
   box-shadow: 0 10px 18px rgba(11, 138, 52, 0.18);
 }
@@ -559,7 +583,7 @@
 }
 
 .monthly-score-card {
-  background: linear-gradient(180deg, #0b8a34, #08762c);
+  background: linear-gradient(180deg, var(--primary), #08762c);
   color: #fff;
 }
 
@@ -609,7 +633,7 @@
 
 .trend-card-head p {
   margin: 6px 0 0;
-  color: #888;
+  color: var(--text-light);
   font-size: 17px;
 }
 
@@ -627,7 +651,7 @@
 }
 
 .three-dots span:last-child {
-  background: #0b8a34;
+  background: var(--primary);
 }
 
 .chart-bars {
@@ -648,7 +672,7 @@
 .chart-bar.h2 { height: 54px; }
 .chart-bar.h3 { height: 96px; background: #93c097; }
 .chart-bar.h4 { height: 122px; background: #5ca26a; }
-.chart-bar.h5 { height: 140px; background: #0b8a34; }
+.chart-bar.h5 { height: 140px; background: var(--primary); }
 
 .status-chip-grid {
   display: grid;
@@ -719,7 +743,7 @@
 .mini-improve-box span {
   display: block;
   font-size: 15px;
-  color: #888;
+  color: var(--text-light);
   font-weight: 800;
   margin-bottom: 6px;
 }

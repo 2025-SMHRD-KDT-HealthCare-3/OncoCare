@@ -11,8 +11,8 @@
 
 .calendar-card,
 .wellness-card {
-  background: #fdfcf8;
-  border: 1px solid #ece8df;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 24px;
   padding: 28px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
@@ -31,13 +31,13 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #eaf2e6;
-  border: 1.5px solid #c3dfc3;
+  background: var(--bg-soft);
+  border: 1.5px solid var(--bg-soft);
   border-radius: 10px;
   padding: 7px 14px;
   font-size: 16px;
   font-weight: 700;
-  color: #2a5c1e;
+  color: var(--primary-dark);
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s;
@@ -48,11 +48,11 @@
 
 .daily-gen-msg {
   background: #eaf6ed;
-  border: 1px solid #c3e6cb;
+  border: 1px solid var(--bg-soft);
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 16px;
-  color: #2a5c1e;
+  color: var(--primary-dark);
   font-weight: 600;
   margin-bottom: 12px;
 }
@@ -61,7 +61,7 @@
   margin: 0;
   font-size: 26px;
   font-weight: 800;
-  color: #1b1c1a;
+  color: var(--text-main);
 }
 
 .status-badge {
@@ -77,7 +77,7 @@
 }
 
 .loading-text {
-  color: #888;
+  color: var(--text-light);
   font-size: 18px;
 }
 
@@ -91,7 +91,7 @@
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: conic-gradient(#2f8f46 0deg, #2f8f46 295deg, #e7e4dd 295deg, #e7e4dd 360deg);
+  background: conic-gradient(var(--primary) 0deg, var(--primary) 295deg, #e7e4dd 295deg, #e7e4dd 360deg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,7 +101,7 @@
   width: 132px;
   height: 132px;
   border-radius: 50%;
-  background: #fdfcf8;
+  background: var(--bg);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -111,7 +111,7 @@
 .wellness-score-inner strong {
   font-size: 48px;
   font-weight: 800;
-  color: #1b1c1a;
+  color: var(--text-main);
   line-height: 1;
 }
 
@@ -119,7 +119,7 @@
   margin-top: 6px;
   font-size: 15px;
   font-weight: 700;
-  color: #777;
+  color: var(--text-light);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -132,7 +132,7 @@
 
 .summary-box {
   background: #fff;
-  border: 1px solid #ece8df;
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px;
 }
@@ -158,7 +158,7 @@
 .wellness-comment {
   margin-top: 18px;
   background: #f3f7f2;
-  border-left: 4px solid #4caf50;
+  border-left: 4px solid var(--primary);
   padding: 14px 16px;
   border-radius: 12px;
   color: #3a5c3f;
@@ -177,7 +177,7 @@
   margin: 0;
   font-size: 36px;
   font-weight: 800;
-  color: #1b1c1a;
+  color: var(--text-main);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -197,7 +197,7 @@
   background: none;
   border: none;
   font-size: 22px;
-  color: #888;
+  color: var(--text-light);
   cursor: pointer;
   padding: 2px 6px;
   line-height: 1;
@@ -206,14 +206,14 @@
 }
 
 .cal-nav-btn:hover {
-  color: #1b1c1a;
+  color: var(--text-main);
   background: #f0ede8;
 }
 
 .cal-nav-label {
   font-size: 24px;
   font-weight: 700;
-  color: #1b1c1a;
+  color: var(--text-main);
   min-width: 130px;
   text-align: center;
 }
@@ -291,7 +291,7 @@
 
 .dashboard-top .react-calendar__tile--now > abbr {
   background: transparent !important;
-  color: #2f8f46 !important;
+  color: var(--primary) !important;
   font-weight: 800 !important;
 }
 
@@ -301,13 +301,13 @@
 }
 
 .dashboard-top .react-calendar__tile--active > abbr {
-  background: #1a4a2e !important;
+  background: var(--primary-dark) !important;
   color: #fff !important;
   font-weight: 800 !important;
 }
 
 .dashboard-top .react-calendar__tile--active:hover > abbr {
-  background: #1a4a2e !important;
+  background: var(--primary-dark) !important;
 }
 
 /* 활동 점(dot) */
@@ -316,7 +316,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #2f8f46;
+  background: var(--primary);
   margin: 0 auto;
 }
 
@@ -389,7 +389,7 @@
 .panel-score-bar-bg {
   width: 100%;
   height: 10px;
-  background: #e8e8e8;
+  background: var(--border);
   border-radius: 10px;
   margin-bottom: 1.4rem;
 }
@@ -426,13 +426,13 @@
 .panel-summary-title {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #555;
+  color: var(--text-sub);
   margin: 0 0 2px;
 }
 
 .panel-summary-desc {
   font-size: 0.9rem;
-  color: #888;
+  color: var(--text-light);
   margin: 0;
 }
 

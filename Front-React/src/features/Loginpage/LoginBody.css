@@ -4,7 +4,7 @@
   align-items: center;       /* 세로 중앙 */
   min-height: 100vh;         /* 화면 전체 높이 */
   padding-top: 80px;         /* 네비바 가리는 거 방지 */
-  background-color: #f5f5f5;
+  background-color: var(--bg);
 }
 
 .login-box{
@@ -25,6 +25,6 @@
 
 .login-subtitle {
   text-align: center;
-  color: #888;
+  color: var(--text-light);
   margin-bottom: 1.5rem;
 }

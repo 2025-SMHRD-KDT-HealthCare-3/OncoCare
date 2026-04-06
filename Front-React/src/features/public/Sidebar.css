@@ -4,8 +4,8 @@
   left: 0;
   width: 260px;
   height: 100vh;
-  background: linear-gradient(180deg, #fdfcf8 0%, #f4f8f3 100%);
-  border-right: 1px solid #e6e8e6;
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -70,7 +70,7 @@
 }
 
 .sidebar-link:hover {
-  background-color: #eaf4ed;
+  background-color: var(--bg-soft);
   color: var(--primary-dark);
   transform: translateX(2px);
 }
@@ -88,11 +88,28 @@
 }
 
 .sidebar-bottom {
-  border-top: 1px solid #e6e8e6;
+  border-top: 1px solid var(--border);
   padding-top: 18px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+  flex-shrink: 1;
+  padding-right: 2px;
+}
+
+.sidebar-bottom::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-bottom::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-bottom::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
 }
 
 /* ── 알림 카드 ── */
@@ -213,13 +230,13 @@
 
 /* ── DB 알림 카드 (초록 계열) ── */
 .sidebar-alert-card {
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  background: linear-gradient(135deg, var(--bg-soft) 0%, #c8e6c9 100%);
   box-shadow: 0 4px 16px rgba(42, 92, 30, 0.15);
-  color: #1a4a2e;
+  color: var(--primary-dark);
 }
 
 .sidebar-alert-card .sidebar-notif-title {
-  color: #1a4a2e;
+  color: var(--primary-dark);
 }
 
 /* ── 데일리 로그 버튼 ── */
@@ -302,7 +319,7 @@
     width: 100%;
     height: auto;
     border-right: none;
-    border-bottom: 1px solid #e6e8e6;
+    border-bottom: 1px solid var(--border);
     padding: 18px 16px;
   }
 

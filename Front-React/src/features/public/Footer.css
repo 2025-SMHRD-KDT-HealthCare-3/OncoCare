@@ -1,8 +1,8 @@
 .footer {
-  background: linear-gradient(180deg, #fdfcf8 0%, #f4f8f3 100%);
-  border-top: 1px solid #e6e8e6;
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+  border-top: 1px solid var(--border);
   padding: 40px 40px 28px;
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: 'Pretendard', system-ui, sans-serif;
 }
 
 .footer-inner {
@@ -25,7 +25,7 @@
 .footer-brand {
   font-size: 26px;
   font-weight: 800;
-  color: var(--primary-dark, #2e7d32);
+  color: var(--primary-dark, var(--primary-dark));
   letter-spacing: -0.02em;
   line-height: 1;
 }
@@ -42,7 +42,7 @@
   align-items: center;
   gap: 6px;
   background: rgba(76, 175, 80, 0.1);
-  color: var(--primary-dark, #2e7d32);
+  color: var(--primary-dark, var(--primary-dark));
   border-radius: 999px;
   padding: 5px 12px;
   font-size: 15px;
@@ -71,7 +71,7 @@
 
 .footer-text {
   font-size: 17px;
-  color: #5e6b5e;
+  color: var(--text-sub);
   line-height: 1.8;
 }
 
@@ -91,21 +91,21 @@
   display: inline-block;
   width: 4px;
   height: 4px;
-  background: var(--primary, #4caf50);
+  background: var(--primary, var(--primary));
   border-radius: 50%;
   opacity: 0.7;
   flex-shrink: 0;
 }
 
 .footer-link:hover {
-  color: var(--primary-dark, #2e7d32);
+  color: var(--primary-dark, var(--primary-dark));
 }
 
 /* 하단 구분선 + 카피라이트 */
 .footer-bottom {
   margin-top: 32px;
   padding-top: 18px;
-  border-top: 1px solid #e6e8e6;
+  border-top: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -133,7 +133,7 @@
 }
 
 .footer-meta-link:hover {
-  color: var(--primary-dark, #2e7d32);
+  color: var(--primary-dark, var(--primary-dark));
 }
 
 @media (max-width: 900px) {
