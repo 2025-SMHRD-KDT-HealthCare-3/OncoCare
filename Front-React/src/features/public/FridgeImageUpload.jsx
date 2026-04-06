@@ -184,6 +184,7 @@ function FridgeImageUploadModal({ show, onClose, user_idx = 1, showToast, onSave
                     }}
                   >
                     <span style={{ fontWeight: 600 }}>{item.name}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                     <input
                       type="number"
                       min={0}
@@ -198,6 +199,8 @@ function FridgeImageUploadModal({ show, onClose, user_idx = 1, showToast, onSave
                         fontSize: "14px",
                       }}
                     />
+                    <span style={{ fontSize: "14px", color: "#555", minWidth: "20px" }}>{item.unit}</span>
+                  </div>
                   </div>
                 ))}
               </div>

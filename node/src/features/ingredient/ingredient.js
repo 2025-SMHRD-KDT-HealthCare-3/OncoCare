@@ -34,12 +34,12 @@ router.get('/detail', asyncWrap(async (req, res) => {
  * 
  */
 router.post('/register', asyncWrap(async (req, res) => {
-    const { user_idx, name, type, storage, cnt } = req.body;
+    const { user_idx, name, type, storage, cnt, unit } = req.body;
     const sql = `
-        INSERT INTO t_ingredient (user_idx, ingre_name, ingre_type, ingre_storage, cnt) 
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO t_ingredient (user_idx, ingre_name, ingre_type, ingre_storage, cnt, ingre_unit) 
+        VALUES (?, ?, ?, ?, ?, ?)
     `;
-    await conn.query(sql, [user_idx, name, type, storage, cnt]);
+    await conn.query(sql, [user_idx, name, type, storage, cnt, unit || '개']);
     res.send('1');
 }));
 
@@ -48,13 +48,13 @@ router.post('/register', asyncWrap(async (req, res) => {
  *
  */
 router.post('/update', asyncWrap(async (req, res) => {
-    const { ingre_idx, ingre_name, ingre_type, ingre_storage, cnt } = req.body;
+    const { ingre_idx, ingre_name, ingre_type, ingre_storage, cnt, ingre_unit } = req.body;
     const sql = `
         UPDATE t_ingredient 
-        SET ingre_name = ?, ingre_type = ?, ingre_storage = ?, cnt = ? 
+        SET ingre_name = ?, ingre_type = ?, ingre_storage = ?, cnt = ?, ingre_unit = ? 
         WHERE ingre_idx = ?
     `;
-    await conn.query(sql, [ingre_name, ingre_type, ingre_storage, cnt, ingre_idx]);
+    await conn.query(sql, [ingre_name, ingre_type, ingre_storage, cnt, ingre_unit || '개', ingre_idx]);
     res.send('1');
 }));
 /*

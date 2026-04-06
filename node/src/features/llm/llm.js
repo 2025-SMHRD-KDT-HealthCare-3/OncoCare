@@ -20,8 +20,8 @@ router.post('/diet', asyncWrap(async (req, res) => {
 
     const sql = `
         INSERT INTO t_recipe 
-        (user_idx, recipe_name, main_ingredients, cooking_method, nutrition_info, recipe_category)
-        VALUES (?, ?, ?, ?, ?, ?)
+        (user_idx, recipe_name, main_ingredients, cooking_method, nutrition_info, recipe_category, deduct_ingredients)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
     
     // 💡 배열로 받은 7개의 레시피를 순회하며 DB에 모두 저장
@@ -33,7 +33,8 @@ router.post('/diet', asyncWrap(async (req, res) => {
             recipe.main_ingredients,
             recipe.cooking_method, 
             recipe.nutrition_info, 
-            recipe.recipe_category
+            recipe.recipe_category,
+            JSON.stringify(recipe.deduct_ingredients || []) // 차감용 JSON 배열을 문자열로 저장
         ]);
         insertedIds.push(result.insertId);
     }
@@ -193,8 +194,8 @@ router.post('/ingredient/bulk', asyncWrap(async (req, res) => {
     const updateSql = `UPDATE t_ingredient SET cnt = cnt + ? WHERE ingre_idx = ?`;
     const insertSql = `
         INSERT INTO t_ingredient 
-        (user_idx, ingre_name, ingre_type, ingre_storage, cnt)
-        VALUES (?, ?, ?, ?, ?)
+        (user_idx, ingre_name, ingre_type, ingre_storage, cnt, ingre_unit)
+        VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     const insertedIds = [];
@@ -210,7 +211,7 @@ router.post('/ingredient/bulk', asyncWrap(async (req, res) => {
         } else {
             // 3. 존재하지 않는다면 새 행(row)으로 삽입
             const [result] = await conn.query(insertSql, [
-                user_idx, item.ingre_name, item.ingre_type, item.ingre_storage, item.cnt
+                user_idx, item.ingre_name, item.ingre_type, item.ingre_storage, item.cnt, item.ingre_unit || '개'
             ]);
             insertedIds.push(result.insertId);
         }
@@ -240,7 +241,7 @@ router.get('/data/for-diet', asyncWrap(async (req, res) => {
 
     // 1-2. 현재 사용자가 보유한 식재료 목록 전체 조회
     const ingredientSql = `
-        SELECT ingre_name, ingre_type, ingre_storage, cnt 
+        SELECT ingre_name, ingre_type, ingre_storage, cnt, ingre_unit 
         FROM t_ingredient 
         WHERE user_idx = ?
     `;
@@ -269,12 +270,27 @@ router.get('/data/for-diet', asyncWrap(async (req, res) => {
     `;
     const [dietRows] = await conn.query(dietSql, [user_idx, yesterday_str]);
 
+    // 1-4. [추가] 오늘의 컨디션 기록 조회 (식단 추천 시 오늘 상태 반영)
+    const today = new Date();
+    const t_year = today.getFullYear();
+    const t_month = String(today.getMonth() + 1).padStart(2, '0');
+    const t_day = String(today.getDate()).padStart(2, '0');
+    const today_str = `${t_year}-${t_month}-${t_day}`;
+
+    const todayCondSql = `
+        SELECT condition_score, sleep_score, water_intake, stomach_pain, stomach_score 
+        FROM t_condition 
+        WHERE user_idx = ? AND DATE(created_at) = ?
+    `;
+    const [todayCondRows] = await conn.query(todayCondSql, [user_idx, today_str]);
+
     res.json({
         success: true,
         health_profile: profileRows.length > 0 ? profileRows[0] : null,
         ingredients: ingredientRows,
         yesterday_condition: condRows.length > 0 ? condRows[0] : null,
-        yesterday_diet: dietRows
+        yesterday_diet: dietRows,
+        today_condition: todayCondRows.length > 0 ? todayCondRows[0] : null
     });
 }));
 

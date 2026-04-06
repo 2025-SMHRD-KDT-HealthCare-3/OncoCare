@@ -10,6 +10,7 @@ import deco from '../../assets/ingredient_page_footer_1.jpg'
 
 const CATEGORIES = ['채소', '과일', '육류', '해산물', '유제품', '곡류', '양념/소스', '기타']
 const STORAGE_TYPES = ['냉장', '냉동', '실온']
+const UNIT_TYPES = ['개', 'g', 'ml', '팩', '모', '뿌리', '장', '마리']
 
 const IngredientForm = () => {
   const { showToast, showConfirm } = useToast()
@@ -21,7 +22,7 @@ const IngredientForm = () => {
   const [category, setCategory] = useState('')
   const [storageType, setStorageType] = useState('')
   const [quantity, setQuantity] = useState('')
-  const [unit, setUnit] = useState('')
+  const [unit, setUnit] = useState('개') // 기본 단위 '개'
 
   useEffect(() => {
     if (!isEdit) return
@@ -32,6 +33,7 @@ const IngredientForm = () => {
         setCategory(res.data.ingre_type || '')
         setStorageType(res.data.ingre_storage || '')
         setQuantity(res.data.cnt || '')
+        setUnit(res.data.ingre_unit || '개') // DB에서 단위도 가져오기
       })
       .catch(err => console.error('식재료 조회 실패:', err))
   }, [id, isEdit])
@@ -48,12 +50,12 @@ const IngredientForm = () => {
 
     try {
       if (isEdit) {
-        const payload = { ingre_idx: id, user_idx, ingre_name: name, ingre_type: category, ingre_storage: storageType, cnt: quantity }
+        const payload = { ingre_idx: id, user_idx, ingre_name: name, ingre_type: category, ingre_storage: storageType, cnt: parseFloat(quantity), ingre_unit: unit }
         const res = await axios.post('http://localhost:3000/api/ingredient/update', payload)
         if (res.data == '1') { showToast('수정 완료', '식재료가 수정되었습니다!', 'success') }
         else { showToast('오류', '식재료 수정에 실패했습니다.', 'danger'); return }
       } else {
-        const payload = { user_idx, name, type: category, storage: storageType, cnt: quantity }
+        const payload = { user_idx, name, type: category, storage: storageType, cnt: parseFloat(quantity), unit: unit }
         const res = await axios.post('http://localhost:3000/api/ingredient/register', payload)
         if (res.data == '1') { showToast('등록 완료', '식재료가 등록되었습니다!', 'success') }
         else { showToast('오류', '식재료 등록에 실패했습니다.', 'danger'); return }
@@ -162,17 +164,20 @@ const IngredientForm = () => {
                     value={quantity}
                     min="0"
                     max="10000"
-                    step="1"
+                  step="0.1"
                     onChange={(e) => {
                       const val = e.target.value
                       if (val === '') { setQuantity(''); return }
                       if (parseFloat(val) > 10000) return
-                      if (/^\d+(\.\d{2,})$/.test(val)) return
                       setQuantity(val)
                     }}
                   />
                   <div className="if-select-wrap if-unit-wrap">
-                    <span>개</span>
+                  <select className="if-select" value={unit} onChange={(e) => setUnit(e.target.value)}>
+                    {UNIT_TYPES.map(u => (
+                      <option key={u} value={u}>{u}</option>
+                    ))}
+                  </select>
                   </div>
                 </div>
               </div>

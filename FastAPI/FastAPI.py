@@ -118,12 +118,18 @@ tracker = GlobalTokenTracker()
 # -------------------------------------------------------------------------
 # [2-1] 식단 추천 (Diet) - RAG (벡터 검색) 적용 버전
 # -------------------------------------------------------------------------
+class DeductIngredient(BaseModel):
+    name: str = Field(description="식재료 이름 (보유 중인 식재료의 이름과 정확히 일치해야 함)")
+    amount: float = Field(description="차감할 수량 (숫자형, 예: 0.5, 100)")
+    unit: str = Field(description="단위 (예: 개, g, ml 등)")
+
 class RecipeRecommendation(BaseModel):
     recipe_name: str = Field(description="레시피 이름 (예: 저염식 연어 양배추 찜)")
     main_ingredients: str = Field(description="레시피 재료 (예: 불린 쌀 30g, 흑임자 20g, 연두부 60g, 물 300ml, 우유(또는 영양보충음료) 100ml, 소금 1g)")
     cooking_method: str = Field(description="상세한 조리법 (예: 1. 감자를 얇게 썬다.\n2. 육수에 넣는다.\n3. 푹 익을 때까지 끓인다.)")
     nutrition_info: str = Field(description="영양 정보 요약 (예: 열량: 265 kcal, 탄수화물: 23g, 단백질: 12g, 지방: 15g, 섬유소: 1g). 만약 검색된 가이드에 정확한 영양 정보가 없다면, 일반적인 식재료 데이터를 바탕으로 추정하여 빠짐없이 작성해주세요.")
     recipe_category: str = Field(description="카테고리 (반드시 '죽/스프', '밥류', '국/탕류', '반찬류', '면류', '단백질요리', '샐러드', '과일', '간식', '음료' 중 하나만 출력할 것. 성격이 딱 맞지 않아도 가장 비슷한 카테고리로 억지로라도 매칭하세요.)")
+    deduct_ingredients: List[DeductIngredient] = Field(description="[차감용 데이터] 이 레시피를 만들기 위해 사용자의 냉장고에서 차감해야 할 보유 식재료 목록 (부족해서 새로 사야 할 재료는 절대 넣지 마세요)")
 
 # 💡 7개의 레시피를 리스트(배열) 형태로 받기 위한 상위 모델 추가
 class RecipeList(BaseModel):
@@ -146,20 +152,24 @@ diet_prompt = PromptTemplate(
 [어제 환자 상태 및 식단 피드백]
 {yesterday_record}
 
+[오늘 환자 상태]
+{today_record}
+
 [💡 검색된 대장암 영양 가이드 및 검증된 레시피 (전문 서적 발췌)]
 {retrieved_documents}
 
 주의사항 (매우 중요):
-1. [어제 환자 상태 및 식단 피드백]을 분석하세요. 어제 복통(stomach_pain)이 있었거나 컨디션이 나빴다면, 임의로 판단하지 말고 반드시 [검색된 대장암 영양 가이드 및 검증된 레시피]의 지침을 참고하여 해당 증상에 맞는 안전한 식재료와 조리법으로 대처하세요. 어제 식단 평점(rating)이 낮았다면 비슷한 조리법은 피하세요.
+1. [어제 환자 상태 및 식단 피드백]과 [오늘 환자 상태]를 종합적으로 분석하세요. 어제나 오늘 복통(stomach_pain)이 있었거나 컨디션이 나빴다면, 임의로 판단하지 말고 반드시 [검색된 대장암 영양 가이드 및 검증된 레시피]의 지침을 참고하여 해당 증상에 맞는 안전한 식재료와 조리법으로 대처하세요. 어제 식단 평점(rating)이 낮았다면 비슷한 조리법은 피하세요.
 2. 임의로 요리법을 창작하지 마세요. 모든 식단 구성은 반드시 [검색된 대장암 영양 가이드 및 검증된 레시피]의 내용을 최우선으로 반영해야 합니다.
 3. 대장암 기수, 수술/퇴원 일자, 장루 여부 등을 종합적으로 고려하세요.
 4. 알레르기(allergy)가 있는 식재료는 절대 사용하면 안 됩니다.
 5. 보유 중인 식재료를 최대한 활용하되, 필수적인 기본 양념류는 있다고 가정해도 됩니다.
 6. 추천한 7개의 레시피를 만들기 위해 필요한 식재료 중, [보유 중인 식재료]에 없는 항목들을 파악하여 missing_ingredients에 알려주세요. (예: "레시피를 위해 닭가슴살, 브로콜리가 추가로 필요해요!") 만약 부족한 식재료가 전혀 없다면 "없음" 등의 단어를 절대 쓰지 말고 반드시 빈 문자열("")로만 작성해주세요.
-7. 반드시 정확히 7개의 레시피를 작성하되, 환자가 식사에 흥미를 잃지 않도록 죽/스프, 국/탕, 반찬, 간식 등 다양한 카테고리가 골고루 포함되도록 구성하세요.
+7. 반드시 정확히 7개의 레시피를 작성하세요. 단, 환자의 건강 프로필에 있는 하루 식사 횟수(meals_per_day)를 확인하여, 정확히 그 횟수만큼은 든든한 '메인 식사(밥류, 국/탕류, 면류, 단백질요리 등)'로 구성하세요. 나머지 레시피(7 - 식사 횟수)는 식욕을 돋우거나 가볍게 먹을 수 있는 '간식, 음료, 샐러드, 과일' 등으로 구성하여 총 7개를 맞춰주세요.
+8. [보유 중인 식재료]를 레시피에 활용한 경우, 해당 식재료를 냉장고에서 정밀하게 차감할 수 있도록 `deduct_ingredients` 배열에 차감할 이름, 수량, 단위를 명확히 분리해서 작성하세요. 단, 냉장고에 없어서 새로 사야 하는 재료는 차감 목록에 절대 포함하지 마세요.
 
 {format_instructions}""",
-    input_variables=["health_profile", "ingredients", "yesterday_record", "retrieved_documents"],
+    input_variables=["health_profile", "ingredients", "yesterday_record", "today_record", "retrieved_documents"],
     partial_variables={"format_instructions": diet_parser.get_format_instructions()},
 )
 diet_chain = diet_prompt | llm | diet_parser
@@ -300,64 +310,64 @@ except Exception as e:
 # YOLO 영문 클래스명을 한글 DB 스키마에 맞게 매핑하는 사전 (원하시는 대로 커스텀하세요)
 CLASS_MAPPING = {
     # 🍎 과일 / 견과
-    "apple": {"name": "사과", "type": "과일", "storage": "냉장"},
-    "strawberry": {"name": "딸기", "type": "과일", "storage": "냉장"},
-    "banana": {"name": "바나나", "type": "과일", "storage": "실온"},
-    "pear_raw": {"name": "배", "type": "과일", "storage": "냉장"},
-    "tomato": {"name": "토마토", "type": "채소", "storage": "냉장"},
-    "almond": {"name": "아몬드", "type": "기타", "storage": "실온"},
-    "walnut": {"name": "호두", "type": "기타", "storage": "실온"},
-    "peanut_raw": {"name": "땅콩", "type": "기타", "storage": "실온"},
+    "apple": {"name": "사과", "type": "과일", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "strawberry": {"name": "딸기", "type": "과일", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "banana": {"name": "바나나", "type": "과일", "storage": "실온", "unit": "개", "default_qty": 1},
+    "pear_raw": {"name": "배", "type": "과일", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "tomato": {"name": "토마토", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "almond": {"name": "아몬드", "type": "기타", "storage": "실온", "unit": "g", "default_qty": 10},
+    "walnut": {"name": "호두", "type": "기타", "storage": "실온", "unit": "g", "default_qty": 10},
+    "peanut_raw": {"name": "땅콩", "type": "기타", "storage": "실온", "unit": "g", "default_qty": 10},
     
     # 🥬 채소
-    "eggplant": {"name": "가지", "type": "채소", "storage": "냉장"},
-    "garlic": {"name": "마늘", "type": "채소", "storage": "실온"},
-    "garlic chives": {"name": "부추", "type": "채소", "storage": "냉장"},
-    "napa cabbage": {"name": "배추", "type": "채소", "storage": "냉장"},
-    "oyster mushroom": {"name": "느타리버섯", "type": "채소", "storage": "냉장"},
-    "perilla leaves": {"name": "깻잎", "type": "채소", "storage": "냉장"},
-    "shiitake mushroom": {"name": "표고버섯", "type": "채소", "storage": "냉장"},
-    "green_chili_pepper": {"name": "청양고추", "type": "채소", "storage": "냉장"},
-    "red_cabbage": {"name": "적양배추", "type": "채소", "storage": "냉장"},
-    "red_chili_pepper": {"name": "홍고추", "type": "채소", "storage": "냉장"},
-    "bell pepper": {"name": "파프리카", "type": "채소", "storage": "냉장"},
-    "carrot": {"name": "당근", "type": "채소", "storage": "냉장"},
-    "green onion": {"name": "대파", "type": "채소", "storage": "냉장"},
-    "kabocha_squash": {"name": "단호박", "type": "채소", "storage": "실온"},
-    "bokchoy": {"name": "청경채", "type": "채소", "storage": "냉장"},
-    "broccoli": {"name": "브로콜리", "type": "채소", "storage": "냉장"},
-    "chicory": {"name": "치커리", "type": "채소", "storage": "냉장"},
-    "daikon_radish": {"name": "무", "type": "채소", "storage": "냉장"},
-    "deodeokroot": {"name": "더덕", "type": "채소", "storage": "냉장"},
-    "ginger_raw": {"name": "생강", "type": "채소", "storage": "냉장"},
-    "mallow_leaves_raw": {"name": "아욱", "type": "채소", "storage": "냉장"},
-    "mung_bean_sprouts_raw": {"name": "숙주나물", "type": "채소", "storage": "냉장"},
-    "spinach": {"name": "시금치", "type": "채소", "storage": "냉장"},
-    "tofdeodeok_root": {"name": "더덕", "type": "채소", "storage": "냉장"},
+    "eggplant": {"name": "가지", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "garlic": {"name": "마늘", "type": "채소", "storage": "실온", "unit": "개", "default_qty": 1},
+    "garlic chives": {"name": "부추", "type": "채소", "storage": "냉장", "unit": "g", "default_qty": 50},
+    "napa cabbage": {"name": "배추", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "oyster mushroom": {"name": "느타리버섯", "type": "채소", "storage": "냉장", "unit": "g", "default_qty": 100},
+    "perilla leaves": {"name": "깻잎", "type": "채소", "storage": "냉장", "unit": "장", "default_qty": 10},
+    "shiitake mushroom": {"name": "표고버섯", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "green_chili_pepper": {"name": "청양고추", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "red_cabbage": {"name": "적양배추", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "red_chili_pepper": {"name": "홍고추", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "bell pepper": {"name": "파프리카", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "carrot": {"name": "당근", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "green onion": {"name": "대파", "type": "채소", "storage": "냉장", "unit": "뿌리", "default_qty": 1},
+    "kabocha_squash": {"name": "단호박", "type": "채소", "storage": "실온", "unit": "개", "default_qty": 1},
+    "bokchoy": {"name": "청경채", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "broccoli": {"name": "브로콜리", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "chicory": {"name": "치커리", "type": "채소", "storage": "냉장", "unit": "g", "default_qty": 50},
+    "daikon_radish": {"name": "무", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "deodeokroot": {"name": "더덕", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "ginger_raw": {"name": "생강", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "mallow_leaves_raw": {"name": "아욱", "type": "채소", "storage": "냉장", "unit": "g", "default_qty": 100},
+    "mung_bean_sprouts_raw": {"name": "숙주나물", "type": "채소", "storage": "냉장", "unit": "g", "default_qty": 150},
+    "spinach": {"name": "시금치", "type": "채소", "storage": "냉장", "unit": "g", "default_qty": 100},
+    "tofdeodeok_root": {"name": "더덕", "type": "채소", "storage": "냉장", "unit": "개", "default_qty": 1},
     
     # 🥩 육류 / 해산물
-    "beef": {"name": "소고기", "type": "육류", "storage": "냉동"},
-    "chicken": {"name": "닭고기", "type": "육류", "storage": "냉동"},
-    "pork": {"name": "돼지고기", "type": "육류", "storage": "냉동"},
-    "abalone": {"name": "전복", "type": "해산물", "storage": "냉동"},
-    "crab_meat": {"name": "게맛살", "type": "해산물", "storage": "냉장"},
-    "cutlassfish": {"name": "갈치", "type": "해산물", "storage": "냉동"},
-    "fish": {"name": "생선", "type": "해산물", "storage": "냉동"},
-    "pollack roe": {"name": "명란젓", "type": "해산물", "storage": "냉장"},
-    "shellfish": {"name": "조개", "type": "해산물", "storage": "냉장"},
-    "shrimp": {"name": "새우", "type": "해산물", "storage": "냉동"},
+    "beef": {"name": "소고기", "type": "육류", "storage": "냉동", "unit": "g", "default_qty": 200},
+    "chicken": {"name": "닭고기", "type": "육류", "storage": "냉동", "unit": "g", "default_qty": 300},
+    "pork": {"name": "돼지고기", "type": "육류", "storage": "냉동", "unit": "g", "default_qty": 200},
+    "abalone": {"name": "전복", "type": "해산물", "storage": "냉동", "unit": "개", "default_qty": 1},
+    "crab_meat": {"name": "게맛살", "type": "해산물", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "cutlassfish": {"name": "갈치", "type": "해산물", "storage": "냉동", "unit": "마리", "default_qty": 1},
+    "fish": {"name": "생선", "type": "해산물", "storage": "냉동", "unit": "마리", "default_qty": 1},
+    "pollack roe": {"name": "명란젓", "type": "해산물", "storage": "냉장", "unit": "g", "default_qty": 100},
+    "shellfish": {"name": "조개", "type": "해산물", "storage": "냉장", "unit": "g", "default_qty": 200},
+    "shrimp": {"name": "새우", "type": "해산물", "storage": "냉동", "unit": "마리", "default_qty": 10},
     
     # 🥛 유제품 / 곡류 / 기타
-    "butter": {"name": "버터", "type": "유제품", "storage": "냉장"},
-    "cheese": {"name": "치즈", "type": "유제품", "storage": "냉장"},
-    "milk": {"name": "우유", "type": "유제품", "storage": "냉장"},
-    "egg": {"name": "계란", "type": "기타", "storage": "냉장"},
-    "mung bean": {"name": "녹두", "type": "곡류", "storage": "실온"},
-    "black_bean": {"name": "검은콩", "type": "곡류", "storage": "실온"},
-    "sesame seeds": {"name": "참깨", "type": "양념/소스", "storage": "실온"},
-    "tofu_raw": {"name": "두부", "type": "기타", "storage": "냉장"},
+    "butter": {"name": "버터", "type": "유제품", "storage": "냉장", "unit": "g", "default_qty": 50},
+    "cheese": {"name": "치즈", "type": "유제품", "storage": "냉장", "unit": "장", "default_qty": 1},
+    "milk": {"name": "우유", "type": "유제품", "storage": "냉장", "unit": "ml", "default_qty": 500},
+    "egg": {"name": "계란", "type": "기타", "storage": "냉장", "unit": "개", "default_qty": 1},
+    "mung bean": {"name": "녹두", "type": "곡류", "storage": "실온", "unit": "g", "default_qty": 100},
+    "black_bean": {"name": "검은콩", "type": "곡류", "storage": "실온", "unit": "g", "default_qty": 100},
+    "sesame seeds": {"name": "참깨", "type": "양념/소스", "storage": "실온", "unit": "g", "default_qty": 50},
+    "tofu_raw": {"name": "두부", "type": "기타", "storage": "냉장", "unit": "모", "default_qty": 1},
     
-    "default": {"name": "미분류 식재료", "type": "기타", "storage": "냉장"}
+    "default": {"name": "미분류 식재료", "type": "기타", "storage": "냉장", "unit": "개", "default_qty": 1}
 }
 
 # =========================================================================
@@ -393,6 +403,10 @@ async def generate_diet(user_idx: int, background_tasks: BackgroundTasks):
                 y_diet = fetch_data.get("yesterday_diet", [])
                 yesterday_record_str = f"- 어제 컨디션: {y_cond}\n- 어제 식단 피드백(평점 및 코멘트): {y_diet}"
 
+                # 💡 Node.js에서 넘어온 오늘 기록 조합 (사용자가 아직 기록을 안 했을 수도 있음)
+                t_cond = fetch_data.get("today_condition")
+                today_record_str = f"- 오늘 컨디션: {t_cond}" if t_cond else "- 오늘 컨디션: 아직 기록되지 않음"
+
                 # 💡 [핵심 추가] 외부 Python 파일의 벡터 DB 검색 로직 실행
                 print(f"[벡터 DB 검색 중...] 전문 서적 1.txt, 2.txt에서 가이드 추출 중...")
                 retrieved_docs = await get_relevant_medical_guides(health_profile, ingredients)
@@ -409,6 +423,7 @@ async def generate_diet(user_idx: int, background_tasks: BackgroundTasks):
                         "health_profile": json.dumps(health_profile, ensure_ascii=False),
                         "ingredients": json.dumps(ingredients, ensure_ascii=False),
                         "yesterday_record": yesterday_record_str,
+                        "today_record": today_record_str,
                         "retrieved_documents": retrieved_docs
                     })
                     
@@ -660,9 +675,14 @@ async def analyze_fridge_image(user_idx: int, file: UploadFile = File(...)):
             mapping_info = CLASS_MAPPING.get(name_lower, CLASS_MAPPING["default"])
             korean_name = mapping_info["name"] if mapping_info["name"] != "미분류 식재료" else name
             
+            # 객체 1개가 감지되었을 때, 고기류라면 1 * 200g 으로 계산되도록 처리
+            calc_count = count * mapping_info["default_qty"]
+            unit = mapping_info["unit"]
+            
             react_ingredients.append({
                 "name": korean_name,
-                "count": count
+                "count": calc_count,
+                "unit": unit
             })
             
         print(f"[최종 추출 완료] 감지된 식재료 목록: {react_ingredients}")
@@ -682,7 +702,8 @@ async def analyze_fridge_image(user_idx: int, file: UploadFile = File(...)):
 # --- 사용자 검수 후 식재료 최종 저장 ---
 class ValidatedIngredient(BaseModel):
     name: str
-    count: int
+    count: float  # 💡 소수점(0.5개 등) 허용
+    unit: str     # 💡 식재료 단위 추가
 
 class SaveIngredientsRequest(BaseModel):
     ingredients: List[ValidatedIngredient]
@@ -712,7 +733,8 @@ async def save_ingredients(user_idx: int, request: SaveIngredientsRequest):
                 "ingre_name": item.name,
                 "ingre_type": ingre_type,
                 "ingre_storage": ingre_storage,
-                "cnt": float(item.count)
+                "cnt": item.count,
+                "ingre_unit": item.unit # Node.js DB에도 ingre_unit 컬럼이 추가되어야 완벽하게 연동됩니다.
             })
             
         # 3. Node.js 서버로 한 번에 벌크 저장 전송

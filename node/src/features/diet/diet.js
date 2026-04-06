@@ -69,6 +69,38 @@ router.post('/clickRecipe', asyncWrap(async (req, res) => {
     `;
 
     await conn.query(sql, [user_idx, recipe_idx, meal_type, '', 0]);
+
+    // 💡 [식재료 차감 로직 추가] 식단이 확정되면 냉장고에서 해당 재료 차감
+    try {
+        // 1. 선택한 레시피의 차감용 식재료 배열 데이터 가져오기
+        const [recipeRows] = await conn.query('SELECT deduct_ingredients FROM t_recipe WHERE recipe_idx = ?', [recipe_idx]);
+        if (recipeRows.length > 0 && recipeRows[0].deduct_ingredients) {
+            const deductList = JSON.parse(recipeRows[0].deduct_ingredients);
+
+            // 2. 사용자의 냉장고에서 해당 식재료 찾아 정확한 수량만큼 차감
+            for (const item of deductList) {
+                const [ingreRows] = await conn.query(
+                    'SELECT ingre_idx, cnt FROM t_ingredient WHERE user_idx = ? AND ingre_name = ?',
+                    [user_idx, item.name]
+                );
+                
+                if (ingreRows.length > 0) {
+                    const ingre = ingreRows[0];
+                    const newCnt = parseFloat(ingre.cnt) - parseFloat(item.amount);
+                    
+                    if (newCnt > 0) {
+                        await conn.query('UPDATE t_ingredient SET cnt = ? WHERE ingre_idx = ?', [newCnt, ingre.ingre_idx]);
+                    } else {
+                        await conn.query('DELETE FROM t_ingredient WHERE ingre_idx = ?', [ingre.ingre_idx]);
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        console.error("[식재료 차감 에러]", err);
+        // 차감에 실패해도 식단 선택 자체는 유지되도록 에러를 던지지 않음
+    }
+
     res.send('1');
 }));
 
@@ -84,10 +116,41 @@ router.post('/unClickRecipe', asyncWrap(async (req, res) => {
         throw error;
     }
 
-    const sql = `DELETE FROM t_diet WHERE diet_idx = ?`;
-    const [result] = await conn.query(sql, [diet_idx]);
+    // 💡 1. 취소할 식단의 정보(user_idx, recipe_idx) 먼저 조회
+    const [dietRows] = await conn.query('SELECT user_idx, recipe_idx FROM t_diet WHERE diet_idx = ?', [diet_idx]);
+    
+    if (dietRows.length > 0) {
+        const { user_idx, recipe_idx } = dietRows[0];
+        
+        // 💡 2. 식재료 복구(+) 로직
+        try {
+            const [recipeRows] = await conn.query('SELECT deduct_ingredients FROM t_recipe WHERE recipe_idx = ?', [recipe_idx]);
+            if (recipeRows.length > 0 && recipeRows[0].deduct_ingredients) {
+                const deductList = JSON.parse(recipeRows[0].deduct_ingredients);
+                
+                for (const item of deductList) {
+                    const [ingreRows] = await conn.query('SELECT ingre_idx FROM t_ingredient WHERE user_idx = ? AND ingre_name = ?', [user_idx, item.name]);
+                    
+                    if (ingreRows.length > 0) {
+                        // 냉장고에 항목이 아직 남아있다면 수량 원상복구(+)
+                        await conn.query('UPDATE t_ingredient SET cnt = cnt + ? WHERE ingre_idx = ?', [parseFloat(item.amount), ingreRows[0].ingre_idx]);
+                    } else {
+                        // 차감 시 0이 되어 삭제되었다면 새로 생성하여 복구
+                        await conn.query(`
+                            INSERT INTO t_ingredient (user_idx, ingre_name, ingre_type, ingre_storage, cnt, ingre_unit)
+                            VALUES (?, ?, '기타', '냉장', ?, ?)
+                        `, [user_idx, item.name, parseFloat(item.amount), item.unit || '개']);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("[식재료 복구 에러]", err);
+        }
 
-    if (result.affectedRows > 0) {
+        // 💡 3. 식단 기록 최종 삭제
+        const sql = `DELETE FROM t_diet WHERE diet_idx = ?`;
+        await conn.query(sql, [diet_idx]);
+        
         res.send('1');
     } else {
         res.send('0');
@@ -189,8 +252,35 @@ router.post('/deleteDiet', asyncWrap(async (req, res) => {
         throw error;
     }
 
-    await conn.query(`DELETE FROM t_diet WHERE diet_idx = ?`, [diet_idx]);
-    res.send('1');
+    // 💡 취소(/unClickRecipe)와 동일하게 식재료 원상복구(+) 로직 적용
+    const [dietRows] = await conn.query('SELECT user_idx, recipe_idx FROM t_diet WHERE diet_idx = ?', [diet_idx]);
+    
+    if (dietRows.length > 0) {
+        const { user_idx, recipe_idx } = dietRows[0];
+        try {
+            const [recipeRows] = await conn.query('SELECT deduct_ingredients FROM t_recipe WHERE recipe_idx = ?', [recipe_idx]);
+            if (recipeRows.length > 0 && recipeRows[0].deduct_ingredients) {
+                const deductList = JSON.parse(recipeRows[0].deduct_ingredients);
+                for (const item of deductList) {
+                    const [ingreRows] = await conn.query('SELECT ingre_idx FROM t_ingredient WHERE user_idx = ? AND ingre_name = ?', [user_idx, item.name]);
+                    if (ingreRows.length > 0) {
+                        await conn.query('UPDATE t_ingredient SET cnt = cnt + ? WHERE ingre_idx = ?', [parseFloat(item.amount), ingreRows[0].ingre_idx]);
+                    } else {
+                        await conn.query(`
+                            INSERT INTO t_ingredient (user_idx, ingre_name, ingre_type, ingre_storage, cnt, ingre_unit)
+                            VALUES (?, ?, '기타', '냉장', ?, ?)
+                        `, [user_idx, item.name, parseFloat(item.amount), item.unit || '개']);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("[식재료 복구 에러]", err);
+        }
+        await conn.query(`DELETE FROM t_diet WHERE diet_idx = ?`, [diet_idx]);
+        res.send('1');
+    } else {
+        res.send('0');
+    }
 }));
 
 module.exports = router;
