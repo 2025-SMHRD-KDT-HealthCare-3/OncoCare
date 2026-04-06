@@ -3,7 +3,7 @@
    ════════════════════════════════ */
 .mp-page {
   min-height: 100vh;
-  background: #f5f4ee;
+  background: var(--bg);
   justify-content: center;
 }
 
@@ -23,14 +23,14 @@
 .mp-page-title {
   font-size: 38px;
   font-weight: 800;
-  color: #1c1c1c;
+  color: var(--text-main);
   margin: 0 0 8px;
   line-height: 1.2;
 }
 
 .mp-page-sub {
   font-size: 19px;
-  color: #6b7280;
+  color: var(--text-sub);
   margin: 0;
   line-height: 1.6;
 }
@@ -51,7 +51,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: #2a5c1e;
+  background: var(--primary-dark);
   color: #fff;
   border: none;
   border-radius: 999px;
@@ -71,7 +71,7 @@
    ════════════════════════════════ */
 .mp-profile-card {
   background: #fff;
-  border: 1px solid #e8e6de;
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 24px 24px 20px;
 }
@@ -86,7 +86,7 @@
 .mp-avatar {
   width: 52px;
   height: 52px;
-  background: #eaf2e6;
+  background: var(--bg-soft);
   border-radius: 14px;
   display: flex;
   align-items: center;
@@ -103,7 +103,7 @@
 .mp-profile-name {
   font-size: 22px;
   font-weight: 800;
-  color: #1c1c1c;
+  color: var(--text-main);
   margin: 0 0 3px;
   white-space: nowrap;
   overflow: hidden;
@@ -112,7 +112,7 @@
 
 .mp-profile-since {
   font-size: 16px;
-  color: #9ca3af;
+  color: var(--text-sub);
 }
 
 .mp-profile-divider {
@@ -136,19 +136,19 @@
 
 .mp-row-label {
   font-size: 18px;
-  color: #6b7280;
+  color: var(--text-sub);
   flex-shrink: 0;
 }
 
 .mp-row-value {
   font-size: 18px;
-  color: #1c1c1c;
+  color: var(--text-main);
   text-align: right;
 }
 
 .mp-focus-tag {
-  background: #eaf2e6;
-  color: #2a5c1e;
+  background: var(--bg-soft);
+  color: var(--primary-dark);
   border-radius: 999px;
   padding: 3px 12px;
   font-size: 17px;
@@ -160,7 +160,7 @@
    ════════════════════════════════ */
 .mp-health-card {
   background: #fff;
-  border: 1px solid #e8e6de;
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 24px 24px 20px;
 }
@@ -187,7 +187,7 @@
 .mp-health-card-title {
   font-size: 22px;
   font-weight: 800;
-  color: #1c1c1c;
+  color: var(--text-main);
   margin: 0;
   flex: 1;
 }
@@ -200,7 +200,7 @@
 }
 
 .mp-stat-box {
-  background: #f8f7f2;
+  background: var(--bg-soft);
   border-radius: 12px;
   padding: 14px 16px;
   display: flex;
@@ -212,18 +212,18 @@
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #9ca3af;
+  color: var(--text-sub);
   text-transform: uppercase;
 }
 
 .mp-stat-val {
   font-size: 20px;
   font-weight: 800;
-  color: #1c1c1c;
+  color: var(--text-main);
   line-height: 1.2;
 }
 
-.mp-stat-green { color: #2a5c1e; }
+.mp-stat-green { color: var(--primary-dark); }
 
 /* ════════════════════════════════
    Reports 섹션
@@ -245,14 +245,14 @@
 .mp-section-title {
   font-size: 26px;
   font-weight: 800;
-  color: #1c1c1c;
+  color: var(--text-main);
   margin: 0;
 }
 
 .mp-archive-btn {
   background: none;
   border: none;
-  color: #2a5c1e;
+  color: var(--primary-dark);
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
@@ -265,7 +265,7 @@
 /* ── Report Row ── */
 .mp-report-row {
   background: #fff;
-  border: 1px solid #e8e6de;
+  border: 1px solid var(--border);
   border-radius: 18px;
   padding: 20px 22px;
   display: flex;
@@ -289,7 +289,7 @@
   flex-shrink: 0;
 }
 
-.mp-icon-green-bg { background: #eaf2e6; }
+.mp-icon-green-bg { background: var(--bg-soft); }
 .mp-icon-gray-bg  { background: #f0ede6; }
 
 .mp-report-body {
@@ -303,13 +303,13 @@
 .mp-report-title {
   font-size: 20px;
   font-weight: 800;
-  color: #1c1c1c;
+  color: var(--text-main);
   margin: 0;
 }
 
 .mp-report-desc {
   font-size: 17px;
-  color: #6b7280;
+  color: var(--text-sub);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -331,7 +331,7 @@
 
 .mp-badge-pill {
   background: #f0ede6;
-  color: #6b7280;
+  color: var(--text-sub);
   border-radius: 6px;
   padding: 3px 8px;
   font-size: 15px;
@@ -355,7 +355,7 @@
 .mp-score-val {
   font-size: 24px;
   font-weight: 800;
-  color: #2a5c1e;
+  color: var(--primary-dark);
   line-height: 1;
 }
 
@@ -363,13 +363,13 @@
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #9ca3af;
+  color: var(--text-sub);
   text-transform: uppercase;
 }
 
 /* ── View Report Button ── */
 .mp-view-btn {
-  background: #2a5c1e;
+  background: var(--primary-dark);
   color: #fff;
   border: none;
   border-radius: 999px;
@@ -387,7 +387,7 @@
    인용구 카드
    ════════════════════════════════ */
 .mp-quote-card {
-  background: #e8e6de;
+  background: var(--border);
   border-radius: 20px;
   padding: 40px 48px;
   text-align: center;
@@ -410,7 +410,7 @@
   font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: #9ca3af;
+  color: var(--text-sub);
   text-transform: uppercase;
 }
 

@@ -1,16 +1,24 @@
 :root {
-  --primary: #4CAF50;
-  --primary-dark: #2E7D32;
-  --primary-darker: #215D36;
-  --primary-light: #A5D6A7;
-  --primary-darkest: #174025;
+  --primary: #4CAF7A;
+  --primary-dark: #3A7D5D;
+  --primary-darker: #2d6349;
+  --primary-light: #a8d5bc;
+  --primary-darkest: #1e4a35;
 
-  --bg: #FDFCF8;
+  --bg: #F5F7F6;
+  --bg-soft: #EEF3F1;
   --card: #FFFFFF;
-  --border: #E8E8E8;
+  --border: #E0E8E4;
 
-  --text-main: #222;
-  --text-sub: #888;
+  --accent: #F4A261;
+  --accent-hover: #E76F51;
+
+  --text-main: #2F2F2F;
+  --text-sub: #555;
+  --text-light: #888;
+
+  --font-title: 'Noto Serif KR', Georgia, serif;
+  --font-body: 'Pretendard', 'Noto Sans KR', system-ui, sans-serif;
 }
 
 * {
@@ -25,6 +33,13 @@ html, body, #root {
 
 body {
   background-color: var(--bg);
+  font-family: var(--font-body);
+  color: var(--text-main);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Noto Serif KR', Georgia, serif !important;
+  color: var(--text-main);
 }
 
 .page-layout {

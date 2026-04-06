@@ -4,7 +4,7 @@ import axios from 'axios'
 import { useToast } from '../../context/ToastContext'
 import '../public/root.css'
 import './RecipeDetail.css'
-import { getCategoryImage } from '../../utils/categoryImageMap'
+import { getCategoryImage, getCategoryByName, categoryBadge } from '../../utils/categoryImageMap'
 
 const RecipeDetail = () => {
   const { id } = useParams()
@@ -20,6 +20,11 @@ const RecipeDetail = () => {
     () => getCategoryImage(recipe?.recipe_category, recipe?.recipe_name),
     [recipe?.recipe_category, recipe?.recipe_name]
   )
+
+  const recipeBadge = useMemo(() => {
+    const cat = recipe?.recipe_category || getCategoryByName(recipe?.recipe_name || '')
+    return categoryBadge[cat] || '회복식'
+  }, [recipe?.recipe_category, recipe?.recipe_name])
 
   useEffect(() => {
     axios
@@ -156,7 +161,7 @@ const RecipeDetail = () => {
 
         <div className="recipe-modern-top">
           <div className="recipe-hero-card">
-            <div className="recipe-badge">1단계: 부드러운 음식</div>
+            <div className="recipe-badge">{recipeBadge}</div>
 
             <button
               type="button"
@@ -227,7 +232,6 @@ const RecipeDetail = () => {
                   <div className="cooking-step" key={`${step}-${index}`}>
                     <div className="step-number">{index + 1}</div>
                     <div className="step-copy">
-                      <h4>{`${index + 1}단계`}</h4>
                       <p>{step}</p>
                     </div>
                   </div>

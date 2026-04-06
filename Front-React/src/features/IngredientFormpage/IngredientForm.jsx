@@ -10,7 +10,6 @@ import deco from '../../assets/ingredient_page_footer_1.jpg'
 
 const CATEGORIES = ['채소', '과일', '육류', '해산물', '유제품', '곡류', '양념/소스', '기타']
 const STORAGE_TYPES = ['냉장', '냉동', '실온']
-const UNITS = ['g', 'ml', '개', 'kg', 'L']
 
 const IngredientForm = () => {
   const { showToast, showConfirm } = useToast()
@@ -159,11 +158,11 @@ const IngredientForm = () => {
                   <input
                     className="if-input if-qty-input"
                     type="number"
-                    placeholder="0.00"
+                    placeholder="0"
                     value={quantity}
                     min="0"
                     max="10000"
-                    step="0.1"
+                    step="1"
                     onChange={(e) => {
                       const val = e.target.value
                       if (val === '') { setQuantity(''); return }
@@ -173,16 +172,7 @@ const IngredientForm = () => {
                     }}
                   />
                   <div className="if-select-wrap if-unit-wrap">
-                    <select
-                      className="if-select"
-                      value={unit}
-                      onChange={(e) => setUnit(e.target.value)}
-                    >
-                      {UNITS.map(u => (
-                        <option key={u} value={u}>{u}</option>
-                      ))}
-                    </select>
-                    <span className="if-select-arrow">⌄</span>
+                    <span>개</span>
                   </div>
                 </div>
               </div>

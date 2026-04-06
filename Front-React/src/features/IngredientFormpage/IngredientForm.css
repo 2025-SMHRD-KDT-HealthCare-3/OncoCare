@@ -14,7 +14,7 @@
 .if-form-card {
 
   background: #fff;
-  border: 1px solid #e8e6de;
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 32px 28px 26px;
   box-shadow: 0 2px 14px rgba(0, 0, 0, 0.05);
@@ -33,25 +33,25 @@
 .if-label {
   font-size: 17px;
   font-weight: 700;
-  color: #2a5c1e;
+  color: var(--primary-dark);
 }
 
 /* ── 입력창: 배경을 페이지 크림색으로 ── */
 .if-input {
   width: 100%;
   padding: 13px 16px;
-  border: 1.5px solid #e8e6de;
+  border: 1.5px solid var(--border);
   border-radius: 12px;
   font-size: 19px;
-  color: #1c1c1c;
-  background: #f8f7f2;
+  color: var(--text-main);
+  background: var(--bg-soft);
   outline: none;
   transition: border-color 0.15s, background 0.15s;
   box-sizing: border-box;
 }
 
 .if-input:focus {
-  border-color: #2a5c1e;
+  border-color: var(--primary-dark);
   background: #fff;
 }
 
@@ -74,11 +74,11 @@
 .if-select {
   width: 100%;
   padding: 13px 40px 13px 16px;
-  border: 1.5px solid #e8e6de;
+  border: 1.5px solid var(--border);
   border-radius: 12px;
   font-size: 19px;
-  color: #1c1c1c;
-  background: #f8f7f2;
+  color: var(--text-main);
+  background: var(--bg-soft);
   outline: none;
   appearance: none;
   -webkit-appearance: none;
@@ -88,7 +88,7 @@
 }
 
 .if-select:focus {
-  border-color: #2a5c1e;
+  border-color: var(--primary-dark);
   background: #fff;
 }
 
@@ -98,7 +98,7 @@
   top: 50%;
   transform: translateY(-52%);
   pointer-events: none;
-  color: #9ca3af;
+  color: var(--text-sub);
   font-size: 21px;
   font-weight: 600;
 }
@@ -126,8 +126,8 @@
   align-items: flex-start;
   gap: 12px;
   background: #fff;
-  border: 1px solid #e8e6de;
-  border-left: 4px solid #2a5c1e;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary-dark);
   border-radius: 12px;
   padding: 14px 16px;
   margin-bottom: 28px;
@@ -136,7 +136,7 @@
 .if-reminder-icon {
   width: 28px;
   height: 28px;
-  background: #2a5c1e;
+  background: var(--primary-dark);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -157,13 +157,13 @@
   font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.1em;
-  color: #2a5c1e;
+  color: var(--primary-dark);
   text-transform: uppercase;
 }
 
 .if-reminder-text {
   font-size: 17px;
-  color: #6b7280;
+  color: var(--text-sub);
   line-height: 1.6;
   margin: 0;
 }
@@ -182,7 +182,7 @@
 .if-save-btn {
   flex: 1;
   padding: 15px 24px;
-  background: #2a5c1e;
+  background: var(--primary-dark);
   color: #fff;
   border: none;
   border-radius: 999px;
@@ -200,7 +200,7 @@
 .if-cancel-btn {
   background: none;
   border: none;
-  color: #6b7280;
+  color: var(--text-sub);
   font-size: 19px;
   font-weight: 600;
   cursor: pointer;
@@ -209,7 +209,7 @@
 }
 
 .if-cancel-btn:hover {
-  color: #1c1c1c;
+  color: var(--text-main);
 }
 
 /* ── 삭제 버튼 ── */
@@ -251,7 +251,7 @@
 
 .if-deco-herbs     { background: linear-gradient(135deg, #2d5a1b, #4a8a32); }
 .if-deco-jars      { background: linear-gradient(135deg, #5a7a6a, #7a9a88); }
-.if-deco-botanicals { background: linear-gradient(135deg, #3d5c30, #5a8a48); }
+.if-deco-botanicals { background: linear-gradient(135deg, var(--primary-dark), #5a8a48); }
 
 /* ════════════════════════════════
    Responsive

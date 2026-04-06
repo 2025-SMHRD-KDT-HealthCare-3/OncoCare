@@ -1,6 +1,6 @@
 .ingredient-section {
-  background: #fdfcf8;
-  border: 1px solid #ece8df;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 32px;
   padding: 40px 32px;
   margin-bottom: 32px;
@@ -20,13 +20,13 @@
   margin: 0 0 10px;
   font-size: 38px;
   font-weight: 800;
-  color: #1b1c1a;
+  color: var(--text-main);
 }
 
 .ingredient-subtitle {
   margin: 0;
   font-size: 19px;
-  color: #677067;
+  color: var(--text-sub);
   font-weight: 500;
 }
 
@@ -58,15 +58,15 @@
 }
 
 .ingredient-action.primary {
-  background: linear-gradient(90deg, #006e1c, #4caf50);
+  background: linear-gradient(90deg, var(--primary-dark), var(--primary));
   color: #fff;
   box-shadow: 0 14px 28px rgba(0, 110, 28, 0.15);
 }
 
 .ingredient-action.secondary {
   background: #fff;
-  color: #2e7d32;
-  border: 2px solid #4caf50;
+  color: var(--primary-dark);
+  border: 2px solid var(--primary);
 }
 
 .ingredient-action-icon {

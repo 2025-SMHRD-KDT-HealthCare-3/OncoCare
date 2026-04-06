@@ -1,6 +1,6 @@
 /* ── DailyReport Design Tokens ── */
 .daily-log-page {
-  background: #f5f3ef;
+  background: var(--bg);
 }
 
 .daily-log-hero-wrap {
@@ -60,7 +60,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #8a9189;
+  color: var(--text-sub);
   display: block;
   margin-bottom: 18px;
 }
@@ -82,7 +82,7 @@
 }
 
 .dr-meal-tab.active {
-  background: #1a4a2e;
+  background: var(--primary-dark);
 }
 
 .dr-meal-tab-btn {
@@ -122,7 +122,7 @@
   display: flex;
   gap: 12px;
   align-items: center;
-  background: #f9f7f4;
+  background: var(--bg-soft);
   border-radius: 12px;
   padding: 10px 12px;
   margin-bottom: 14px;
@@ -132,7 +132,7 @@
   width: 52px;
   height: 52px;
   border-radius: 8px;
-  background: #dedad4;
+  background: var(--border);
   flex-shrink: 0;
 }
 
@@ -145,7 +145,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #8a9189;
+  color: var(--text-sub);
   margin: 0 0 4px;
 }
 
@@ -174,7 +174,7 @@
 .dr-rating-q {
   font-size: 16px;
   font-weight: 700;
-  color: #8a9189;
+  color: var(--text-sub);
 }
 
 .dr-emoji-row {
@@ -188,7 +188,7 @@
   height: 40px;
   border-radius: 50%;
   border: 2px solid #e8e4df;
-  background: #f5f3ef;
+  background: var(--bg);
   font-size: 22px;
   display: flex;
   align-items: center;
@@ -200,8 +200,8 @@
 
 .dr-emoji-btn:hover,
 .dr-emoji-btn.active {
-  border-color: #1a4a2e;
-  background: #e8f0e9;
+  border-color: var(--primary-dark);
+  background: var(--bg-soft);
   transform: scale(1.12);
 }
 
@@ -222,7 +222,7 @@
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 18px;
-  color: #555;
+  color: var(--text-sub);
   background: #fafaf8;
   resize: none;
   outline: none;
@@ -231,15 +231,15 @@
 }
 
 .dr-textarea:focus {
-  border-color: #1a4a2e;
+  border-color: var(--primary-dark);
   background: #fff;
 }
 
-.dr-textarea::placeholder { color: #c0bdb8; }
+.dr-textarea::placeholder { color: var(--border); }
 
 /* ── 저장 버튼 ── */
 .dr-save-btn {
-  background: #1a4a2e;
+  background: var(--primary-dark);
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -263,7 +263,7 @@
   background: transparent;
   border: none;
   font-size: 17px;
-  color: #8a9189;
+  color: var(--text-sub);
   cursor: pointer;
   padding: 0;
 }
@@ -274,7 +274,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #8a9189;
+  color: var(--text-sub);
   margin-bottom: 12px;
   display: block;
 }
@@ -292,10 +292,10 @@
   min-height: 52px;
   border-radius: 12px;
   border: 1.5px solid #e8e4df;
-  background: #f5f3ef;
+  background: var(--bg);
   font-size: 18px;
   font-weight: 700;
-  color: #555;
+  color: var(--text-sub);
   cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
@@ -308,13 +308,13 @@
 }
 
 .dr-bristol-btn:hover {
-  border-color: #1a4a2e;
-  color: #1a4a2e;
+  border-color: var(--primary-dark);
+  color: var(--primary-dark);
 }
 
 .dr-bristol-btn.active {
-  background: #1a4a2e;
-  border-color: #1a4a2e;
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
   color: #fff;
   box-shadow: 0 4px 12px rgba(26,74,46,0.25);
 }
@@ -335,11 +335,11 @@
 
 /* 초록 설명 박스 */
 .dr-bristol-desc-green {
-  background: #e8f5e9;
+  background: var(--bg-soft);
   border-radius: 12px;
   padding: 12px 16px;
   font-size: 17px;
-  color: #2e7d32;
+  color: var(--primary-dark);
   font-weight: 600;
   margin-bottom: 20px;
   line-height: 1.55;
@@ -357,7 +357,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #f5f3ef;
+  background: var(--bg);
   border: 1.5px solid #e8e4df;
   border-radius: 12px;
   padding: 10px 14px;
@@ -380,11 +380,11 @@
 }
 
 .dr-bristol-desc {
-  background: #f5f3ef;
+  background: var(--bg);
   border-radius: 10px;
   padding: 10px 14px;
   font-size: 17px;
-  color: #555;
+  color: var(--text-sub);
   font-style: italic;
   margin-bottom: 16px;
   line-height: 1.5;
@@ -409,7 +409,7 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #8a9189;
+  color: var(--text-sub);
 }
 
 .dr-form-input,
@@ -428,7 +428,7 @@
 
 .dr-form-input:focus,
 .dr-form-select:focus {
-  border-color: #1a4a2e;
+  border-color: var(--primary-dark);
 }
 
 /* ── 배변 기록 목록 ── */
@@ -444,7 +444,7 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #8a9189;
+  color: var(--text-sub);
   margin-bottom: 4px;
   display: block;
 }
@@ -453,7 +453,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #f5f3ef;
+  background: var(--bg);
   border-radius: 10px;
   padding: 10px 14px;
 }
@@ -461,14 +461,14 @@
 .dr-bowel-time {
   font-size: 17px;
   font-weight: 700;
-  color: #1a4a2e;
+  color: var(--primary-dark);
   min-width: 48px;
 }
 
 .dr-bowel-status {
   flex: 1;
   font-size: 16px;
-  color: #555;
+  color: var(--text-sub);
 }
 
 .dr-bowel-del {
@@ -492,7 +492,7 @@
 }
 
 .dr-vitality-sub {
-  background: #f9f7f4;
+  background: var(--bg-soft);
   border-radius: 12px;
   padding: 12px 14px;
 }
@@ -514,13 +514,13 @@
 }
 
 .dr-vitality-badge.moderate { background: #fff3e0; color: #e65100; }
-.dr-vitality-badge.minimal  { background: #e8f5e9; color: #2e7d32; }
-.dr-vitality-badge.low      { background: #e8f5e9; color: #2e7d32; }
+.dr-vitality-badge.minimal  { background: var(--bg-soft); color: var(--primary-dark); }
+.dr-vitality-badge.low      { background: var(--bg-soft); color: var(--primary-dark); }
 .dr-vitality-badge.high     { background: #fce4ec; color: #c62828; }
 
 .dr-slider {
   width: 100%;
-  accent-color: #1a4a2e;
+  accent-color: var(--primary-dark);
   margin: 6px 0;
   cursor: pointer;
 }
@@ -529,7 +529,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 14px;
-  color: #8a9189;
+  color: var(--text-sub);
   font-weight: 600;
 }
 
@@ -538,7 +538,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #f5f3ef;
+  background: var(--bg);
   border-radius: 10px;
   padding: 11px 14px;
   margin-bottom: 8px;
@@ -547,7 +547,7 @@
 .dr-info-label {
   font-size: 15px;
   font-weight: 700;
-  color: #8a9189;
+  color: var(--text-sub);
   min-width: 85px;
 }
 
@@ -579,7 +579,7 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #8a9189;
+  color: var(--text-sub);
   display: block;
   margin-bottom: 10px;
 }
@@ -588,7 +588,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #f9f7f4;
+  background: var(--bg-soft);
   border-radius: 10px;
   padding: 10px 14px;
   margin-bottom: 8px;
@@ -597,8 +597,8 @@
 .dr-saved-meal-type {
   font-size: 15px;
   font-weight: 800;
-  color: #1a4a2e;
-  background: #e8f0e9;
+  color: var(--primary-dark);
+  background: var(--bg-soft);
   border-radius: 999px;
   padding: 2px 10px;
   flex-shrink: 0;
@@ -652,7 +652,7 @@
 }
 
 .dr-btn-complete {
-  background: #2a5c1e;
+  background: var(--primary-dark);
   color: #fff;
   border: none;
   border-radius: 999px;
@@ -687,7 +687,7 @@
 .daily-hero {
   text-align: center;
   padding: 50px 40px 24px;
-  background-color: #f5f3ef;
+  background-color: var(--bg);
 }
 
 .daily-hero-title {
@@ -698,5 +698,5 @@
 
 .daily-hero-sub {
   font-size: 20px;
-  color: #8a9189;
+  color: var(--text-sub);
 }

@@ -12,6 +12,13 @@ const parseField = (field) => {
 
 const formatDate = (dateStr) => dateStr?.split('T')[0]
 
+const getScoreLabel = (score) => {
+  if (score >= 80) return '우수'
+  if (score >= 60) return '양호'
+  if (score >= 40) return '보통'
+  return '주의'
+}
+
 const WeeklyReport = ({ data }) => {
   const score = data?.report_score ?? 0
   const diet = parseField(data?.report_diet)
@@ -20,8 +27,10 @@ const WeeklyReport = ({ data }) => {
 
   const periodText =
     data?.start_date && data?.end_date
-      ? `${formatDate(data.start_date)} - ${formatDate(data.end_date)}`
+      ? `${formatDate(data.start_date)} ~ ${formatDate(data.end_date)}`
       : data?.report_week_label || '이번 주 회복 데이터 요약'
+
+  const highlightTitle = diet?.summary || condition?.summary || '이번 주 회복 데이터를 분석했습니다.'
 
   return (
     <div className="report-view">
@@ -43,31 +52,33 @@ const WeeklyReport = ({ data }) => {
               }}
             >
               <div className="score-ring-inner">
-                <strong>{score || '—'}%</strong>
-                <span>우수</span>
+                <strong>{data ? `${score}%` : '—'}</strong>
+                <span>{data ? getScoreLabel(score) : '—'}</span>
               </div>
             </div>
           </div>
 
           <div className="soft-message-box">
-            <p>
-              {data?.report_comment ||
-                '기록이 꾸준히 쌓일수록 회복 흐름을 더 정확히 파악할 수 있어요.'}
-            </p>
+            <p>{data?.report_comment || '기록이 꾸준히 쌓일수록 회복 흐름을 더 정확히 파악할 수 있어요.'}</p>
           </div>
         </section>
 
         <section className="glass-card weekly-highlight-card">
           <span className="mini-title">이번 주 분석</span>
-          <h3>7일간 꾸준한 기록 달성</h3>
-          <p>
-            매일 회복 데이터를 기록하여 의미 있는 주간 패턴을 만들어가고 있습니다.
-          </p>
+          <h3>{data ? highlightTitle : '리포트를 생성하면 분석 결과가 표시됩니다.'}</h3>
 
           <div className="metric-chip-grid">
             <div className="metric-chip">
-              <span>평균 수면</span>
-              <strong>7시간 45분</strong>
+              <span>식단 점수</span>
+              <strong>{diet?.score != null ? `${diet.score}점` : '—'}</strong>
+            </div>
+            <div className="metric-chip">
+              <span>배변 상태</span>
+              <strong>{bowel?.score != null ? `${bowel.score}형` : '—'}</strong>
+            </div>
+            <div className="metric-chip">
+              <span>컨디션</span>
+              <strong>{condition?.score != null ? `${condition.score}점` : '—'}</strong>
             </div>
           </div>
         </section>
@@ -81,12 +92,12 @@ const WeeklyReport = ({ data }) => {
           <div className="progress-row">
             <div className="progress-label-line">
               <span>식단 준수율</span>
-              <strong>{diet?.score ?? 92}%</strong>
+              <strong>{diet?.score != null ? `${diet.score}%` : '—'}</strong>
             </div>
             <div className="progress-track">
               <div
                 className="progress-fill"
-                style={{ width: `${diet?.score ?? 92}%` }}
+                style={{ width: `${diet?.score ?? 0}%` }}
               />
             </div>
           </div>
@@ -94,19 +105,19 @@ const WeeklyReport = ({ data }) => {
           <div className="mini-stat-grid">
             <div className="mini-stat-card">
               <span>단백질 섭취</span>
-              <strong>{diet?.value || '65g / 목표 달성'}</strong>
+              <strong>{diet?.value || '—'}</strong>
             </div>
             <div className="mini-stat-card">
               <span>식이섬유 섭취</span>
-              <strong>{bowel?.value || '28g / 적정 수준'}</strong>
+              <strong>{bowel?.value || '—'}</strong>
             </div>
           </div>
 
-          <div className="insight-pill-row">
-            <span className="insight-pill green">
-              {diet?.insight || '이번 주 소화 편의성이 개선되었습니다'}
-            </span>
-          </div>
+          {diet?.insight && (
+            <div className="insight-pill-row">
+              <span className="insight-pill green">{diet.insight}</span>
+            </div>
+          )}
         </section>
 
         <section className="glass-card report-feature-card">
@@ -115,44 +126,34 @@ const WeeklyReport = ({ data }) => {
           <div className="trend-box">
             <div className="trend-header">
               <span>브리스톨 척도 (평균)</span>
-              <strong>4형</strong>
+              <strong>{bowel?.score != null ? `${bowel.score}형` : '—'}</strong>
             </div>
 
             <div className="trend-badge-line">
               <span className="trend-badge active">
-                {bowel?.score ?? '정상'}
+                {bowel?.status || '—'}
               </span>
             </div>
 
             <p className="trend-copy">
-              {bowel?.summary || '현재 배변 패턴은 비교적 안정적으로 유지되고 있어요.'}
+              {bowel?.summary || '—'}
             </p>
           </div>
 
           <div className="trend-mini-grid">
             <div>
               <span>피로도</span>
-              <strong>2.4 / 10</strong>
+              <strong>{condition?.fatigue != null ? `${condition.fatigue} / 10` : '—'}</strong>
             </div>
             <div>
               <span>통증</span>
-              <strong>1.2 / 10</strong>
+              <strong>{condition?.pain != null ? `${condition.pain} / 10` : '—'}</strong>
             </div>
           </div>
 
-          <div className="bar-sparkline">
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
-
-          <div className="report-note-inline">
-            {condition?.summary ||
-              '지난주보다 피로감이 감소하고 전반적인 컨디션이 안정적으로 유지되고 있습니다.'}
-          </div>
+          {condition?.summary && (
+            <div className="report-note-inline">{condition.summary}</div>
+          )}
         </section>
       </div>
     </div>
