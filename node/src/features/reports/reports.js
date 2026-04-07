@@ -70,10 +70,11 @@ router.get('/weekly', asyncWrap(async (req, res) => {
     const start_date = mondayObj.toISOString().split('T')[0];
 
     const sql = `
-        SELECT report_idx, user_idx, start_date, end_date, 
-               report_week_label, report_title, report_score, 
-               report_diet, report_bowel, report_condition 
-        FROM t_weekly_report 
+        SELECT report_idx, user_idx, start_date, end_date,
+               report_week_label, report_title, report_score,
+               report_score_list, report_score_list_comment,
+               report_diet, report_bowel, report_condition, report_comment
+        FROM t_weekly_report
         WHERE user_idx = ? AND DATE(start_date) = ?
     `;
     const [results] = await conn.query(sql, [user_idx, start_date]);

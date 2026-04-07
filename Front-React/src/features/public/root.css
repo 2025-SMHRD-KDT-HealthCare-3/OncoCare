@@ -1,3 +1,28 @@
+@font-face {
+  font-family: 'NanumSquareRound';
+  src: url('./fonts/NanumSquareRoundL.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'NanumSquareRound';
+  src: url('./fonts/NanumSquareRoundR.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'NanumSquareRound';
+  src: url('./fonts/NanumSquareRoundB.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'NanumSquareRound';
+  src: url('./fonts/NanumSquareRoundEB.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
 :root {
   --primary: #4CAF7A;
   --primary-dark: #3A7D5D;
@@ -17,9 +42,11 @@
   --text-sub: #555;
   --text-light: #888;
 
-  --font-title: 'Noto Serif KR', Georgia, serif;
-  --font-body: 'Pretendard', 'Noto Sans KR', system-ui, sans-serif;
+  --font-title: 'NanumSquareRound', sans-serif;
+  --font-body: 'Pretendard', system-ui, sans-serif;
 }
+
+
 
 * {
   box-sizing: border-box;
@@ -38,7 +65,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Noto Serif KR', Georgia, serif !important;
+  font-family: 'NanumSquareRound', sans-serif !important;
   color: var(--text-main);
 }
 
@@ -79,24 +106,4 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-@font-face {
-  font-family: '온글잎 류류체';
-  src: url('../../assets/fonts/온글잎\ 류류체.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
-@font-face {
-  font-family: 'Cafe24Oneprettynight';
-  src: url('../../assets/fonts/Cafe24Oneprettynight-v2.0.otf') format('opentype'),
-       url('../../assets/fonts/Cafe24Oneprettynight-v2.0.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Louis George Cafe Bold';
-  src: url('../../assets/fonts/Louis\ George\ Cafe\ Bold.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}

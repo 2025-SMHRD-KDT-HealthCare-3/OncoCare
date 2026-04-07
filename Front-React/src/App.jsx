@@ -15,6 +15,7 @@ import IngredientForm from './features/IngredientFormpage/IngredientForm.jsx'
 import HealthInfo from './features/HealthInfopage/HealthInfo.jsx'
 import PersonalInfo from './features/Registerpage/PersonalInfo.jsx'
 import Landing from './features/Landing/Landing.jsx'
+import Intro from './features/Intro/Intro.jsx'
 import axios from 'axios'
 axios.defaults.withCredentials = true;
 
@@ -29,6 +30,7 @@ function App() {
         {/* <Route path="/" element={<Login />} /> */}
         {/* <Route path="/Register" element={<Register />} /> */}
         <Route path="/" element={<Landing />} />
+        <Route path="/intro" element={<Intro />} />
         <Route path="/Auth" element={<Auth />} />
         <Route path="/Main" element={<Main />} />
         <Route path='/MyPage' element={<MyPage />}/>

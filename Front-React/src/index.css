@@ -1,6 +1,3 @@
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap');
-
 :root {
   font-family: 'Pretendard', system-ui, sans-serif;
   font-size: 16px;
@@ -22,7 +19,7 @@ body, input, button, textarea, select {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Noto Serif KR', Georgia, serif !important;
+  font-family: 'NanumSquareRound', sans-serif !important;
   color: #2F2F2F;
 }
 
@@ -47,33 +44,6 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  font-family: 'Pretendard', system-ui, sans-serif;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
 }

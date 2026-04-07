@@ -98,7 +98,7 @@
   letter-spacing: -0.03em;
   color: var(--primary-dark);
   margin-bottom: 16px;
-  font-family: 'Noto Serif KR', serif;
+  font-family: 'NanumSquareRound', sans-serif;
 }
 
 .auth-brand-subtitle {
@@ -209,7 +209,7 @@
   font-size: 36px;
   font-weight: 800;
   color: var(--text-main);
-  font-family: 'Noto Serif KR', serif;
+  font-family: 'NanumSquareRound', sans-serif;
 }
 
 .auth-panel-header p {
@@ -330,7 +330,7 @@
   font-weight: 800;
   box-shadow: 0 12px 28px rgba(0, 110, 28, 0.18);
   transition: transform 0.15s ease;
-  font-family: 'Noto Serif KR', serif;
+  font-family: 'NanumSquareRound', sans-serif;
 }
 
 .auth-submit-btn:hover {

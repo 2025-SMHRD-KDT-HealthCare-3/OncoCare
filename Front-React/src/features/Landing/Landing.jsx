@@ -39,7 +39,7 @@ const Landing = () => {
             <a href="#reports">리포트</a>
           </nav>
 
-          <button className="landing-cta-button" onClick={() => navigate('/Auth')}>시작하기</button>
+          <button className="landing-cta-button" onClick={() => navigate('/intro')}>시작하기</button>
         </div>
       </header>
 
@@ -56,7 +56,7 @@ const Landing = () => {
             </p>
 
             <div className="landing-hero-buttons">
-              <button className="landing-button primary" onClick={() => navigate('/Auth')}>
+              <button className="landing-button primary" onClick={() => navigate('/intro')}>
                 지금 시작하기
                 <ChevronRight size={20} />
               </button>
@@ -221,7 +221,7 @@ const Landing = () => {
       <section className="landing-cta-section">
         <h2>지금 시작하세요</h2>
         <p>건강한 회복을 위해 oncocare와 함께하세요. 첫 번째 식단 추천은 지금 바로 받을 수 있습니다.</p>
-        <button className="landing-button cta" onClick={() => navigate('/Auth')}>
+        <button className="landing-button cta" onClick={() => navigate('/intro')}>
           무료로 시작하기
           <ChevronRight size={20} />
         </button>

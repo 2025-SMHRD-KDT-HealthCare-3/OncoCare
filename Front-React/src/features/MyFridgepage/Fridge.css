@@ -130,9 +130,10 @@
 
 .fr-cat-name {
   flex: 1;
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 800;
   color: var(--text-main);
+  white-space: nowrap;
 }
 
 .fr-cat-add-btn {
@@ -176,14 +177,19 @@
 }
 
 .fr-cat-item-name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
 }
 
 .fr-cat-item-meta {
-  font-size: 16px;
+  font-size: 14px;
   color: var(--text-sub);
+  white-space: nowrap;
 }
 
 .fr-status-badge {
@@ -230,10 +236,11 @@
 .fr-harvest-info { flex: 1; }
 
 .fr-harvest-title {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--text-main);
   margin: 0 0 2px;
+  white-space: nowrap;
 }
 
 .fr-harvest-sub {
@@ -299,7 +306,7 @@
 }
 
 .fr-harvest-item-name {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-main);
   white-space: nowrap;

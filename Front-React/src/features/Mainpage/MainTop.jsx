@@ -25,7 +25,7 @@ const parseSummary = (raw) => {
   return raw
 }
 
-const MainTop = () => {
+const MainTop = ({ onDateChange }) => {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedDateStr, setSelectedDateStr] = useState(toLocalDateString(new Date()))
   const [activeStartDate, setActiveStartDate] = useState(new Date())
@@ -125,7 +125,9 @@ const MainTop = () => {
             onActiveStartDateChange={({ activeStartDate: d }) => d && setActiveStartDate(d)}
             onChange={(date) => {
               setSelectedDate(date)
-              setSelectedDateStr(toLocalDateString(date))
+              const dateStr = toLocalDateString(date)
+              setSelectedDateStr(dateStr)
+              if (onDateChange) onDateChange(dateStr)
             }}
             onClickDay={(date, event) => {
               if (event.detail === 2) {
@@ -185,7 +187,7 @@ const MainTop = () => {
                   <p className="summary-label">배변</p>
                   <p className="summary-value">{getSummaryText(bowel)}</p>
                 </div>
-                <div className="summary-box full">
+                <div className="summary-box">
                   <p className="summary-label">컨디션</p>
                   <p className="summary-value">{getSummaryText(condition)}</p>
                 </div>

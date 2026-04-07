@@ -155,10 +155,11 @@
 
 .report-header-block h2 {
   margin: 10px 0 6px;
-  font-size: 44px;
-  line-height: 1.05;
+  font-size: 34px;
+  line-height: 1.1;
   color: var(--text-main);
   font-weight: 900;
+  white-space: nowrap;
 }
 
 .report-header-block p {
@@ -226,7 +227,7 @@
 }
 
 .score-ring-inner strong {
-  font-size: 48px;
+  font-size: 38px;
   line-height: 1;
   color: var(--primary);
   font-weight: 900;
@@ -255,10 +256,11 @@
 
 .weekly-highlight-card h3 {
   margin: 0 0 8px;
-  font-size: 38px;
-  line-height: 1.08;
+  font-size: 26px;
+  line-height: 1.3;
   color: #2b2b2b;
   font-weight: 900;
+  word-break: keep-all;
 }
 
 .weekly-highlight-card p {
@@ -289,10 +291,11 @@
 }
 
 .metric-chip strong {
-  font-size: 28px;
+  font-size: 22px;
   line-height: 1.1;
   color: #212121;
   font-weight: 900;
+  white-space: nowrap;
 }
 
 .weekly-lower-grid {
@@ -306,10 +309,11 @@
 .mobility-card h3,
 .final-summary-card h3 {
   margin: 0 0 14px;
-  font-size: 32px;
-  line-height: 1.1;
+  font-size: 22px;
+  line-height: 1.2;
   color: #2c2c2c;
   font-weight: 900;
+  white-space: nowrap;
 }
 
 .fake-food-image {
@@ -599,7 +603,7 @@
 }
 
 .monthly-score-value strong {
-  font-size: 68px;
+  font-size: 54px;
   line-height: 1;
   font-weight: 900;
 }
@@ -832,9 +836,10 @@
 
 .milestone-card h3 {
   margin: 0 0 12px;
-  font-size: 38px;
-  line-height: 1.05;
+  font-size: 28px;
+  line-height: 1.2;
   font-weight: 900;
+  word-break: keep-all;
 }
 
 .milestone-card p {
@@ -885,6 +890,124 @@
   border-radius: 16px;
   background: #1d1d1d;
   color: #fff;
+}
+
+/* ── WeeklyReport 추가 스타일 ── */
+.weekly-chart-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.score-line-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.score-list-stat-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.score-stat-chip {
+  flex: 1;
+  background: #f5f3ee;
+  border-radius: 16px;
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.score-stat-chip span {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.score-stat-chip strong {
+  font-size: 22px;
+  font-weight: 900;
+  color: #0a8a34;
+}
+
+.weekly-label-badge {
+  background: #eaf6ed;
+  color: #2d6b46;
+  border-radius: 999px;
+  text-align: center;
+  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: 800;
+  margin-top: 12px;
+}
+
+.weekly-comment-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #f3f7f2;
+  border-left: 4px solid var(--primary);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.weekly-comment-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.weekly-comment-box p {
+  margin: 0;
+  font-size: 18px;
+  color: #3a5c3f;
+  line-height: 1.75;
+  font-weight: 500;
+}
+
+.weekly-text-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.weekly-text-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.weekly-text-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.weekly-text-icon {
+  font-size: 20px;
+}
+
+.weekly-text-card h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: #2c2c2c;
+  white-space: nowrap;
+}
+
+.weekly-text-card p {
+  margin: 0;
+  font-size: 16px;
+  color: #4a4a4a;
+  line-height: 1.8;
+}
+
+@media (max-width: 1100px) {
+  .weekly-text-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 1100px) {
@@ -959,11 +1082,13 @@
   .monthly-trend-card h3,
   .mobility-card h3,
   .milestone-card h3 {
-    font-size: 28px;
+    font-size: 22px;
+    white-space: normal;
+    word-break: keep-all;
   }
 
   .monthly-score-value strong {
-    font-size: 54px;
+    font-size: 44px;
   }
 
   .score-ring {
@@ -977,7 +1102,7 @@
   }
 
   .score-ring-inner strong {
-    font-size: 40px;
+    font-size: 32px;
   }
 }
 

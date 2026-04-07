@@ -89,14 +89,17 @@ const RecipeGridCard = ({ recipe }) => {
   )
 }
 
-const MainRecipe = ({ user_idx }) => {
+const MainRecipe = ({ user_idx, selectedDate }) => {
   const { showToast } = useToast()
   const [recipes, setRecipes] = useState([])
   const [search, setSearch] = useState('')
 
-  const getDietList = async (user_idx) => {
+  const getDietList = async (uid, date) => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/diet/dietList/${user_idx}`)
+      const url = date
+        ? `http://localhost:3000/api/diet/dietList/${uid}?date=${date}`
+        : `http://localhost:3000/api/diet/dietList/${uid}`
+      const response = await axios.get(url)
       if (response.data === '0') {
         showToast('알림', '건강 정보를 먼저 입력해주세요.', 'warning')
         return
@@ -108,8 +111,8 @@ const MainRecipe = ({ user_idx }) => {
   }
 
   useEffect(() => {
-    if (user_idx) getDietList(user_idx)
-  }, [user_idx])
+    if (user_idx) getDietList(user_idx, selectedDate)
+  }, [user_idx, selectedDate])
 
   const filtered = recipes.filter((r) =>
     r.recipe_name?.toLowerCase().includes(search.toLowerCase())
@@ -135,7 +138,7 @@ const MainRecipe = ({ user_idx }) => {
             />
             <span className="recipe-search-icon">🔍</span>
           </div>
-          <button className="recipe-new-btn" onClick={() => getDietList(user_idx)}>
+          <button className="recipe-new-btn" onClick={() => getDietList(user_idx, selectedDate)}>
             + 새로고침
           </button>
         </div>
