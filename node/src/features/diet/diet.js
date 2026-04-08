@@ -47,8 +47,8 @@ router.get('/dietList/:user_idx', asyncWrap(async (req, res) => {
         [recipes] = await conn.query(dateSql, [user_idx, date]);
     }
 
-    // 날짜 지정이 없거나 해당 날짜 데이터가 없으면 최신 7개 반환
-    if (recipes.length === 0) {
+    // 날짜 지정이 없고 데이터도 없을 때만 최신 7개 반환 (날짜 지정 시 폴백 없음)
+    if (recipes.length === 0 && !date) {
         const recipeSql = `
             SELECT
                 MAX(recipe_idx) as recipe_idx,

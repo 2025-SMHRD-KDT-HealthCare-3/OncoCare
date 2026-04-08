@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import axios from 'axios'
 import './MainRecipe.css'
 import { useToast } from '../../context/ToastContext'
@@ -93,6 +93,8 @@ const MainRecipe = ({ user_idx, selectedDate }) => {
   const { showToast } = useToast()
   const [recipes, setRecipes] = useState([])
   const [search, setSearch] = useState('')
+  const [generating, setGenerating] = useState(false)
+  const timerRef = useRef(null)
 
   const getDietList = async (uid, date) => {
     try {
@@ -100,19 +102,43 @@ const MainRecipe = ({ user_idx, selectedDate }) => {
         ? `http://localhost:3000/api/diet/dietList/${uid}?date=${date}`
         : `http://localhost:3000/api/diet/dietList/${uid}`
       const response = await axios.get(url)
-      if (response.data === '0') {
-        showToast('알림', '건강 정보를 먼저 입력해주세요.', 'warning')
-        return
-      }
+      if (response.data === '0') return null
       setRecipes(Array.isArray(response.data) ? response.data : [])
+      return response.data
     } catch (error) {
       console.error('추천 식단 조회 에러:', error)
+      return null
+    }
+  }
+
+  const handleRefresh = async () => {
+    if (!user_idx || generating) return
+    const data = await getDietList(user_idx, selectedDate)
+    if (data !== null) return  // 데이터 있으면 바로 표시
+    // DB에 데이터 없음 → FastAPI로 생성 요청
+    setGenerating(true)
+    try {
+      await axios.post(`http://localhost:8000/generate-diet/${user_idx}`)
+      showToast('알림', '식단을 생성하고 있습니다. 잠시 후 확인해주세요.', 'info')
+      clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(async () => {
+        await getDietList(user_idx, selectedDate)
+        setGenerating(false)
+      }, 20000)
+    } catch (err) {
+      console.error('식단 생성 요청 실패:', err)
+      showToast('오류', '식단 생성 요청에 실패했습니다.', 'error')
+      setGenerating(false)
     }
   }
 
   useEffect(() => {
     if (user_idx) getDietList(user_idx, selectedDate)
   }, [user_idx, selectedDate])
+
+  useEffect(() => {
+    return () => clearTimeout(timerRef.current)
+  }, [])
 
   const filtered = recipes.filter((r) =>
     r.recipe_name?.toLowerCase().includes(search.toLowerCase())
@@ -138,8 +164,8 @@ const MainRecipe = ({ user_idx, selectedDate }) => {
             />
             <span className="recipe-search-icon">🔍</span>
           </div>
-          <button className="recipe-new-btn" onClick={() => getDietList(user_idx, selectedDate)}>
-            + 새로고침
+          <button className="recipe-new-btn" onClick={handleRefresh} disabled={generating}>
+            {generating ? '⏳ 생성 중...' : '+ 새로고침'}
           </button>
         </div>
       </div>
