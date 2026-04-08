@@ -96,8 +96,6 @@ const HealthInfoBody = () => {
     const user_idx = sessionStorage.getItem('user_idx')
     if (!user_idx) { showToast('알림', '로그인이 필요합니다.', 'warning'); return }
 
-    const mealStr = mealCount
-
     try {
       const response = await axios.post('http://localhost:3000/api/user/health/register', {
         user_idx,
@@ -109,7 +107,7 @@ const HealthInfoBody = () => {
         stoma_status: hasOstomy ? 'Y' : 'N',
         chemo_status: hasChemo ? 'Y' : 'N',
         allergy: selectedAllergens.join(','),
-        meals_per_day: mealStr,
+        meals_per_day: parseInt(mealCount) || 3,
       })
 
       if (response.data == '1') {

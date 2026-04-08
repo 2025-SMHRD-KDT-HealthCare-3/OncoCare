@@ -13,6 +13,9 @@ const getWeekOfMonth = (dateStr) => {
 
 const formatMonthLabel = (dateStr) => {
   if (!dateStr) return null
+  // '2026-03' 형식 처리
+  const parts = dateStr.split('-')
+  if (parts.length >= 2) return `${parts[0]}년 ${parseInt(parts[1])}월`
   const date = new Date(dateStr)
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월`
 }
@@ -54,7 +57,8 @@ const MypageBody = () => {
   }, [user_idx])
 
   const weekLabel  = formatWeekLabel(weeklyData?.start_date)
-  const monthLabel = formatMonthLabel(monthlyData?.report_date || monthlyData?.start_date)
+  const monthLabel = monthlyData?.report_month_label
+    || formatMonthLabel(monthlyData?.report_month)
   const weekScore  = weeklyData?.report_score ?? null
   const monthScore = monthlyData?.report_score ?? null
 
@@ -189,7 +193,7 @@ const MypageBody = () => {
                   <span className="mp-score-lbl">점수</span>
                 </div>
               )}
-              <button className="mp-view-btn" onClick={() => navigate('/Report#monthly')}>
+              <button className="mp-view-btn" onClick={() => navigate('/Report?tab=monthly')}>
                 리포트 보기
               </button>
             </div>

@@ -95,9 +95,11 @@ router.get('/monthly', asyncWrap(async (req, res) => {
     let targetMonth = month || new Date().toISOString().slice(0, 7);
 
     const sql = `
-        SELECT report_idx, user_idx, report_month, report_score, 
-               report_diet, report_bowel, report_condition, report_comment 
-        FROM t_monthly_report 
+        SELECT report_idx, user_idx, report_month, report_month_label,
+               report_title, report_score,
+               report_score_list, report_score_list_comment,
+               report_diet, report_bowel, report_condition, report_comment
+        FROM t_monthly_report
         WHERE user_idx = ? AND report_month = ?
     `;
     const [results] = await conn.query(sql, [user_idx, targetMonth]);

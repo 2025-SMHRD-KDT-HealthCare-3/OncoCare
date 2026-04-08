@@ -141,7 +141,7 @@
 
 .auth-feature-title {
   margin: 0 0 4px;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--text-main);
   font-family: 'Pretendard', sans-serif;
@@ -149,7 +149,7 @@
 
 .auth-feature-desc {
   margin: 0;
-  font-size: 22px;
+  font-size: 18px;
   color: var(--text-sub);
   line-height: 1.5;
   font-family: 'Pretendard', sans-serif;

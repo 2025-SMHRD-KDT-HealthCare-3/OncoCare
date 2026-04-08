@@ -55,6 +55,13 @@ body {
   cursor: pointer;
 }
 
+.landing-logo-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .logo-icon {
   width: 40px;
   height: 40px;
@@ -75,6 +82,8 @@ body {
   display: none;
   gap: 2rem;
   flex: 1;
+  font-size: 1.25rem;
+  justify-content: center;
 }
 
 @media (min-width: 768px) {
@@ -150,7 +159,9 @@ body {
 }
 
 .landing-hero-title .text-primary {
-  color: var(--primary);
+  color: #2F9E6F !important;
+  font-weight: bold !important;
+  
 }
 
 .landing-hero-subtitle {
@@ -242,6 +253,7 @@ body {
   align-items: center;
   gap: 0.5rem;
   color: var(--text-main);
+  font-size: 1.25rem !important;
 }
 
 .trust-dot {
@@ -445,19 +457,6 @@ body {
   line-height: 1.5;
 }
 
-/* Connector lines for desktop */
-@media (min-width: 768px) {
-  .landing-step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    top: 2rem;
-    left: 50%;
-    width: 0.25rem;
-    height: 3rem;
-    background-color: rgba(76, 175, 80, 0.2);
-    transform: translateX(-50%);
-  }
-}
 
 /* Reports Section */
 .landing-reports {
@@ -470,13 +469,15 @@ body {
   margin: 0 auto 4rem;
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: var(--shadow-xl);
+  position: relative;
 }
 
 .landing-report-preview img {
   width: 100%;
   height: auto;
   display: block;
+  mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 40%, transparent 100%);
 }
 
 .landing-report-details {
@@ -616,25 +617,198 @@ body {
   color: var(--text-sub);
 }
 
-/* Responsive Design */
-@media (max-width: 640px) {
-  .landing-hero-title {
-    font-size: 2.25rem;
-  }
-
-  .landing-section-header h2 {
-    font-size: 2.125rem;
-  }
-
-  .landing-feature-text h3 {
-    font-size: 1.75rem;
-  }
-
-  .landing-cta-section h2 {
-    font-size: 2.125rem;
+/* ── Responsive: Tablet (max 1024px) ── */
+@media (max-width: 1024px) {
+  .landing-hero {
+    padding: 2rem 1.5rem;
   }
 
   .landing-feature-item {
+    max-width: 100%;
+    padding: 0 1.5rem;
+  }
+
+  .landing-steps {
+    padding: 0 1.5rem;
+  }
+
+  .landing-report-preview,
+  .landing-report-details {
+    padding: 0 1.5rem;
+  }
+}
+
+/* ── Responsive: Mobile (max 768px) ── */
+@media (max-width: 768px) {
+  /* Header */
+  .landing-header-content {
+    padding: 0.75rem 1rem;
+    gap: 1rem;
+  }
+
+  .logo-text {
+    font-size: 1.4rem;
+  }
+
+  .landing-cta-button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+
+  /* Hero */
+  .landing-hero {
+    padding: 2rem 1rem;
+  }
+
+  .landing-hero-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .landing-hero-title {
+    font-size: 2rem;
+  }
+
+  .landing-hero-subtitle {
+    font-size: 1.125rem;
+  }
+
+  .landing-hero-image {
+    height: 18rem;
+    order: -1;
+  }
+
+  .landing-trust-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+  }
+
+  .landing-trust-list li {
+    font-size: 1.1rem !important;
+  }
+
+  /* Sections common */
+  .landing-section-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .landing-section-header h2 {
+    font-size: 1.875rem;
+  }
+
+  .landing-section-header p {
+    font-size: 1.125rem;
+  }
+
+  /* Features */
+  .landing-features {
+    padding: 4rem 1rem;
+  }
+
+  .landing-feature-item {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
     margin-bottom: 3rem;
+    padding: 0;
+  }
+
+  /* reverse 클래스는 모바일에서 방향 리셋 */
+  .landing-feature-item.reverse {
+    direction: ltr;
+  }
+
+  .landing-feature-image {
+    height: 16rem;
+    order: 0;
+  }
+
+  .landing-feature-text {
+    order: 1;
+  }
+
+  .landing-feature-text h3 {
+    font-size: 1.5rem;
+  }
+
+  .landing-feature-text p {
+    font-size: 1.125rem;
+  }
+
+  /* How it works */
+  .landing-how-it-works {
+    padding: 4rem 1rem;
+  }
+
+  .landing-steps {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    padding: 0;
+  }
+
+  .landing-step h3 {
+    font-size: 1.25rem;
+  }
+
+  .landing-step p {
+    font-size: 1rem;
+  }
+
+  /* Reports */
+  .landing-reports {
+    padding: 4rem 1rem;
+  }
+
+  .landing-report-preview,
+  .landing-report-details {
+    padding: 0;
+  }
+
+  .landing-report-card h3 {
+    font-size: 1.375rem;
+  }
+
+  .landing-report-card p {
+    font-size: 1.125rem;
+  }
+
+  /* CTA */
+  .landing-cta-section {
+    padding: 4rem 1rem;
+  }
+
+  .landing-cta-section h2 {
+    font-size: 1.875rem;
+  }
+
+  .landing-cta-section p {
+    font-size: 1.125rem;
+  }
+}
+
+/* ── Responsive: Small Mobile (max 480px) ── */
+@media (max-width: 480px) {
+  .landing-hero-title {
+    font-size: 1.75rem;
+  }
+
+  .landing-hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .landing-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-section-header h2 {
+    font-size: 1.625rem;
+  }
+
+  .landing-button {
+    font-size: 1.1rem;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .landing-report-details {
+    grid-template-columns: 1fr;
   }
 }

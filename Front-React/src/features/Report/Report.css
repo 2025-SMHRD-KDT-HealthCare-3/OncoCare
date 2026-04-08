@@ -1010,6 +1010,73 @@
   }
 }
 
+/* ── MonthlyReport 추가 스타일 ── */
+.monthly-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 10px;
+  height: 160px;
+  padding: 0 4px;
+  margin-bottom: 10px;
+}
+
+.monthly-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+}
+
+.monthly-bar-score {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0a8a34;
+  margin-bottom: 4px;
+}
+
+.monthly-bar-track {
+  flex: 1;
+  width: 100%;
+  background: #eef0ea;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.monthly-bar-fill {
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+  transition: height 0.4s ease;
+  min-height: 4px;
+}
+
+.monthly-bar-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #aaa;
+  margin-top: 6px;
+}
+
+.monthly-chart-comment {
+  margin: 10px 0 0;
+  font-size: 15px;
+  color: #5f745f;
+  line-height: 1.7;
+}
+
+.monthly-diff-chips {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.monthly-diff-chips .score-stat-chip {
+  flex: 1;
+}
+
 @media (max-width: 1100px) {
   .weekly-dashboard-grid,
   .weekly-lower-grid,

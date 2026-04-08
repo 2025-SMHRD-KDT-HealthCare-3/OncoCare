@@ -1,15 +1,5 @@
 import './Report.css'
 
-const parseField = (field) => {
-  if (!field) return null
-  if (typeof field === 'object') return field
-  try {
-    return JSON.parse(field)
-  } catch {
-    return { summary: field }
-  }
-}
-
 const getScoreLabel = (score) => {
   if (score >= 80) return '우수'
   if (score >= 60) return '양호'
@@ -17,31 +7,62 @@ const getScoreLabel = (score) => {
   return '주의'
 }
 
+const parseScoreList = (raw) => {
+  if (!raw) return []
+  return raw
+    .split(',')
+    .map((s) => parseFloat(s.trim()))
+    .filter((n) => !isNaN(n))
+}
+
+const WeeklyBarChart = ({ scores }) => {
+  if (!scores || scores.length === 0) return null
+
+  const max = 100
+  const barColors = ['#c5dfc9', '#9ecba4', '#6db87b', '#3da358', '#0a8a34']
+
+  return (
+    <div className="monthly-bar-chart">
+      {scores.map((score, i) => (
+        <div key={i} className="monthly-bar-col">
+          <span className="monthly-bar-score">{score}</span>
+          <div className="monthly-bar-track">
+            <div
+              className="monthly-bar-fill"
+              style={{
+                height: `${(score / max) * 100}%`,
+                background: barColors[i] ?? '#0a8a34',
+              }}
+            />
+          </div>
+          <span className="monthly-bar-label">{i + 1}주</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 const MonthlyReport = ({ data, prevData }) => {
   const score     = data?.report_score ?? 0
   const prevScore = prevData?.report_score ?? null
   const diff      = prevScore != null ? score - prevScore : null
+  const scores    = parseScoreList(data?.report_score_list)
 
-  const diet      = parseField(data?.report_diet)
-  const bowel     = parseField(data?.report_bowel)
-  const condition = parseField(data?.report_condition)
-
-  const monthLabel = data?.report_month
-    ? `${data.report_month}월 회복 리포트`
-    : data?.report_week_label || '이번 달 회복 데이터 요약'
+  const periodLabel = data?.report_month_label || data?.report_month || '이번 달'
 
   return (
     <div className="report-view">
+      {/* 헤더 */}
       <div className="report-header-block">
         <span className="report-view-badge monthly">월간 인사이트</span>
-        <h2>월간 건강 리포트</h2>
-        <p>{monthLabel}</p>
+        <h2>{data?.report_title || '월간 건강 리포트'}</h2>
+        <p>{periodLabel} 회복 데이터 요약</p>
       </div>
 
+      {/* 상단: 점수 링 + 주간별 바 차트 */}
       <div className="weekly-dashboard-grid">
         <section className="glass-card score-ring-card">
           <p className="mini-title">종합 건강 점수</p>
-
           <div className="score-ring-wrap">
             <div
               className="score-ring"
@@ -50,110 +71,105 @@ const MonthlyReport = ({ data, prevData }) => {
               }}
             >
               <div className="score-ring-inner">
-                <strong>{data ? `${score}%` : '—'}</strong>
+                <strong>{data ? score : '—'}</strong>
                 <span>{data ? getScoreLabel(score) : '—'}</span>
               </div>
             </div>
           </div>
 
-          <div className="soft-message-box">
-            <p>{data?.report_comment || '기록이 꾸준히 쌓일수록 회복 흐름을 더 정확히 파악할 수 있어요.'}</p>
-          </div>
-        </section>
-
-        <section className="glass-card weekly-highlight-card">
-          <span className="mini-title">전월 대비</span>
-          <h3>
-            {diff == null
-              ? '이번 달 회복 데이터를 분석했습니다'
-              : diff > 0
-              ? `지난달보다 ${diff}점 향상되었습니다`
-              : diff < 0
-              ? `지난달보다 ${Math.abs(diff)}점 하락했습니다`
-              : '지난달과 동일한 수준을 유지했습니다'}
-          </h3>
-
-          <div className="metric-chip-grid">
-            <div className="metric-chip">
-              <span>이번달 점수</span>
-              <strong>{data ? `${score}점` : '—'}</strong>
+          {/* 전월 대비 */}
+          <div className="monthly-diff-chips">
+            <div className="score-stat-chip">
+              <span>이번 달</span>
+              <strong style={{ color: '#0a8a34' }}>{data ? score : '—'}</strong>
             </div>
-            <div className="metric-chip">
-              <span>지난달 점수</span>
-              <strong>{prevScore != null ? `${prevScore}점` : '—'}</strong>
+            <div className="score-stat-chip">
+              <span>지난 달</span>
+              <strong>{prevScore ?? '—'}</strong>
             </div>
-            <div className="metric-chip">
+            <div className="score-stat-chip">
               <span>변화</span>
               <strong style={{ color: diff == null ? 'inherit' : diff >= 0 ? '#0a8a34' : '#c0392b' }}>
-                {diff == null ? '—' : diff > 0 ? `+${diff}점` : `${diff}점`}
+                {diff == null ? '—' : diff > 0 ? `+${diff}` : `${diff}`}
               </strong>
             </div>
           </div>
         </section>
-      </div>
 
-      <div className="weekly-lower-grid">
-        <section className="glass-card report-feature-card">
-          <div className="feature-image fake-food-image" />
-          <h3>이번 달 영양 섭취</h3>
-
-          <div className="progress-row">
-            <div className="progress-label-line">
-              <span>식단 준수율</span>
-              <strong>{diet?.score != null ? `${diet.score}%` : '—'}</strong>
+        <section className="glass-card weekly-chart-card">
+          <p className="mini-title">주간별 점수 추이</p>
+          {scores.length > 0 ? (
+            <>
+              <WeeklyBarChart scores={scores} />
+              {data?.report_score_list_comment && (
+                <p className="monthly-chart-comment">{data.report_score_list_comment}</p>
+              )}
+              <div className="score-list-stat-row" style={{ marginTop: 14 }}>
+                <div className="score-stat-chip">
+                  <span>최고</span>
+                  <strong>{Math.max(...scores)}</strong>
+                </div>
+                <div className="score-stat-chip">
+                  <span>최저</span>
+                  <strong>{Math.min(...scores)}</strong>
+                </div>
+                <div className="score-stat-chip">
+                  <span>평균</span>
+                  <strong>{Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)}</strong>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="report-empty-state" style={{ minHeight: 140 }}>
+              <p>점수 기록이 없습니다.</p>
             </div>
-            <div className="progress-track">
-              <div
-                className="progress-fill"
-                style={{ width: `${diet?.score ?? 0}%` }}
-              />
-            </div>
-          </div>
-
-          <div className="mini-stat-grid">
-            <div className="mini-stat-card">
-              <span>식단 요약</span>
-              <strong>{diet?.summary || '—'}</strong>
-            </div>
-            <div className="mini-stat-card">
-              <span>식단 인사이트</span>
-              <strong>{diet?.insight || '—'}</strong>
-            </div>
-          </div>
-        </section>
-
-        <section className="glass-card report-feature-card">
-          <h3>배변 및 컨디션 추이</h3>
-
-          <div className="trend-box">
-            <div className="trend-header">
-              <span>브리스톨 척도 (평균)</span>
-              <strong>{bowel?.score != null ? `${bowel.score}형` : '—'}</strong>
-            </div>
-
-            <div className="trend-badge-line">
-              <span className="trend-badge active">{bowel?.status || '—'}</span>
-            </div>
-
-            <p className="trend-copy">{bowel?.summary || '—'}</p>
-          </div>
-
-          <div className="trend-mini-grid">
-            <div>
-              <span>컨디션</span>
-              <strong>{condition?.score != null ? `${condition.score} / 5` : '—'}</strong>
-            </div>
-            <div>
-              <span>통증 여부</span>
-              <strong>{condition?.pain != null ? condition.pain : '—'}</strong>
-            </div>
-          </div>
-
-          {condition?.summary && (
-            <div className="report-note-inline">{condition.summary}</div>
           )}
         </section>
       </div>
+
+      {/* 종합 코멘트 */}
+      {data?.report_comment && (
+        <div className="weekly-comment-box">
+          <span className="weekly-comment-icon">💬</span>
+          <p>{data.report_comment}</p>
+        </div>
+      )}
+
+      {/* 식단 / 배변 / 컨디션 텍스트 카드 */}
+      <div className="weekly-text-grid">
+        <section className="glass-card weekly-text-card">
+          <div className="weekly-text-card-header">
+            <span className="weekly-text-icon">🥗</span>
+            <h3>식단</h3>
+          </div>
+          <p>{data?.report_diet || '기록 없음'}</p>
+        </section>
+
+        <section className="glass-card weekly-text-card">
+          <div className="weekly-text-card-header">
+            <span className="weekly-text-icon">🚽</span>
+            <h3>배변</h3>
+          </div>
+          <p>{data?.report_bowel || '기록 없음'}</p>
+        </section>
+
+        <section className="glass-card weekly-text-card">
+          <div className="weekly-text-card-header">
+            <span className="weekly-text-icon">💪</span>
+            <h3>컨디션</h3>
+          </div>
+          <p>{data?.report_condition || '기록 없음'}</p>
+        </section>
+      </div>
+
+      {!data && (
+        <div className="report-empty-state">
+          <p>
+            아직 월간 리포트가 없습니다.<br />
+            위의 <strong>월간 레포트 생성</strong> 버튼을 눌러 생성해보세요.
+          </p>
+        </div>
+      )}
     </div>
   )
 }

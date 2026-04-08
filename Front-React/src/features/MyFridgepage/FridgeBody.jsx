@@ -136,7 +136,7 @@ const FridgeBody = () => {
                     <span className="fr-cat-name">{cat}</span>
                     <button
                       className="fr-cat-add-btn"
-                      onClick={() => navigate('/IngredientForm')}
+                      onClick={() => navigate(`/IngredientForm?category=${encodeURIComponent(cat)}`)}
                     >
                       + 추가
                     </button>

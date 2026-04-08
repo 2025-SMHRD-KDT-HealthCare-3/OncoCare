@@ -139,17 +139,17 @@ const RecipeDetail = () => {
   const cookingSteps = useMemo(() => {
     if (!recipe?.cooking_method) return []
 
-    const lines = String(recipe.cooking_method)
-      .split('\n')
-      .map((line) => line.trim())
-      .filter(Boolean)
+    const raw = String(recipe.cooking_method)
 
-    if (lines.length > 1) return lines
+    // "1. 내용 2. 내용 3. 내용" 형식
+    const byNumber = raw.split(/\s*\d+\.\s+/).map(s => s.trim()).filter(Boolean)
+    if (byNumber.length > 1) return byNumber
 
-    return String(recipe.cooking_method)
-      .split(/[.]\s+/)
-      .map((line) => line.trim())
-      .filter(Boolean)
+    // 줄바꿈 형식
+    const byLine = raw.split(/\r?\n/).map(s => s.trim().replace(/^\d+[\.\)]\s*/, '').trim()).filter(Boolean)
+    if (byLine.length > 1) return byLine
+
+    return [raw.trim()]
   }, [recipe])
 
   return (

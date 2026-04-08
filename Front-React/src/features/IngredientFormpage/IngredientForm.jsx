@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import Sidebar from '../public/Sidebar'
 import axios from 'axios'
 import { useToast } from '../../context/ToastContext'
@@ -15,11 +15,12 @@ const UNIT_TYPES = ['개', 'g', 'ml', '팩', '모', '뿌리', '장', '마리']
 const IngredientForm = () => {
   const { showToast, showConfirm } = useToast()
   const { id } = useParams()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const isEdit = !!id
 
   const [name, setName] = useState('')
-  const [category, setCategory] = useState('')
+  const [category, setCategory] = useState(() => searchParams.get('category') || '')
   const [storageType, setStorageType] = useState('')
   const [quantity, setQuantity] = useState('')
   const [unit, setUnit] = useState('개') // 기본 단위 '개'

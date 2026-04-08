@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import axios from 'axios'
+import ReportLoading from '../public/ReportLoading'
 import Sidebar from '../public/Sidebar'
 import WeeklyReport from './WeeklyReport'
 import MonthlyReport from './MonthlyReport'
@@ -13,13 +15,15 @@ const toMonth  = () => new Date().getMonth() + 1
 
 const Report = () => {
   const user_idx = sessionStorage.getItem('user_idx')
+  const [searchParams] = useSearchParams()
 
-  const [activeTab, setActiveTab] = useState('weekly')
+  const [activeTab, setActiveTab] = useState(() =>
+    searchParams.get('tab') === 'monthly' ? 'monthly' : 'weekly'
+  )
   const [weeklyData, setWeeklyData] = useState(null)
   const [monthlyData, setMonthlyData] = useState(null)
   const [prevMonthlyData, setPrevMonthlyData] = useState(null)
   const [generating, setGenerating] = useState({ weekly: false, monthly: false })
-  const [genMsg, setGenMsg] = useState({ weekly: '', monthly: '' })
   const timers = useRef({})
 
   const fetchReports = () => {
@@ -71,7 +75,6 @@ const Report = () => {
   const handleGenerate = async (type) => {
     if (!user_idx) return
     setGenerating((prev) => ({ ...prev, [type]: true }))
-    setGenMsg((prev) => ({ ...prev, [type]: '' }))
 
     try {
       const url =
@@ -80,22 +83,24 @@ const Report = () => {
           : `http://localhost:8000/generate-monthly-report/${user_idx}?month=${toMonth()}`
 
       await axios.post(url)
-      setGenMsg((prev) => ({ ...prev, [type]: '생성이 시작되었습니다. 약 20초 후 자동으로 갱신됩니다.' }))
 
       clearTimeout(timers.current[type])
       timers.current[type] = setTimeout(() => {
         fetchReports()
-        setGenMsg((prev) => ({ ...prev, [type]: '' }))
+        setGenerating((prev) => ({ ...prev, [type]: false }))
       }, 20000)
     } catch (err) {
       console.error('레포트 생성 실패:', err)
-      setGenMsg((prev) => ({ ...prev, [type]: '생성 요청에 실패했습니다. FastAPI 서버를 확인해주세요.' }))
-    } finally {
       setGenerating((prev) => ({ ...prev, [type]: false }))
     }
   }
 
+  const isGenerating = generating.weekly || generating.monthly
+  const generatingMsg = generating.weekly ? '주간 레포트를 생성하고 있습니다...' : '월간 레포트를 생성하고 있습니다...'
+
   return (
+    <>
+    {isGenerating && <ReportLoading message={generatingMsg} />}
     <div className="report-page page-layout">
       <Sidebar />
       <div className="page-content-area">
@@ -137,7 +142,6 @@ const Report = () => {
                     {generating.weekly ? '생성 요청 중...' : '주간 레포트 생성'}
                   </button>
                 </div>
-                {genMsg.weekly && <div className="report-gen-msg">{genMsg.weekly}</div>}
                 <WeeklyReport data={weeklyData} />
               </>
             )}
@@ -154,7 +158,6 @@ const Report = () => {
                     {generating.monthly ? '생성 요청 중...' : '월간 레포트 생성'}
                   </button>
                 </div>
-                {genMsg.monthly && <div className="report-gen-msg">{genMsg.monthly}</div>}
                 <MonthlyReport data={monthlyData} prevData={prevMonthlyData} />
               </>
             )}
@@ -163,6 +166,7 @@ const Report = () => {
         <Footer />
       </div>
     </div>
+    </>
   )
 }
 

@@ -25,6 +25,18 @@ const parseSummary = (raw) => {
   return raw
 }
 
+const getRecoveryStage = (dischargeDate) => {
+  if (!dischargeDate) return null
+  const discharge = new Date(dischargeDate)
+  const today = new Date()
+  const diffMs = today - discharge
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  if (days < 0) return null
+  if (days <= 30)  return { days, label: '회복 초기 단계', color: '#2d6b46', bg: '#e7f3eb', dot: '🟢' }
+  if (days <= 90)  return { days, label: '적응기',         color: '#7a5c00', bg: '#fff8e1', dot: '🟡' }
+  return             { days, label: '안정기',               color: '#1a4d7c', bg: '#e3f0fb', dot: '🔵' }
+}
+
 const MainTop = ({ onDateChange }) => {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedDateStr, setSelectedDateStr] = useState(toLocalDateString(new Date()))
@@ -33,8 +45,8 @@ const MainTop = ({ onDateChange }) => {
   const [reportData, setReportData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [generating, setGenerating] = useState(false)
-  const [genMsg, setGenMsg] = useState('')
   const [refreshTick, setRefreshTick] = useState(0)
+  const [recoveryStage, setRecoveryStage] = useState(null)
   const timerRef = useRef(null)
   const nav = useNavigate()
   const user_idx = sessionStorage.getItem('user_idx')
@@ -74,25 +86,33 @@ const MainTop = ({ onDateChange }) => {
   const comment = reportData?.report_comment ?? null
 
   useEffect(() => {
+    if (!user_idx) return
+    axios.get(`http://localhost:3000/api/user/health?user_idx=${user_idx}`)
+      .then(res => {
+        const d = res.data
+        if (d && d !== '0' && d.discharge_date) {
+          setRecoveryStage(getRecoveryStage(d.discharge_date))
+        }
+      })
+      .catch(() => {})
+  }, [user_idx])
+
+  useEffect(() => {
     return () => clearTimeout(timerRef.current)
   }, [])
 
   const handleGenerateDaily = async () => {
     if (!user_idx) return
     setGenerating(true)
-    setGenMsg('')
     try {
       await axios.post(`http://localhost:8000/generate-daily-report/${user_idx}?target_date=${selectedDateStr}`)
-      setGenMsg('생성이 시작되었습니다. 약 20초 후 자동으로 갱신됩니다.')
       clearTimeout(timerRef.current)
       timerRef.current = setTimeout(() => {
         setRefreshTick((t) => t + 1)
-        setGenMsg('')
+        setGenerating(false)
       }, 20000)
     } catch (err) {
       console.error('일일 레포트 생성 실패:', err)
-      setGenMsg('생성 요청에 실패했습니다. FastAPI 서버를 확인해주세요.')
-    } finally {
       setGenerating(false)
     }
   }
@@ -105,6 +125,7 @@ const MainTop = ({ onDateChange }) => {
   }
 
   return (
+   <>
    <section className="dashboard-top">
       <div className="dashboard-grid">
         <div className="calendar-card">
@@ -152,7 +173,16 @@ const MainTop = ({ onDateChange }) => {
           <div className="section-card-header">
             <div>
               <h3>일일 레포트</h3>
-              <span className="status-badge">안정기</span>
+              {recoveryStage && (
+                <span
+                  className="status-badge"
+                  style={{ background: recoveryStage.bg, color: recoveryStage.color }}
+                > 
+                  {recoveryStage.dot} {recoveryStage.label}
+                  <br />
+                  <span className="status-badge-days"> · 퇴원 {recoveryStage.days}일차</span>
+                </span>
+              )}
             </div>
             <button
               type="button"
@@ -163,9 +193,13 @@ const MainTop = ({ onDateChange }) => {
               📋 {generating ? '생성 요청 중...' : '일일 레포트 생성'}
             </button>
           </div>
-          {genMsg && <div className="daily-gen-msg">{genMsg}</div>}
-
-          {loading ? (
+          {generating ? (
+            <div className="daily-gen-loading">
+              <div className="daily-gen-spinner" />
+              <p>일일 레포트를 생성하고 있습니다...</p>
+              <span>AI가 데이터를 분석 중이에요. 잠시만 기다려주세요.</span>
+            </div>
+          ) : loading ? (
             <p className="loading-text">불러오는 중...</p>
           ) : (
             <>
@@ -201,6 +235,7 @@ const MainTop = ({ onDateChange }) => {
         </div>
       </div>
     </section>
+   </>
   )
 }
 

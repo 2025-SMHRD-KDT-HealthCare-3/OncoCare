@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Landing.css';
-import { ChevronRight, Leaf } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import oncoCareIcon from '../../assets/oncocare_icon.png';
+import Footer from '../public/Footer';
 
 /**
  * oncocare Landing Page Component
@@ -27,10 +29,8 @@ const Landing = () => {
       <header className={`landing-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="landing-header-content">
           <div className="landing-logo">
-            <div className="logo-icon">
-              <Leaf size={24} color="white" />
-            </div>
-            <h1 className="logo-text">oncocare</h1>
+            <img src={oncoCareIcon} alt="oncocare logo" className="landing-logo-icon" />
+            <h1 className="logo-text">OncoCare</h1>
           </div>
 
           <nav className="landing-nav">
@@ -49,10 +49,12 @@ const Landing = () => {
           {/* Left Content */}
           <div className="landing-hero-text animate-fade-in">
             <h2 className="landing-hero-title">
-              퇴원 후 건강한 식탁을 위한 <span className="text-primary">동반자</span>
+              회복을 위한   <br /><span className="text-primary">당신만의 치유 공간</span>
             </h2>
             <p className="landing-hero-subtitle">
-              냉장고 재고와 건강정보를 기반으로 맞춤형 식단을 추천받고, 일일 피드백과 리포트로 회복 과정을 함께합니다.
+              냉장고 재고와 건강정보를 기반으로 맞춤형 식단을 추천받고, 
+              <br />
+              일일 피드백과 리포트로 회복 과정을 함께합니다.
             </p>
 
             <div className="landing-hero-buttons">
@@ -95,7 +97,7 @@ const Landing = () => {
       {/* Features Section */}
       <section id="features" className="landing-features">
         <div className="landing-section-header">
-          <h2>oncocare의 주요 기능</h2>
+          <h2>OncoCare의 주요 기능</h2>
           <p>간단한 입력으로 시작해서, 체계적인 관리까지. 모든 과정이 쉽고 편합니다.</p>
         </div>
 
@@ -197,7 +199,7 @@ const Landing = () => {
         {/* Large Report Preview */}
         <div className="landing-report-preview">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663448006131/m9ykw8pxoudomePpQokfJ3/feature-daily-report-k9UUkyposWRxWpV2hyoqj4.png"
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663448006131/m9ykw8pxoudomePpQokfJ3/feature-daily-report-full-aWnniEWtpSC6jcD7bqrooF.webp"
             alt="리포트 미리보기"
           />
         </div>
@@ -227,50 +229,7 @@ const Landing = () => {
         </button>
       </section>
 
-      {/* Footer */}
-      <footer className="landing-footer">
-        <div className="landing-footer-content">
-          <div className="landing-footer-section">
-            <div className="landing-footer-logo">
-              <div className="logo-icon">
-                <Leaf size={20} color="white" />
-              </div>
-              <span>oncocare</span>
-            </div>
-            <p>퇴원 후 건강한 식탁을 위한 동반자</p>
-          </div>
-
-          <div className="landing-footer-section">
-            <h4>서비스</h4>
-            <ul>
-              <li><a href="#features">기능</a></li>
-              <li><a href="#how-it-works">가격</a></li>
-              <li><a href="#reports">블로그</a></li>
-            </ul>
-          </div>
-
-          <div className="landing-footer-section">
-            <h4>회사</h4>
-            <ul>
-              <li><a href="#features">소개</a></li>
-              <li><a href="#how-it-works">문의</a></li>
-              <li><a href="#reports">채용</a></li>
-            </ul>
-          </div>
-
-          <div className="landing-footer-section">
-            <h4>법률</h4>
-            <ul>
-              <li><a href="#features">개인정보처리방침</a></li>
-              <li><a href="#how-it-works">이용약관</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="landing-footer-bottom">
-          <p>&copy; 2026 oncocare. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
