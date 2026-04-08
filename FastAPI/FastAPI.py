@@ -137,7 +137,7 @@ class RecipeRecommendation(BaseModel):
 
 # 💡 7개의 레시피를 리스트(배열) 형태로 받기 위한 상위 모델 추가
 class RecipeList(BaseModel):
-    missing_ingredients: str = Field(description="추천 레시피를 위해 추가로 구매해야 할 부족한 식재료 안내 메시지 (부족한 식재료가 없다면 '없음'이라고 적지 말고 반드시 빈 문자열('') 사용)")
+    missing_ingredients_list: List[str] = Field(description="추천 레시피에 필요한 식재료 중, 현재 냉장고([보유 중인 식재료])에 없는 '부족한 식재료'들의 이름 목록 (예: ['잡곡', '닭가슴살', '브로콜리']). 부족한게 없다면 빈 배열 [] 반환")
     recipes: List[RecipeRecommendation] = Field(description="추천 레시피 7개 목록")
 
 diet_parser = JsonOutputParser(pydantic_object=RecipeList)
@@ -168,7 +168,7 @@ diet_prompt = PromptTemplate(
 3. 대장암 기수, 수술/퇴원 일자, 장루 여부 등을 종합적으로 고려하세요.
 4. 알레르기(allergy)가 있는 식재료는 절대 사용하면 안 됩니다.
 5. 보유 중인 식재료를 최대한 활용하되, 필수적인 기본 양념류는 있다고 가정해도 됩니다.
-6. 추천한 7개의 레시피를 만들기 위해 필요한 식재료 중, [보유 중인 식재료]에 없는 항목들을 파악하여 missing_ingredients에 알려주세요. (예: "레시피를 위해 닭가슴살, 브로콜리가 추가로 필요해요!") 만약 부족한 식재료가 전혀 없다면 "없음" 등의 단어를 절대 쓰지 말고 반드시 빈 문자열("")로만 작성해주세요.
+6. 추천한 7개의 레시피를 만들기 위해 필요한 식재료 중, [보유 중인 식재료]에 없는 항목(예: 잡곡, 고기류, 채소류 등)을 빠짐없이 파악하여 `missing_ingredients_list` 배열에 담아주세요.
 7. 반드시 정확히 7개의 레시피를 작성하세요. 단, 환자의 건강 프로필에 있는 하루 식사 횟수(meals_per_day)를 확인하여, 정확히 그 횟수만큼은 든든한 '메인 식사(밥류, 국/탕류, 면류, 단백질요리 등)'로 구성하세요. 나머지 레시피(7 - 식사 횟수)는 식욕을 돋우거나 가볍게 먹을 수 있는 '간식, 음료, 샐러드, 과일' 등으로 구성하여 총 7개를 맞춰주세요.
 8. [보유 중인 식재료]를 레시피에 활용한 경우, 해당 식재료를 냉장고에서 정밀하게 차감할 수 있도록 `deduct_ingredients` 배열에 차감할 이름, 수량, 단위를 명확히 분리해서 작성하세요. 단, 냉장고에 없어서 새로 사야 하는 재료는 차감 목록에 절대 포함하지 마세요.
 
@@ -436,11 +436,16 @@ async def generate_diet(user_idx: int, background_tasks: BackgroundTasks):
                     print(f"--- [이번 요청] Token Usage ---\n{cb}")
                     print(f"=== [서버 누적 총합] Total Tokens: {tracker.total_tokens} | Total Cost: ${tracker.total_cost:.4f} ===")
 
-                # 💡 이제 ai_result는 여러 개의 레시피를 포함하는 {"recipes": [...]} 형태가 됩니다.
+                # 💡 누락된 식재료 배열을 자연스러운 한국어 문장으로 변환
+                missing_list = ai_result.get("missing_ingredients_list", [])
+                missing_str = ""
+                if missing_list:
+                    missing_str = f"레시피를 위해 {', '.join(missing_list)}이(가) 추가로 필요해요!"
+
                 payload = { 
                     "user_idx": uid, 
                     "recipes": ai_result.get("recipes", []),
-                    "missing_ingredients": ai_result.get("missing_ingredients", "") 
+                    "missing_ingredients": missing_str
                 }
                 print(f"[Node.js로 전송 중...] User {uid} 레시피 저장 요청")
                 post_res = await client.post(f"{NODE_SERVER_URL}/diet", json=payload)
