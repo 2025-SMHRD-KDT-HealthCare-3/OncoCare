@@ -13,7 +13,8 @@ const asyncWrap = require('../../middleware/asyncWrap');
  */
 router.get('/dietList/:user_idx', asyncWrap(async (req, res) => {
     const { user_idx } = req.params;
-    const { date } = req.query; // 선택된 날짜 (YYYY-MM-DD), 없으면 최신
+    const { date, since } = req.query;
+    // since: 이 시각 이후 생성된 레시피만 반환 (새로고침 신규 배치용)
 
     if (!user_idx) {
         const error = new Error("사용자 번호가 유효하지 않습니다.");
@@ -30,8 +31,20 @@ router.get('/dietList/:user_idx', asyncWrap(async (req, res) => {
 
     let recipes = [];
 
+    // since가 있으면: 해당 시각 이후 생성된 최신 7개 반환
+    if (since) {
+        const sinceSql = `
+            SELECT recipe_idx, recipe_name, recipe_category
+            FROM t_recipe
+            WHERE user_idx = ?
+            AND created_at > ?
+            ORDER BY created_at DESC
+            LIMIT 7
+        `;
+        [recipes] = await conn.query(sinceSql, [user_idx, since]);
+    }
     // 날짜가 지정된 경우: 해당 날짜에 생성된 추천 레시피 조회
-    if (date) {
+    else if (date) {
         const dateSql = `
             SELECT
                 MAX(recipe_idx) as recipe_idx,
@@ -47,21 +60,6 @@ router.get('/dietList/:user_idx', asyncWrap(async (req, res) => {
         [recipes] = await conn.query(dateSql, [user_idx, date]);
     }
 
-    // 날짜 지정이 없고 데이터도 없을 때만 최신 7개 반환 (날짜 지정 시 폴백 없음)
-    if (recipes.length === 0 && !date) {
-        const recipeSql = `
-            SELECT
-                MAX(recipe_idx) as recipe_idx,
-                recipe_name,
-                MAX(recipe_category) as recipe_category
-            FROM t_recipe
-            WHERE user_idx = ?
-            GROUP BY recipe_name
-            ORDER BY MAX(created_at) DESC
-            LIMIT 7
-        `;
-        [recipes] = await conn.query(recipeSql, [user_idx]);
-    }
 
     if (recipes.length > 0) {
         res.json(recipes);

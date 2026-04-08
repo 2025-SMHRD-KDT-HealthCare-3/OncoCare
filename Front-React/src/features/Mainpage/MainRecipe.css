@@ -80,6 +80,46 @@
   background: var(--primary-dark);
 }
 
+/* ── Empty state ─────────────────────────── */
+.recipe-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 60px 20px;
+  text-align: center;
+  background: var(--card);
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  margin-top: 8px;
+}
+
+.recipe-empty-spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid #e7f3eb;
+  border-top-color: var(--primary);
+  animation: recipe-spin 0.9s linear infinite;
+}
+
+@keyframes recipe-spin {
+  to { transform: rotate(360deg); }
+}
+
+.recipe-empty-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.recipe-empty-sub {
+  font-size: 0.95rem;
+  color: var(--text-sub);
+}
+
 /* ── Featured card ───────────────────────── */
 .recipe-featured {
   display: flex;

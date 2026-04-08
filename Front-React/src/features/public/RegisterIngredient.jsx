@@ -22,7 +22,8 @@ const RegisterIngredient = ({ onSaveSuccess }) => {
       <div className="ingredient-header">
         <h3 className="ingredient-title">식재료 생성</h3>
         <p className="ingredient-subtitle">
-          Register your ingredients to receive personalized meal recommendations.
+          당신의 냉장고의 식재료를 등록해보세요! <br />
+          사진으로 간편하게 등록하거나, 수동으로 입력할 수 있습니다.
         </p>
       </div>
 

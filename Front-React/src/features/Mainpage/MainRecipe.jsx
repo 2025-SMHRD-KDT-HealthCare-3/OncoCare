@@ -102,7 +102,9 @@ const MainRecipe = ({ user_idx, selectedDate }) => {
         ? `http://localhost:3000/api/diet/dietList/${uid}?date=${date}`
         : `http://localhost:3000/api/diet/dietList/${uid}`
       const response = await axios.get(url)
-      if (response.data === '0') return null
+      const noData = !response.data || response.data === '0' || response.data === 0
+        || (Array.isArray(response.data) && response.data.length === 0)
+      if (noData) { setRecipes([]); return null }
       setRecipes(Array.isArray(response.data) ? response.data : [])
       return response.data
     } catch (error) {
@@ -113,18 +115,33 @@ const MainRecipe = ({ user_idx, selectedDate }) => {
 
   const handleRefresh = async () => {
     if (!user_idx || generating) return
-    const data = await getDietList(user_idx, selectedDate)
-    if (data !== null) return  // 데이터 있으면 바로 표시
-    // DB에 데이터 없음 → FastAPI로 생성 요청
+    // 클릭 시각 기록 (MySQL 형식: YYYY-MM-DD HH:MM:SS, 서버 로컬 기준)
+    const now = new Date()
+    const since = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`
+    // 기존 레시피 즉시 비우고 로딩 상태로 전환
+    setRecipes([])
     setGenerating(true)
+    showToast('알림', 'AI가 맞춤 식단을 생성하고 있습니다. 1분 후 자동으로 불러옵니다.', 'info')
     try {
       await axios.post(`http://localhost:8000/generate-diet/${user_idx}`)
-      showToast('알림', '식단을 생성하고 있습니다. 잠시 후 확인해주세요.', 'info')
-      clearTimeout(timerRef.current)
+      // 1분 후 since 이후 생성된 레시피 조회
       timerRef.current = setTimeout(async () => {
-        await getDietList(user_idx, selectedDate)
+        try {
+          const response = await axios.get(
+            `http://localhost:3000/api/diet/dietList/${user_idx}?since=${encodeURIComponent(since)}`
+          )
+          const noData = !response.data || response.data === '0' || response.data === 0
+            || (Array.isArray(response.data) && response.data.length === 0)
+          if (!noData) {
+            setRecipes(Array.isArray(response.data) ? response.data : [])
+          } else {
+            showToast('알림', '식단 생성이 완료되지 않았습니다. 잠시 후 다시 시도해주세요.', 'warning')
+          }
+        } catch {
+          showToast('오류', '식단을 불러오는 데 실패했습니다.', 'error')
+        }
         setGenerating(false)
-      }, 20000)
+      }, 60000)
     } catch (err) {
       console.error('식단 생성 요청 실패:', err)
       showToast('오류', '식단 생성 요청에 실패했습니다.', 'error')
@@ -170,14 +187,28 @@ const MainRecipe = ({ user_idx, selectedDate }) => {
         </div>
       </div>
 
-      {featured && <FeaturedCard recipe={featured} />}
-
-      {rest.length > 0 && (
-        <div className="recipe-grid">
-          {rest.map((recipe) => (
-            <RecipeGridCard key={recipe.recipe_idx} recipe={recipe} />
-          ))}
+      {generating ? (
+        <div className="recipe-empty">
+          <div className="recipe-empty-spinner" />
+          <p className="recipe-empty-title">AI가 맞춤 식단을 생성하고 있어요</p>
+          <span className="recipe-empty-sub">약 30초 후 자동으로 불러옵니다</span>
         </div>
+      ) : recipes.length === 0 ? (
+        <div className="recipe-empty">
+          <p className="recipe-empty-title">이 날짜의 추천 식단이 없습니다</p>
+          <span className="recipe-empty-sub">새로고침 버튼을 눌러 오늘의 맞춤 식단을 생성해보세요</span>
+        </div>
+      ) : (
+        <>
+          {featured && <FeaturedCard recipe={featured} />}
+          {rest.length > 0 && (
+            <div className="recipe-grid">
+              {rest.map((recipe) => (
+                <RecipeGridCard key={recipe.recipe_idx} recipe={recipe} />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </section>
   )

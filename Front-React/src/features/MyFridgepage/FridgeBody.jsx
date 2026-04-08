@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import './Fridge.css'
@@ -9,9 +9,15 @@ import RegisterIngredient from '../public/RegisterIngredient'
 const getCategoryIcon = (type) => categoryIconMap[type] || '📦'
 const FRESH_TYPES = ['채소', '야채', '과일']
 
+const COLLAPSE_LIMIT = 4  // 이 개수 초과 시 접기
+
 const FridgeBody = () => {
   const navigate = useNavigate()
   const [ingredients, setIngredients] = useState([])
+  const [expanded, setExpanded] = useState({})
+
+  const toggleExpand = (cat) =>
+    setExpanded(prev => ({ ...prev, [cat]: !prev[cat] }))
 
   const fetchIngredients = () => {
     const user_idx = sessionStorage.getItem('user_idx')
@@ -94,7 +100,7 @@ const FridgeBody = () => {
                       <div className="fr-harvest-item-info">
                         <span className="fr-harvest-item-name">{item.ingre_name}</span>
                         <span className={`fr-harvest-status ${Number(item.cnt) <= 1 ? 'fr-harvest-warn' : 'fr-harvest-ok'}`}>
-                          {Number(item.cnt) <= 1 ? '재고 부족' : `${item.cnt}개 남음`}
+                          {Number(item.cnt) <= 1 ? '재고 부족' : `${Math.floor(Number(item.cnt))}${item.ingre_unit || '개'} 남음`}
                         </span>
                       </div>
                     </div>
@@ -142,7 +148,7 @@ const FridgeBody = () => {
                     </button>
                   </div>
                   <div className="fr-cat-items">
-                    {grouped[cat].map((item) => (
+                    {(expanded[cat] ? grouped[cat] : grouped[cat].slice(0, COLLAPSE_LIMIT)).map((item) => (
                       <div
                         key={item.ingre_idx}
                         className="fr-cat-item"
@@ -153,7 +159,7 @@ const FridgeBody = () => {
                             {getIngredientIcon(item.ingre_name, item.ingre_type)} {item.ingre_name}
                           </span>
                           <span className="fr-cat-item-meta">
-                            {item.cnt}개 · {item.ingre_storage}
+                            {Math.floor(Number(item.cnt))}{item.ingre_unit || '개'} · {item.ingre_storage}
                           </span>
                         </div>
                         <span className={`fr-status-badge ${Number(item.cnt) <= 1 ? 'fr-badge-low' : 'fr-badge-ok'}`}>
@@ -162,6 +168,13 @@ const FridgeBody = () => {
                       </div>
                     ))}
                   </div>
+                  {grouped[cat].length > COLLAPSE_LIMIT && (
+                    <button className="fr-cat-toggle" onClick={() => toggleExpand(cat)}>
+                      {expanded[cat]
+                        ? '접기 ▲'
+                        : `+${grouped[cat].length - COLLAPSE_LIMIT}개 더보기 ▼`}
+                    </button>
+                  )}
                 </div>
               ))}
             </div>

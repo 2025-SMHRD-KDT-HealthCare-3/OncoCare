@@ -150,6 +150,20 @@
 
 .fr-cat-add-btn:hover { background: #d6ebd0; }
 
+.fr-cat-toggle {
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px 0;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.fr-cat-toggle:hover { background: var(--bg-soft); color: var(--primary); }
+
 .fr-cat-items {
   display: flex;
   flex-direction: column;

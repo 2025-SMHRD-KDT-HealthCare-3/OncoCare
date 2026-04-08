@@ -51,12 +51,12 @@ const IngredientForm = () => {
 
     try {
       if (isEdit) {
-        const payload = { ingre_idx: id, user_idx, ingre_name: name, ingre_type: category, ingre_storage: storageType, cnt: parseFloat(quantity), ingre_unit: unit }
+        const payload = { ingre_idx: id, user_idx, ingre_name: name, ingre_type: category, ingre_storage: storageType, cnt: parseInt(quantity), ingre_unit: unit }
         const res = await axios.post('http://localhost:3000/api/ingredient/update', payload)
         if (res.data == '1') { showToast('수정 완료', '식재료가 수정되었습니다!', 'success') }
         else { showToast('오류', '식재료 수정에 실패했습니다.', 'danger'); return }
       } else {
-        const payload = { user_idx, name, type: category, storage: storageType, cnt: parseFloat(quantity), unit: unit }
+        const payload = { user_idx, name, type: category, storage: storageType, cnt: parseInt(quantity), unit: unit }
         const res = await axios.post('http://localhost:3000/api/ingredient/register', payload)
         if (res.data == '1') { showToast('등록 완료', '식재료가 등록되었습니다!', 'success') }
         else { showToast('오류', '식재료 등록에 실패했습니다.', 'danger'); return }
@@ -165,12 +165,13 @@ const IngredientForm = () => {
                     value={quantity}
                     min="0"
                     max="10000"
-                  step="0.1"
+                  step="1"
                     onChange={(e) => {
                       const val = e.target.value
                       if (val === '') { setQuantity(''); return }
-                      if (parseFloat(val) > 10000) return
-                      setQuantity(val)
+                      const int = Math.floor(Number(val))
+                      if (int > 10000) return
+                      setQuantity(int)
                     }}
                   />
                   <div className="if-select-wrap if-unit-wrap">
