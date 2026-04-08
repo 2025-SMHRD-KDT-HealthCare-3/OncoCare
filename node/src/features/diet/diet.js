@@ -34,7 +34,7 @@ router.get('/dietList/:user_idx', asyncWrap(async (req, res) => {
     // since가 있으면: 해당 시각 이후 생성된 최신 7개 반환
     if (since) {
         const sinceSql = `
-            SELECT recipe_idx, recipe_name, recipe_category
+            SELECT recipe_idx, recipe_name, recipe_category, nutrition_info
             FROM t_recipe
             WHERE user_idx = ?
             AND created_at > ?
@@ -49,7 +49,8 @@ router.get('/dietList/:user_idx', asyncWrap(async (req, res) => {
             SELECT
                 MAX(recipe_idx) as recipe_idx,
                 recipe_name,
-                MAX(recipe_category) as recipe_category
+                MAX(recipe_category) as recipe_category,
+                MAX(nutrition_info) as nutrition_info
             FROM t_recipe
             WHERE user_idx = ?
             AND DATE(created_at) = ?

@@ -6,8 +6,8 @@ import { getCategoryImage } from '../../utils/categoryImageMap'
 const RecipeCard = ({ recipe }) => {
   const navigate = useNavigate()
   const img = useMemo(
-    () => getCategoryImage(recipe?.category, recipe?.recipe_name),
-    [recipe?.category, recipe?.recipe_name]
+    () => getCategoryImage(recipe?.recipe_category, recipe?.recipe_name),
+    [recipe?.recipe_category, recipe?.recipe_name]
   )
 
   return (
