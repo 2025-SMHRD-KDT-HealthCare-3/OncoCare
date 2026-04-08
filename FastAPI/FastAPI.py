@@ -23,7 +23,7 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_community.callbacks.manager import get_openai_callback
 from ultralytics import YOLO
 # 기존 모듈 임포트 아래에 추가
-from vector_search import get_relevant_medical_guides # 외부 파일에서 검색 함수 불러오기
+from vector_search import get_relevant_medical_guides, init_vector_db # 외부 파일에서 검색 및 초기화 함수 불러오기
 
 # =========================================================================
 # ⚙️ 1. 환경 설정 및 앱 초기화
@@ -71,6 +71,10 @@ async def scheduled_monthly_report():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # 💡 [추가] 서버 시작 시 벡터 DB를 즉시 초기화 (또는 로드)합니다.
+    print("🚀 [System] FastAPI 서버 시작: Vector DB 초기화를 진행합니다.")
+    init_vector_db()
+
     scheduler = AsyncIOScheduler()
     scheduler.add_job(scheduled_daily_report, CronTrigger(hour=23, minute=50)) # 매일 밤 11시 50분
     scheduler.add_job(scheduled_weekly_report, CronTrigger(day_of_week="sun", hour=23, minute=55)) # 매주 일요일 밤 11시 55분
