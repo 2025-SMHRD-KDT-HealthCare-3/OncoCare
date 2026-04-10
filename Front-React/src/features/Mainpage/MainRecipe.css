@@ -120,6 +120,18 @@
   color: var(--text-sub);
 }
 
+.recipe-empty-link {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.recipe-empty-link:hover {
+  text-decoration: underline;
+}
+
 /* ── Featured card ───────────────────────── */
 .recipe-featured {
   display: flex;
