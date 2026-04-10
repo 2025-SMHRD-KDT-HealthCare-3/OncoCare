@@ -127,6 +127,29 @@ async def get_relevant_medical_guides(health_profile: dict, ingredients: list) -
         print(f"벡터 검색 중 에러: {e}")
         return "의학 가이드 검색에 실패했습니다."
 
+async def get_relevant_symptom_guides(health_profile: dict, report_type: str) -> str:
+    """레포트 생성 시, 환자 프로필과 레포트 종류에 맞춰 연관성 높은 전문 의학/영양 가이드를 찾아옵니다."""
+    global vector_store
+    
+    if vector_store is None:
+        init_vector_db()
+        
+    if vector_store is None:
+        return "현재 등록된 참고 의학 가이드 서적이 없습니다."
+
+    stoma_status = health_profile.get("stoma_status", "정보없음")
+    
+    # 배변, 컨디션, 식단 관리에 대한 전문 지식을 찾기 위한 쿼리
+    query = f"대장암 장루 여부: {stoma_status}. 환자의 {report_type} 상태 분석을 위한 대장암 회복, 증상 관리(배변, 복통, 변비, 설사 등), 컨디션 향상, 영양 및 식단 가이드 전문 지식"
+    
+    try:
+        results = vector_store.similarity_search(query, k=3)
+        combined_text = "\n\n".join([doc.page_content for doc in results])
+        return combined_text
+    except Exception as e:
+        print(f"벡터 검색 중 에러: {e}")
+        return "의학 가이드 검색에 실패했습니다."
+
 # 💡 [추가됨] 이 스크립트를 직접 실행하면 서버를 켜지 않고도 즉시 벡터 DB를 생성합니다.
 if __name__ == "__main__":
     init_vector_db()

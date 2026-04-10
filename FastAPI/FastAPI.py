@@ -23,7 +23,7 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_community.callbacks.manager import get_openai_callback
 from ultralytics import YOLO
 # 기존 모듈 임포트 아래에 추가
-from vector_search import get_relevant_medical_guides, init_vector_db # 외부 파일에서 검색 및 초기화 함수 불러오기
+from vector_search import get_relevant_medical_guides, get_relevant_symptom_guides, init_vector_db # 외부 파일에서 검색 및 초기화 함수 불러오기
 
 # =========================================================================
 # ⚙️ 1. 환경 설정 및 앱 초기화
@@ -159,7 +159,7 @@ diet_prompt = PromptTemplate(
 [오늘 환자 상태]
 {today_record}
 
-[💡 검색된 대장암 영양 가이드 및 검증된 레시피 (전문 서적 발췌)]
+[검색된 대장암 영양 가이드 및 검증된 레시피 (전문 서적 발췌)]
 {retrieved_documents}
 
 주의사항 (매우 중요):
@@ -183,9 +183,9 @@ diet_chain = diet_prompt | llm | diet_parser
 # -------------------------------------------------------------------------
 class DailyReportOut(BaseModel):
     report_score: int = Field(description="오늘의 종합 건강 점수 (0~100점). 제공된 '섭취 식단', '배변 기록', '컨디션' 3가지 데이터를 종합적으로 평가하여 점수를 산정하세요.")
-    report_diet: str = Field(description="오늘 섭취한 식단에 대한 요약 및 평가 (1~2문장). 빈 배열([])이 넘어왔다면 '오늘 등록된 식단 기록이 없습니다.'라고 작성하세요.")
-    report_bowel: str = Field(description="오늘의 배변 기록에 대한 요약 및 평가 (1~2문장). 빈 배열([])이 넘어왔다면 '오늘 등록된 배변 기록이 없습니다.'라고 작성하세요.")
-    report_condition: str = Field(description="오늘의 컨디션(수면, 통증 등)에 대한 요약 및 평가 (1~2문장). null값이 넘어왔다면 '오늘 등록된 컨디션 기록이 없습니다.'라고 작성하세요.")
+    report_diet: str = Field(description="[전문 지식 기반 분석 필수] 뻔한 건강 상식이 아닌, 제공된 [검색된 전문 지식] 안에서 근거를 찾아 식재료와 상태의 연관성을 의사/영양사처럼 자연스러운 문장으로 분석하세요 (2~3문장). 빈 배열([])일 경우 '오늘 등록된 식단 기록이 없습니다.'라고 작성하세요.")
+    report_bowel: str = Field(description="[전문 지식 기반 분석 필수] 일반 상식이 아닌 제공된 [검색된 전문 지식]을 바탕으로 배변 상태를 분석하고 자연스럽게 장 건강 조언을 서술하세요 (2~3문장). 빈 배열([])일 경우 '오늘 등록된 배변 기록이 없습니다.'라고 작성하세요.")
+    report_condition: str = Field(description="[전문 지식 기반 분석 필수] 제공된 [전문 지식]을 바탕으로 복통/수면/수분의 인과관계를 전문적이지만 자연스러운 말투로 분석하고 액션 플랜을 제시하세요 (2~3문장). null일 경우 '오늘 등록된 컨디션 기록이 없습니다.'라고 작성하세요.")
     report_comment: str = Field(description="오늘 하루를 마무리하는 종합 AI 코멘트 (이모지 포함, 다정하고 격려하는 말투로 1줄)")
 
 daily_parser = JsonOutputParser(pydantic_object=DailyReportOut)
@@ -201,6 +201,9 @@ daily_prompt = PromptTemplate(
 - 배변 기록: {bowel_logs}
 - 섭취 식단: {diets}
 
+[검색된 대장암 영양 가이드 및 전문 지식]
+{retrieved_documents}
+
 주의사항 (매우 중요):
 1. 장루/대장암 환자 특성(수술일, 장루 여부 등)을 반영하여, 배변 양상이 일반인과 다를 수 있음을 인지하고 수분 섭취와 식단이 미친 영향을 분석하세요.
 2. 절대 의학적 진단이나 직접적인 처방을 내리지 마세요. ("~일 수 있습니다", "~하시는 것을 권장합니다" 형태 사용)
@@ -208,9 +211,11 @@ daily_prompt = PromptTemplate(
 4. 오늘의 종합 건강 점수(report_score)는 식단, 배변, 컨디션 3가지 데이터를 종합하여 0~100점으로 산정하세요. 긍정적인 기록(예: 높은 식단 평점, 정상 배변, 통증 없음)은 점수를 높이고, 부정적인 기록(예: 낮은 식단 평점, 복통 발생, 설사)은 점수를 낮추세요. 단, 사용자가 기록을 누락한 항목(null 또는 빈 배열)은 점수 계산에서 제외하여, 기록된 데이터만으로 객관적인 점수를 매겨야 합니다.
 5. 식단을 평가할 때는 섭취한 요리뿐만 아니라, 환자가 직접 남긴 특이식 피드백(diet_feedback)과 평점(diet_rating)을 적극적으로 반영하여 공감해주세요.
 6. 코멘트는 이모지를 적절히 섞어 오늘 하루 수고했다는 따뜻하고 친근한 격려를 1줄로 남겨주세요.
+7. [가장 중요] "A를 먹었고, 설사를 했습니다" 같은 단순 요약(Summary)을 절대 피하세요. "A 식단에 포함된 특정 성분이 장을 자극하여 설사가 발생했을 가능성이 있으므로, 내일은 B 조리법을 권장합니다"처럼 데이터 간의 연결고리를 찾는 깊이 있는 인사이트(Insight)를 제공하세요.
+8. [가장 중요: 전문 지식 강제 인용] AI가 기존에 학습한 "일반적인 건강 상식(예: 무조건 섬유소와 수분을 많이 섭취해라)"을 절대 지어내서 조언하지 마세요! 대장암 수술 환자는 일반인과 장 상태가 다르기 때문에 일반 상식이 오히려 위험할 수 있습니다. 반드시 제공된 [검색된 대장암 영양 가이드 및 전문 지식] 텍스트 안에 있는 내용만을 근거로 삼아 답변하세요.
 
 {format_instructions}""",
-    input_variables=["health_profile", "condition", "bowel_logs", "diets"],
+    input_variables=["health_profile", "condition", "bowel_logs", "diets", "retrieved_documents"],
     partial_variables={"format_instructions": daily_parser.get_format_instructions()},
 )
 daily_chain = daily_prompt | llm | daily_parser
@@ -224,9 +229,9 @@ class WeeklyReportOut(BaseModel):
     report_score: int = Field(description="주간 평균 점수 (0~100점). 제공된 '일일 레포트'들의 점수를 평균 내어 산정하세요.")
     report_score_list : str = Field(description="일일 점수 리스트 (예: '80, 85, 90, 70, 88, 92, 100' 처럼 콤마로 구분된 문자열로 작성)")
     report_score_list_comment: str = Field(description="일일 점수 리스트의 추이에 대한 한줄 요약")
-    report_diet: str = Field(description="식단 요약 및 인사이트 (데이터 간의 상관관계 포함)")
-    report_bowel: str = Field(description="배변 요약 및 인사이트 (데이터 간의 상관관계 포함)")
-    report_condition: str = Field(description="컨디션 요약 및 인사이트 (데이터 간의 상관관계 포함)")
+    report_diet: str = Field(description="[전문 지식 기반 분석 필수] 제공된 [전문 지식]의 내용을 근거로 삼아 식재료가 배변 및 컨디션에 미친 영향을 자연스러운 문장으로 깊이 있게 분석하세요 (3~4문장)")
+    report_bowel: str = Field(description="[전문 지식 기반 분석 필수] 제공된 [전문 지식]을 참고하여 특이 배변 패턴을 추적하고 대장암 회복에 맞춘 구체적인 개선 방향을 자연스럽게 제안하세요 (3~4문장)")
+    report_condition: str = Field(description="[전문 지식 기반 분석 필수] 제공된 [전문 지식]을 바탕으로 복통이나 수면 하락 패턴을 종합적으로 분석하고 자연스러운 멘토링 말투로 관리 전략을 제시하세요 (3~4문장)")
     report_comment: str = Field(description="강력한 동기부여와 폭풍 칭찬 위주의 종합 코멘트 (3~4줄)")
 
 weekly_parser = JsonOutputParser(pydantic_object=WeeklyReportOut)
@@ -243,6 +248,9 @@ weekly_prompt = PromptTemplate(
 [분석 타겟 기간]
 {period}
 
+[검색된 대장암 영양 가이드 및 전문 지식]
+{retrieved_documents}
+
 주의사항 (매우 중요):
 1. 주간 점수(report_score)는 임의로 지어내지 말고, 넘겨받은 [이번 주 일일 레포트 목록]에 있는 각 날짜의 점수들을 수학적으로 평균 내어 산정하세요. 만약 목록이 아예 비어있다면 0점으로 처리하세요.
 2. 일주일 중 기록이 없는 날짜가 있다면 상상하지 말고, 기록된 날짜들의 데이터만으로 분석하되 종합 코멘트에 "기록이 빠진 날이 있어 아쉽다"는 격려를 추가하세요. 만약 이번 주에 등록된 일일 레포트가 단 하나도 없다면, 모든 분석 내용을 지어내지 말고 "이번 주 등록된 일일 레포트가 없습니다."라고 안내하세요.
@@ -250,9 +258,11 @@ weekly_prompt = PromptTemplate(
 4. 환자의 현재 기수나 수술/항암 상태를 인지한 상태에서 무리가 되지 않는 선의 조언을 도출하세요.
 5. report_week_label은 [분석 타겟 기간]을 바탕으로 'YY년 M월 W주차' 형식으로 만들어주세요.
 6. report_title은 이번 주 전체 상태를 가장 잘 요약하는 센스 있고 흥미로운 제목(이모지 1~2개 포함)을 15자 이내로 달아주세요.
+7. [가장 중요] 단순 사실 나열(예: "이번 주는 부드러운 음식을 먹었고 설사가 잦았습니다")을 절대 하지 마세요! "두부 요리를 주로 섭취했으나, 수/목요일 특정 반찬 섭취 후 수양성 설사가 집중된 패턴이 발견되었습니다. 이는 수분 부족과 겹쳐 장루 배출량을 급증시켰으므로..." 처럼 탐정처럼 데이터를 교차 분석하여 발견한 숨겨진 패턴과 실질적인 해결책(Insight)을 서술하세요.
+8. [가장 중요: 전문 지식 강제 인용] AI가 기존에 학습한 "일반적인 건강 상식(예: 무조건 섬유소와 수분을 많이 섭취해라)"을 절대 지어내서 조언하지 마세요! 대장암 수술 환자는 일반인과 장 상태가 다르기 때문에 일반 상식이 오히려 위험할 수 있습니다. 반드시 제공된 [검색된 대장암 영양 가이드 및 전문 지식] 텍스트 안에 있는 내용만을 근거로 삼아 답변하세요.
 
 {format_instructions}""",
-    input_variables=["health_profile", "daily_reports", "period"],
+    input_variables=["health_profile", "daily_reports", "period", "retrieved_documents"],
     partial_variables={"format_instructions": weekly_parser.get_format_instructions()},
 )
 weekly_chain = weekly_prompt | llm | weekly_parser
@@ -266,9 +276,9 @@ class MonthlyReportOut(BaseModel):
     report_score: int = Field(description="월간 평균 점수 (0~100점). 제공된 '주간 레포트'들의 점수를 평균 내어 산정하세요.")
     report_score_list : str = Field(description="주간 점수 리스트 (예: '80, 85, 90, 95' 처럼 각 주차의 점수를 콤마로 구분하여 문자열로 작성)")
     report_score_list_comment: str = Field(description="주간 점수 리스트의 추이에 대한 한줄 요약")
-    report_diet: str = Field(description="식단 요약 및 긍정적 변화 (장기적 관점)")
-    report_bowel: str = Field(description="배변 요약 및 긍정적 변화 (장기적 관점)")
-    report_condition: str = Field(description="컨디션 요약 및 긍정적 변화 (장기적 관점)")
+    report_diet: str = Field(description="[전문 지식 기반 분석 필수] 제공된 [전문 지식]의 내용을 근거로 삼아 한 달간의 식단 변화가 회복에 미친 영향을 전문적이면서도 자연스럽게 서술하세요 (3~4문장)")
+    report_bowel: str = Field(description="[전문 지식 기반 분석 필수] 제공된 [전문 지식]을 바탕으로 배변 패턴의 안정화 과정을 비교 분석하고 식습관 패턴을 자연스럽게 도출하세요 (3~4문장)")
+    report_condition: str = Field(description="[전문 지식 기반 분석 필수] 제공된 [전문 지식]을 바탕으로 한 달간의 컨디션 회복 트렌드를 의학적 근거와 함께 멘토링하듯 자연스럽게 서술하세요 (3~4문장)")
     report_comment: str = Field(description="강력한 동기부여와 폭풍 칭찬 위주의 종합 코멘트 (3~4줄)")
 
 monthly_parser = JsonOutputParser(pydantic_object=MonthlyReportOut)
@@ -285,6 +295,9 @@ monthly_prompt = PromptTemplate(
 [이번 달 주간 레포트 목록]
 {weekly_reports}
 
+[검색된 대장암 영양 가이드 및 전문 지식]
+{retrieved_documents}
+
 주의사항 (매우 중요):
 1. 월간 점수(report_score)는 임의로 지어내지 말고, 넘겨받은 [이번 달 주간 레포트 목록]에 있는 주차별 점수들을 수학적으로 평균 내어 산정하세요. 만약 목록이 아예 비어있다면 0점으로 처리하세요.
 2. 한 달 중 기록이 없는 주차가 있다면 상상하지 말고, 기록된 주차의 데이터만으로 분석하세요. 만약 이번 달에 등록된 주간 레포트가 단 하나도 없다면, 모든 분석 내용을 지어내지 말고 "이번 달 등록된 주간 레포트가 없습니다."라고 안내하세요.
@@ -293,9 +306,11 @@ monthly_prompt = PromptTemplate(
 5. report_comment는 환자가 질병에 지치지 않고 건강 관리를 할 수 있도록 진심이 담긴 강력한 동기부여와 폭풍 칭찬을 3~4줄로 꽉 채워 작성해주세요.
 6. report_month_label은 'YY년 M월' 형식으로 만들어주세요.
 7. report_title은 한 달간의 변화를 가장 잘 보여주는 센스 있는 제목(이모지 1~2개 포함)을 15자 이내로 달아주세요.
+8. [가장 중요] "한 달간 설사가 있었습니다" 같은 단순 요약(Summary)을 강력히 금지합니다. 지난 한 달간의 데이터 흐름 속에서 '성공적인 회복 패턴(예: 2주차 식습관 개선이 3주차 수면 향상으로 이어짐)'이나 '악화 원인'을 연결하여 도출해내는 깊이 있는 분석(Insight)을 반드시 포함하세요.
+9. [가장 중요: 전문 지식 강제 인용] AI가 기존에 학습한 "일반적인 건강 상식(예: 무조건 섬유소와 수분을 많이 섭취해라)"을 절대 지어내서 조언하지 마세요! 대장암 수술 환자는 일반인과 장 상태가 다르기 때문에 일반 상식이 오히려 위험할 수 있습니다. 반드시 제공된 [검색된 대장암 영양 가이드 및 전문 지식] 텍스트 안에 있는 내용만을 근거로 삼아 답변하세요.
 
 {format_instructions}""",
-    input_variables=["health_profile", "weekly_reports", "target_month"],
+    input_variables=["health_profile", "weekly_reports", "target_month", "retrieved_documents"],
     partial_variables={"format_instructions": monthly_parser.get_format_instructions()},
 )
 monthly_chain = monthly_prompt | llm | monthly_parser
@@ -412,7 +427,7 @@ async def generate_diet(user_idx: int, background_tasks: BackgroundTasks):
                 today_record_str = f"- 오늘 컨디션: {t_cond}" if t_cond else "- 오늘 컨디션: 아직 기록되지 않음"
 
                 # 💡 [핵심 추가] 외부 Python 파일의 벡터 DB 검색 로직 실행
-                print(f"[벡터 DB 검색 중...] 전문 서적 1.txt, 2.txt에서 가이드 추출 중...")
+                print(f"[벡터 DB 검색 중...] 전문 서적 가이드 추출 중...")
                 retrieved_docs = await get_relevant_medical_guides(health_profile, ingredients)
 
                 # 💡 [안정성 강화] 벡터 DB 검색 실패 시(파일 부재 등) LLM 호출 중단
@@ -497,13 +512,17 @@ async def process_daily(uid: int, date: str):
             profile_res.raise_for_status()
             health_profile = profile_res.json().get("health_profile", {})
                 
+            print(f"[벡터 DB 검색 중...] 일일 레포트용 전문 서적 가이드 추출 중...")
+            retrieved_docs = await get_relevant_symptom_guides(health_profile, "일일")
+
             print(f"[AI 분석 중...] User {uid} 일일 레포트 작성 중")
             with get_openai_callback() as cb:
                 ai_result = await daily_chain.ainvoke({
                     "health_profile": json.dumps(health_profile, ensure_ascii=False),
                     "condition": json.dumps(data.get("condition"), ensure_ascii=False),
                     "bowel_logs": json.dumps(data.get("bowel_logs"), ensure_ascii=False),
-                    "diets": json.dumps(data.get("diets"), ensure_ascii=False)
+                    "diets": json.dumps(data.get("diets"), ensure_ascii=False),
+                    "retrieved_documents": retrieved_docs
                 })
                 
                 tracker.total_tokens += cb.total_tokens
@@ -558,12 +577,16 @@ async def process_weekly(uid: int, date: str):
             period_str = data.get("period") 
             start_date, end_date = period_str.split(" ~ ")
 
+            print(f"[벡터 DB 검색 중...] 주간 레포트용 전문 서적 가이드 추출 중...")
+            retrieved_docs = await get_relevant_symptom_guides(health_profile, "주간")
+
             print(f"[AI 분석 중...] User {uid} 주간 레포트 작성 중")
             with get_openai_callback() as cb:
                 ai_result = await weekly_chain.ainvoke({
                     "health_profile": json.dumps(health_profile, ensure_ascii=False),
                     "daily_reports": json.dumps(data.get("daily_reports"), ensure_ascii=False),
-                    "period": period_str
+                    "period": period_str,
+                    "retrieved_documents": retrieved_docs
                 })
                 
                 tracker.total_tokens += cb.total_tokens
@@ -618,12 +641,16 @@ async def process_monthly(uid: int, target_month: int):
             current_year = datetime.now().year
             report_month_str = f"{current_year}-{str(target_month).zfill(2)}"
 
+            print(f"[벡터 DB 검색 중...] 월간 레포트용 전문 서적 가이드 추출 중...")
+            retrieved_docs = await get_relevant_symptom_guides(health_profile, "월간")
+
             print(f"[AI 분석 중...] User {uid} 월간 레포트 작성 중")
             with get_openai_callback() as cb:
                 ai_result = await monthly_chain.ainvoke({
                     "health_profile": json.dumps(health_profile, ensure_ascii=False),
                     "weekly_reports": json.dumps(data.get("weekly_reports"), ensure_ascii=False),
-                    "target_month": data.get("target_year_month", f"{target_month}월")
+                    "target_month": data.get("target_year_month", f"{target_month}월"),
+                    "retrieved_documents": retrieved_docs
                 })
                 
                 tracker.total_tokens += cb.total_tokens
