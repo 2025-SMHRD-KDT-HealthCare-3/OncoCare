@@ -28,18 +28,19 @@ router.post('/update', asyncWrap(async (req, res) => {
         throw error;
     }
 
-    let sql = `UPDATE t_user SET name = ?, phone = ?`;
-    let params = [name, phone];
+    const queryParts = ["name = ?", "phone = ?"];
+    const params = [name, phone];
 
     if (password) {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        sql += `, pw = ?`;
+        queryParts.push("pw = ?");
         params.push(hashedPassword);
     }
 
-    sql += ` WHERE user_idx = ?`;
+    const sql = `UPDATE t_user SET ${queryParts.join(', ')} WHERE user_idx = ?`;
     params.push(user_idx);
 
+    // 5. DB 실행
     await conn.query(sql, params);
     res.send('1'); 
 }));
@@ -62,6 +63,19 @@ router.get('/health', asyncWrap(async (req, res) => {
     res.json(results.length > 0 ? results[0] : '0');
 }));
 
+/**
+ * 
+ * 
+ */
+const toNum = (val, def, isInt = false) => {
+    const n = isInt ? parseInt(val) : parseFloat(val);
+    return (val !== undefined && val !== null && val !== '' && !isNaN(n)) ? n : def;
+};
+
+const toYN = (val) => (val === 'Y' ? 'Y' : 'N');
+
+const toDate = (val) => val || new Date().toISOString().split('T')[0];
+
 /*
  * [건강정보 저장/수정]
  */
@@ -77,21 +91,25 @@ router.post('/health/register', asyncWrap(async (req, res) => {
         throw error;
     }
 
-    const v_height = (height && !isNaN(height)) ? parseFloat(height) : 0.0;
-    const v_weight = (weight && !isNaN(weight)) ? parseFloat(weight) : 0.0;
-    const v_stage = cancer_stage || '0';
-    const v_meals = (meals_per_day && !isNaN(meals_per_day)) ? parseInt(meals_per_day) : 3;
-    
-    const today = new Date().toISOString().split('T')[0];
-    const v_surgery = surgery_date || today;
-    const v_discharge = discharge_date || today;
-
-    const v_stoma = stoma_status === 'Y' ? 'Y' : 'N';
-    const v_chemo = chemo_status === 'Y' ? 'Y' : 'N';
-    const v_allergy = allergy || "";
+    const profile = {
+        height: toNum(height, 0.0),
+        weight: toNum(weight, 0.0),
+        stage: cancer_stage || '0',
+        meals: toNum(meals_per_day, 3, true),
+        surgery: toDate(surgery_date),
+        discharge: toDate(discharge_date),
+        stoma: toYN(stoma_status),
+        chemo: toYN(chemo_status),
+        allergy: allergy || ""
+    };
 
     const checkSql = `SELECT user_idx FROM t_health_profile WHERE user_idx = ?`;
     const [existing] = await conn.query(checkSql, [user_idx]);
+
+    const commonParams = [
+        profile.height, profile.weight, profile.stage, profile.surgery, 
+        profile.discharge, profile.stoma, profile.chemo, profile.allergy, profile.meals
+    ];
 
     if (existing.length > 0) {
         const updateSql = `
@@ -100,22 +118,17 @@ router.post('/health/register', asyncWrap(async (req, res) => {
                 DISCHARGE_DATE=?, STOMA_STATUS=?, CHEMO_STATUS=?, ALLERGY=?, MEALS_PER_DAY=? 
             WHERE USER_IDX=?
         `;
-        await conn.query(updateSql, [
-            v_height, v_weight, v_stage, v_surgery, 
-            v_discharge, v_stoma, v_chemo, v_allergy, v_meals, user_idx
-        ]);
+        await conn.query(updateSql, [...commonParams, user_idx]);
     } else {
         const insertSql = `
             INSERT INTO t_health_profile (
-                USER_IDX, HEIGHT, WEIGHT, CANCER_STAGE, SURGERY_DATE, 
-                DISCHARGE_DATE, STOMA_STATUS, CHEMO_STATUS, ALLERGY, MEALS_PER_DAY
+                HEIGHT, WEIGHT, CANCER_STAGE, SURGERY_DATE, 
+                DISCHARGE_DATE, STOMA_STATUS, CHEMO_STATUS, ALLERGY, MEALS_PER_DAY, USER_IDX
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-        await conn.query(insertSql, [
-            user_idx, v_height, v_weight, v_stage, v_surgery, 
-            v_discharge, v_stoma, v_chemo, v_allergy, v_meals
-        ]);
+        await conn.query(insertSql, [...commonParams, user_idx]);
     }
+
     res.send('1');
 }));
 

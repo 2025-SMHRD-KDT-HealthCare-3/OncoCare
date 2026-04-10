@@ -83,6 +83,20 @@ router.post('/login', asyncWrap(async (req, res, next) => {
 }));
 
 /*
+ * [로그아웃]
+ * 세션 삭제 및 쿠키 클리어
+ */
+router.post('/logout', (req, res, next) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return next(err);
+        }
+        res.clearCookie('connect.sid'); 
+        res.send('1');
+    });
+});
+
+/*
  * [유저 정보 조회 - 수정 모드 pre-fill용]
  */
 router.get('/profile', asyncWrap(async (req, res) => {
