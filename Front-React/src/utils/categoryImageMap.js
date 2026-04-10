@@ -94,33 +94,6 @@ export const categoryDesc = {
   '찜류': '촉촉하고 부드럽게 익혀 소화가 편하고 회복기에 부담이 적은 조리 방식의 메뉴입니다.',
 }
 
-export const categoryNutrition = {
-  '죽/스프':     { protein: 8,  fiber: 2, kcal: 240 },
-  '밥류':        { protein: 12, fiber: 3, kcal: 350 },
-  '국/탕류':     { protein: 10, fiber: 2, kcal: 180 },
-  '반찬류':      { protein: 8,  fiber: 4, kcal: 150 },
-  '면류':        { protein: 9,  fiber: 2, kcal: 320 },
-  '단백질요리':  { protein: 22, fiber: 1, kcal: 280 },
-  '샐러드':      { protein: 6,  fiber: 5, kcal: 120 },
-  '과일':        { protein: 2,  fiber: 4, kcal: 90 },
-  '간식':        { protein: 4,  fiber: 2, kcal: 160 },
-  '음료':        { protein: 2,  fiber: 1, kcal: 80 },
-  '찜류':        { protein: 18, fiber: 2, kcal: 260 },
-}
-
-export const categoryTime = {
-  '죽/스프': '20분',
-  '밥류': '30분',
-  '국/탕류': '35분',
-  '반찬류': '15분',
-  '면류': '20분',
-  '단백질요리': '25분',
-  '샐러드': '10분',
-  '과일': '5분',
-  '간식': '10분',
-  '음료': '5분',
-  '찜류': '30분',
-}
 
 /** 레시피 이름으로 카테고리 추론 */
 export const getCategoryByName = (name = '') => {

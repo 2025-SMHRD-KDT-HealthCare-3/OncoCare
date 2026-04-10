@@ -7,15 +7,27 @@ import {
   getCategoryImage,
   categoryBadge,
   categoryDesc,
-  categoryNutrition,
-  categoryTime,
 } from '../../utils/categoryImageMap'
+
+/** nutrition_info 문자열에서 특정 키의 값 추출
+ *  예: "열량: 180 kcal, 단백질: 25g, 섬유소: 1g"
+ */
+const parseNutrient = (nutritionInfo, keys) => {
+  if (!nutritionInfo) return '-'
+  for (const key of keys) {
+    const match = nutritionInfo.match(new RegExp(key + '\\s*:\\s*([\\d.]+)'))
+    if (match) return match[1]
+  }
+  return '-'
+}
 
 /* 피처드 카드 — useMemo로 이미지 고정 */
 const FeaturedCard = ({ recipe }) => {
   const cat = getCategoryByName(recipe.recipe_name)
   const img = useMemo(() => getCategoryImage(cat), [cat])
-  const { protein, fiber, kcal } = categoryNutrition[cat] || { protein: 8, fiber: 2, kcal: 240 }
+  const protein = parseNutrient(recipe.nutrition_info, ['단백질', 'Protein'])
+  const fiber   = parseNutrient(recipe.nutrition_info, ['섬유소', '식이섬유', 'Fiber'])
+  const kcal    = parseNutrient(recipe.nutrition_info, ['열량', '칼로리', 'Calories', 'kcal'])
   return (
     <div
       className="recipe-featured"
@@ -27,24 +39,14 @@ const FeaturedCard = ({ recipe }) => {
       <div className="recipe-featured-content">
         <div className="recipe-featured-meta">
           <span className="recipe-recommended-badge">추천 메뉴</span>
-          <span className="recipe-time-badge">⏱ {categoryTime[cat] || '20 mins'}</span>
         </div>
         <h3 className="recipe-featured-title">{recipe.recipe_name}</h3>
         <p className="recipe-featured-desc">{categoryDesc[cat]}</p>
-        <div className="recipe-stats-row">
-          <div className="recipe-stat">
-            <span className="recipe-stat-label">단백질</span>
-            <strong className="recipe-stat-value">{protein}g</strong>
-          </div>
-          <div className="recipe-stat">
-            <span className="recipe-stat-label">식이섬유</span>
-            <strong className="recipe-stat-value">{fiber}g</strong>
-          </div>
-          <div className="recipe-stat">
-            <span className="recipe-stat-label">칼로리</span>
-            <strong className="recipe-stat-value">{kcal}</strong>
-          </div>
-        </div>
+        <p className="recipe-inline-stats">
+          <strong>{kcal} kcal</strong> &nbsp;·&nbsp;
+          단백질 <strong>{protein}g</strong> &nbsp;·&n 
+          식이섬유 <strong>{fiber}g</strong>
+        </p>
         <button
           className="recipe-detail-btn"
           onClick={() => window.location.href = `/RecipeDetail/${recipe.recipe_idx}`}
@@ -60,7 +62,8 @@ const FeaturedCard = ({ recipe }) => {
 const RecipeGridCard = ({ recipe }) => {
   const cat = getCategoryByName(recipe.recipe_name)
   const img = useMemo(() => getCategoryImage(cat), [cat])
-  const { protein, kcal } = categoryNutrition[cat] || { protein: 8, kcal: 240 }
+  const protein = parseNutrient(recipe.nutrition_info, ['단백질', 'Protein'])
+  const kcal    = parseNutrient(recipe.nutrition_info, ['열량', '칼로리', 'Calories', 'kcal'])
   return (
     <div
       className="recipe-card-shell"
@@ -94,6 +97,7 @@ const MainRecipe = ({ user_idx, selectedDate }) => {
   const [recipes, setRecipes] = useState([])
   const [search, setSearch] = useState('')
   const [generating, setGenerating] = useState(false)
+  const [hasHealthProfile, setHasHealthProfile] = useState(null)
   const timerRef = useRef(null)
 
   const getDietList = async (uid, date) => {
@@ -150,6 +154,13 @@ const MainRecipe = ({ user_idx, selectedDate }) => {
   }
 
   useEffect(() => {
+    if (!user_idx) return
+    axios.get(`http://localhost:3000/api/user/health?user_idx=${user_idx}`)
+      .then((res) => setHasHealthProfile(res.data && res.data !== '0' && res.data !== 0))
+      .catch(() => setHasHealthProfile(false))
+  }, [user_idx])
+
+  useEffect(() => {
     if (user_idx) getDietList(user_idx, selectedDate)
   }, [user_idx, selectedDate])
 
@@ -194,10 +205,18 @@ const MainRecipe = ({ user_idx, selectedDate }) => {
           <span className="recipe-empty-sub">약 30초 후 자동으로 불러옵니다</span>
         </div>
       ) : recipes.length === 0 ? (
-        <div className="recipe-empty">
-          <p className="recipe-empty-title">이 날짜의 추천 식단이 없습니다</p>
-          <span className="recipe-empty-sub">새로고침 버튼을 눌러 오늘의 맞춤 식단을 생성해보세요</span>
-        </div>
+        hasHealthProfile === false ? (
+          <div className="recipe-empty">
+            <p className="recipe-empty-title">건강 정보를 먼저 입력해주세요</p>
+            <span className="recipe-empty-sub">맞춤 식단 추천을 위해 건강 프로필이 필요합니다</span>
+            <a href="/HealthInfo" className="recipe-empty-link">건강정보 입력하러 가기 →</a>
+          </div>
+        ) : (
+          <div className="recipe-empty">
+            <p className="recipe-empty-title">이 날짜의 추천 식단이 없습니다</p>
+            <span className="recipe-empty-sub">새로고침 버튼을 눌러 오늘의 맞춤 식단을 생성해보세요</span>
+          </div>
+        )
       ) : (
         <>
           {featured && <FeaturedCard recipe={featured} />}
